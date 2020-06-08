@@ -38,7 +38,9 @@ subprojects { subProject ->
         annotationProcessor 'org.projectlombok:lombok:+'
 
         compileOnly(group: 'org.pf4j', name: 'pf4j', version: "${pf4jVersion}")
-        compileOnly (group: 'com.netflix.spinnaker.kork', name: 'kork-plugins-api', version: "${korkVersion}")
+        compileOnly(group: 'com.netflix.spinnaker.kork', name: 'kork-plugins-api', version: "${korkVersion}")
+        compileOnly "com.netflix.spinnaker.kork:kork-core:${korkVersion}"
+        compileOnly "com.netflix.spinnaker.kork:kork-web:${korkVersion}"
 
         annotationProcessor(group: 'org.pf4j', name: 'pf4j', version: "${pf4jVersion}")
 
