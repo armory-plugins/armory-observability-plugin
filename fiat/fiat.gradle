@@ -1,0 +1,9 @@
+spinnakerPlugin {
+    serviceName = "fiat"
+    pluginClass = "io.armory.plugin.metrics.ArmoryMetricsPlugin"
+    requires = "fiat>=${fiatMinimumSuppotedVersion}"
+}
+
+dependencies {
+    implementation(project(":common"))
+}

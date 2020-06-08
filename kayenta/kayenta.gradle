@@ -1,0 +1,9 @@
+spinnakerPlugin {
+    serviceName = "kayenta"
+    pluginClass = "io.armory.plugin.metrics.ArmoryMetricsPlugin"
+    requires = "kayenta>=${kayentaMinimumSuppotedVersion}"
+}
+
+dependencies {
+    implementation(project(":common"))
+}

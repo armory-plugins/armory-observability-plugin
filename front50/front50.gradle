@@ -1,0 +1,9 @@
+spinnakerPlugin {
+    serviceName = "front50"
+    pluginClass = "io.armory.plugin.metrics.ArmoryMetricsPlugin"
+    requires = "front50>=${front50MinimumSuppotedVersion}"
+}
+
+dependencies {
+    implementation(project(":common"))
+}

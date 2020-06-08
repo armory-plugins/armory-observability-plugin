@@ -1,0 +1,33 @@
+pluginManagement {
+    repositories {
+        mavenLocal()
+        maven { url "https://dl.bintray.com/spinnaker/gradle/" }
+        gradlePluginPortal()
+    }
+}
+
+rootProject.name = 'armory-metrics-plugin'
+
+include(
+    'clouddriver',
+    'common',
+    'echo',
+    'fiat',
+    'front50',
+    'gate',
+    'igor',
+    'kayenta',
+    'orca',
+    'rosco',
+)
+
+def setBuildFile(project) {
+    project.buildFileName = "${project.name}.gradle"
+    project.children.each {
+        setBuildFile(it)
+    }
+}
+
+rootProject.children.each {
+    setBuildFile(it)
+}

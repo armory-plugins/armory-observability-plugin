@@ -1,0 +1,9 @@
+spinnakerPlugin {
+    serviceName = "rosco"
+    pluginClass = "io.armory.plugin.metrics.ArmoryMetricsPlugin"
+    requires = "rosco>=${roscoMinimumSuppotedVersion}"
+}
+
+dependencies {
+    implementation(project(":common"))
+}

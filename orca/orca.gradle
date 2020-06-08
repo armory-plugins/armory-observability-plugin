@@ -1,0 +1,9 @@
+spinnakerPlugin {
+    serviceName = "orca"
+    pluginClass = "io.armory.plugin.metrics.ArmoryMetricsPlugin"
+    requires = "orca>=${orcaMinimumSuppotedVersion}"
+}
+
+dependencies {
+    implementation(project(":common"))
+}

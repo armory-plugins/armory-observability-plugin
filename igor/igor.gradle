@@ -1,0 +1,9 @@
+spinnakerPlugin {
+    serviceName = "igor"
+    pluginClass = "io.armory.plugin.metrics.ArmoryMetricsPlugin"
+    requires = "igor>=${igorMinimumSuppotedVersion}"
+}
+
+dependencies {
+    implementation(project(":common"))
+}

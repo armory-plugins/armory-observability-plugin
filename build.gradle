@@ -1,0 +1,64 @@
+plugins {
+    id("com.palantir.git-version").version("0.12.2")
+    id("io.spinnaker.plugin.bundler").version("$spinnakerGradleVersion")
+}
+
+spinnakerBundle {
+    pluginId = "Armory.MetricsPlugin"
+    description = "A plugin for configuring and customizing Micrometer for Armory."
+    provider = "TODO"
+    version = rootProject.version
+}
+
+version = normalizedVersion()
+
+subprojects { subProject ->
+    apply plugin: 'java'
+    apply plugin: "maven-publish"
+
+    if (!['common'].contains(subProject.name)) {
+        apply plugin: "io.spinnaker.plugin.service-extension"
+    }
+
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+
+    repositories {
+        mavenCentral()
+        jcenter()
+        maven { url "http://dl.bintray.com/spinnaker/spinnaker/" }
+    }
+
+    compileJava {
+        options.compilerArgs << '-Apf4j.ignoreExtensionPoint'
+    }
+
+    dependencies {
+        compileOnly 'org.projectlombok:lombok:+'
+        annotationProcessor 'org.projectlombok:lombok:+'
+
+        compileOnly(group: 'org.pf4j', name: 'pf4j', version: "${pf4jVersion}")
+        compileOnly (group: 'com.netflix.spinnaker.kork', name: 'kork-plugins-api', version: "${korkVersion}")
+
+        annotationProcessor(group: 'org.pf4j', name: 'pf4j', version: "${pf4jVersion}")
+
+        testImplementation 'junit:junit:4.12'
+        testImplementation "org.mockito:mockito-core:2.+"
+        testImplementation 'org.springframework:spring-test:5.1.7.RELEASE'
+        testImplementation 'org.springframework.boot:spring-boot-test:2.1.5.RELEASE'
+        testImplementation 'org.springframework.vault:spring-vault-core:2.1.2.RELEASE'
+    }
+
+    group = "io.armory.plugins.metrics"
+    version = rootProject.version
+}
+
+String normalizedVersion() {
+    String fullVersion = gitVersion()
+    String normalized = fullVersion.split("-").first()
+    if (fullVersion.contains("dirty")) {
+        return "$normalized-SNAPSHOT"
+    } else {
+        return normalized
+    }
+}

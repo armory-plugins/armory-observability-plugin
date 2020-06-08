@@ -1,0 +1,9 @@
+spinnakerPlugin {
+    serviceName = "gate"
+    pluginClass = "io.armory.plugin.metrics.ArmoryMetricsPlugin"
+    requires = "gate>=${gateMinimumSuppotedVersion}"
+}
+
+dependencies {
+    implementation(project(":common"))
+}
