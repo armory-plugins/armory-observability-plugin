@@ -1,6 +1,6 @@
 spinnakerPlugin {
     serviceName = "orca"
-    pluginClass = "io.armory.plugin.metrics.ArmoryMetricsPlugin"
+    pluginClass = "io.armory.plugin.observability.ArmoryObservabilityPlugin"
     requires = "orca>=${orcaMinimumSuppotedVersion}"
 }
 

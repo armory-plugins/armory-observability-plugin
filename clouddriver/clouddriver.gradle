@@ -1,6 +1,6 @@
 spinnakerPlugin {
     serviceName = "clouddriver"
-    pluginClass = "io.armory.plugin.metrics.ArmoryMetricsPlugin"
+    pluginClass = "io.armory.plugin.observability.ArmoryObservabilityPlugin"
     requires = "clouddriver>=${clouddriverMinimumSuppotedVersion}"
 }
 

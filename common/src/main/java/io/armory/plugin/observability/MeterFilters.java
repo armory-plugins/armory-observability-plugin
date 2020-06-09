@@ -1,4 +1,4 @@
-package io.armory.plugin.metrics;
+package io.armory.plugin.observability;
 
 import io.micrometer.core.instrument.config.MeterFilter;
 

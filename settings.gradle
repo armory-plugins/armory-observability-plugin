@@ -6,7 +6,7 @@ pluginManagement {
     }
 }
 
-rootProject.name = 'armory-metrics-plugin'
+rootProject.name = 'armory-observability-plugin'
 
 include(
     'clouddriver',

@@ -1,6 +1,6 @@
 spinnakerPlugin {
     serviceName = "front50"
-    pluginClass = "io.armory.plugin.metrics.ArmoryMetricsPlugin"
+    pluginClass = "io.armory.plugin.observability.ArmoryObservabilityPlugin"
     requires = "front50>=${front50MinimumSuppotedVersion}"
 }
 

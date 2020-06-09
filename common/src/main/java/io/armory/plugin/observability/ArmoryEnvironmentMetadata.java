@@ -1,4 +1,4 @@
-package io.armory.plugin.metrics.model;
+package io.armory.plugin.observability;
 
 import lombok.Builder;
 import lombok.Data;
