@@ -68,7 +68,7 @@ String normalizedVersion() {
     if (fullVersion.contains("dirty")) {
         resolvedVersion = "$normalized-SNAPSHOT"
     } else {
-        resolvedVersion = normalized
+        resolvedVersion = fullVersion
     }
     logger.lifecycle("Resolved version: ${resolvedVersion}")
     return resolvedVersion
