@@ -62,10 +62,14 @@ subprojects { subProject ->
 
 String normalizedVersion() {
     String fullVersion = gitVersion()
+    logger.lifecycle("full version: ${String.valueOf(fullVersion)}")
     String normalized = fullVersion.split("-").first()
+    def resolvedVersion
     if (fullVersion.contains("dirty")) {
-        return "$normalized-SNAPSHOT"
+        resolvedVersion = "$normalized-SNAPSHOT"
     } else {
-        return normalized
+        resolvedVersion = normalized
     }
+    logger.lifecycle("Resolved version: ${resolvedVersion}")
+    return resolvedVersion
 }
