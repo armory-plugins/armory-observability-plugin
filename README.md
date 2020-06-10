@@ -30,7 +30,7 @@ To debug the plugin inside a Spinnaker service (like Orca) using IntelliJ Idea f
 spinnaker:
   extensibility:
     plugins:
-      armory.obervabilityPlugin:
+      Armory.ObservabilityPlugin:
         enabled: true
         config:
           # Human Readable Customer name for dashboarding.
@@ -39,4 +39,24 @@ spinnaker:
           customerEnvName: production
           # Halyard generated UUID for non-managed and non-sass customers
           customerEnvId: e0fb0422-aa8e-11ea-bb37-0242ac130002
+          
+          # By default this plugin adds a set of sane default tags to help with observability best practices, you can disable those here
+          defaultTagsDisabled: false
+          
+          # By default this plugin does some sane filtering and transformations on metrics, you can disable those here
+          meterRegistryFiltersDisabled: false
+
+          prometheus:
+            # The step size to use in computing windowed statistics like max. The default is 1 minute.
+            # To get the most out of these statistics, align the step interval to be close to your scrape interval.
+            # Optional, Default: 30
+            stepInSeconds: 30
+            # true if meter descriptions should be sent to Prometheus.
+            # Turn this off to minimize the amount of data sent on each scrape.
+            # Optional, Default: false
+            descriptions: flase
+            # Optional, Default: 8009
+            scrapePort: 8009
+            # Optional, Default: /prometheus
+            path: /prometheus
 ```

@@ -13,6 +13,8 @@ public class ArmoryObservabilityPluginProperties {
     String customerEnvName;
     String customerName;
 
+    PluginPrometheusConfig prometheus = new PluginPrometheusConfig();
+
     boolean meterRegistryFiltersDisabled;
     boolean defaultTagsDisabled;
 }
