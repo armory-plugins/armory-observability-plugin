@@ -66,5 +66,5 @@ spinnaker:
             path: /prometheus
     repositories:
       armory-observability-plugin-releases:
-        url: https://raw.githubusercontent.com/armory-observability-plugin-releases/pluginRepository/master/repositories.json            
+        url: https://raw.githubusercontent.com/armory-plugins/armory-observability-plugin-releases/master/repositories.json            
 ```
