@@ -39,4 +39,10 @@ spinnaker:
           customerEnvName: production
           # Halyard generated UUID for non-managed and non-sass customers
           customerEnvId: e0fb0422-aa8e-11ea-bb37-0242ac130002
+
+          # By default this plugin adds a set of sane default tags to help with observability best practices, you can disable those here
+          defaultTagsDisabled: false
+          
+          # By default this plugin does some sane filtering and transformations on metrics, you can disable those here
+          meterRegistryFiltersDisabled: false
 ```
