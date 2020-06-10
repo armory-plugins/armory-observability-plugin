@@ -1,0 +1,24 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    name: Build Plugin
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v2
+      - name: run tests
+        run: ./gradlew test
+      - name: build
+        run: ./gradlew releaseBundle
+      - name: archive build artifacts
+        uses: actions/upload-artifact@v1
+        with:
+          name: dist
+          path: build/distributions

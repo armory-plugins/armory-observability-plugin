@@ -16,9 +16,7 @@ public class ArmoryObservabilityPlugin extends PrivilegedSpringPlugin {
     @Override
     public void registerBeanDefinitions(BeanDefinitionRegistry registry) {
         try {
-            var prometheusRegistry = beanDefinitionFor(PrometheusMeterRegistryWrapper.class);
-            prometheusRegistry.setPrimary(true);
-            registerBean(prometheusRegistry, registry);
+            registerBean(primaryBeanDefinitionFor(PrometheusMeterRegistryWrapper.class), registry);
             registerBean(beanDefinitionFor(PrometheusScrapeEndpoint.class), registry);
             registerBean(beanDefinitionFor(ArmoryObservabilityPluginProperties.class), registry);
             registerBean(beanDefinitionFor(DefaultTagsMeterRegistryCustomizer.class), registry);
