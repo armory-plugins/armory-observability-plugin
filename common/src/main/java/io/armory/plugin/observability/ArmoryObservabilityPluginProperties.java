@@ -12,4 +12,7 @@ public class ArmoryObservabilityPluginProperties {
     String customerEnvId;
     String customerEnvName;
     String customerName;
+
+    boolean meterRegistryFiltersDisabled;
+    boolean defaultTagsDisabled;
 }
