@@ -1,6 +1,9 @@
 # Armory Observability Plugin
 
-Spinnaker plugin for configuring and customizing observability features such as
+Spinnaker plugin for configuring and customizing observability.
+
+![](observability.png | width=100)
+
 - Customizing and tweaking the Micrometer registry.
 - Enabling direct transmision of metrics to promethous and skipping the [Spinnaker Monitoring Daemon](https://github.com/spinnaker/spinnaker-monitoring/tree/master/spinnaker-monitoring-daemon)
 
