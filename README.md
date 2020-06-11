@@ -2,7 +2,17 @@
 
 Spinnaker plugin for configuring and customizing observability.
 
+## What is Observability?
+
+In control theory, observability is a measure of how well internal states of a system can be inferred from knowledge of its external outputs. The observability and controllability of a linear system are mathematical duals. 
+
+The concept of observability was introduced by Hungarian-American engineer Rudolf E. Kálmán for linear dynamic systems.
+
 <img src="observability.png" width="40%">
+
+In software metrics, logging and tracing make up the core categories of observability
+
+## What does this plugin do?
 
 - Customizing and tweaking the Micrometer registry.
 - Enabling direct transmision of metrics to promethous and skipping the [Spinnaker Monitoring Daemon](https://github.com/spinnaker/spinnaker-monitoring/tree/master/spinnaker-monitoring-daemon)
