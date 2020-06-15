@@ -109,6 +109,7 @@ public class DefaultTagsMeterRegistryCustomizer implements MeterRegistryCustomiz
     @Override
     public void customize(MeterRegistry registry) {
         if (!metricsConfig.isDefaultTagsDisabled()) {
+            log.info("Adding default tags to {} class", registry.getClass());
             var propertiesPath = getPropertiesPath();
             var buildProperties = getBuildProperties(propertiesPath);
             var environmentMetadata = getEnvironmentMetadata(buildProperties);
