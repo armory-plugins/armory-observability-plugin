@@ -1,6 +1,6 @@
 package io.armory.plugin.observability;
 
-import io.armory.plugin.observability.model.ArmoryObservabilityPluginProperties;
+import io.armory.plugin.observability.model.PluginConfig;
 import io.armory.plugin.observability.promethus.PrometheusMeterRegistryWrapper;
 import io.armory.plugin.observability.promethus.PrometheusScrapeEndpoint;
 import io.armory.plugin.observability.meterregistrycustomizer.DefaultTagsMeterRegistryCustomizer;
@@ -23,7 +23,7 @@ public class ArmoryObservabilityPlugin extends PrivilegedSpringPlugin {
         try {
             registerBean(primaryBeanDefinitionFor(PrometheusMeterRegistryWrapper.class), registry);
             registerBean(beanDefinitionFor(PrometheusScrapeEndpoint.class), registry);
-            registerBean(beanDefinitionFor(ArmoryObservabilityPluginProperties.class), registry);
+            registerBean(beanDefinitionFor(PluginConfig.class), registry);
             registerBean(beanDefinitionFor(DefaultTagsMeterRegistryCustomizer.class), registry);
             registerBean(beanDefinitionFor(MetricFiltersMeterRegistryCustomizer.class), registry);
         } catch (Exception e) {

@@ -1,6 +1,7 @@
 package io.armory.plugin.observability.meterregistrycustomizer;
 
-import io.armory.plugin.observability.model.ArmoryObservabilityPluginProperties;
+import io.armory.plugin.observability.model.PluginConfig;
+import io.armory.plugin.observability.model.PluginMetricsConfig;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.config.MeterFilter;
 import org.springframework.boot.actuate.autoconfigure.metrics.MeterRegistryCustomizer;
@@ -29,15 +30,15 @@ public class MetricFiltersMeterRegistryCustomizer implements MeterRegistryCustom
             BLOCK_METRICS_THAT_HAVE_PERCENTILE_IN_NAME
     );
 
-    private final ArmoryObservabilityPluginProperties pluginProperties;
+    private final PluginMetricsConfig metricsConfig;
 
-    public MetricFiltersMeterRegistryCustomizer(ArmoryObservabilityPluginProperties pluginProperties) {
-        this.pluginProperties = pluginProperties;
+    public MetricFiltersMeterRegistryCustomizer(PluginConfig metricsConfig) {
+        this.metricsConfig = metricsConfig.getMetrics();
     }
 
     @Override
     public void customize(MeterRegistry registry) {
-        if (!pluginProperties.isMeterRegistryFiltersDisabled()) {
+        if (!metricsConfig.isMeterRegistryFiltersDisabled()) {
             METER_FILTERS.forEach(meterFilter -> registry.config().meterFilter(meterFilter));
         }
     }

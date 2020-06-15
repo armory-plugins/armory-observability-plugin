@@ -3,7 +3,8 @@ package io.armory.plugin.observability.meterregistrycustomizer;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.armory.plugin.observability.model.ArmoryEnvironmentMetadata;
-import io.armory.plugin.observability.model.ArmoryObservabilityPluginProperties;
+import io.armory.plugin.observability.model.PluginConfig;
+import io.armory.plugin.observability.model.PluginMetricsConfig;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import lombok.extern.slf4j.Slf4j;
@@ -16,10 +17,11 @@ import org.springframework.boot.info.BuildProperties;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+
+import static java.util.Optional.ofNullable;
 
 /**
  * A registry customizer that will add the default tags that enable observability best practices for Armory.
@@ -29,21 +31,20 @@ public class DefaultTagsMeterRegistryCustomizer implements MeterRegistryCustomiz
 
     private static final String SPRING_BOOT_BUILD_PROPERTIES_PATH = "META-INF/build-info.properties";
 
-    protected final ArmoryObservabilityPluginProperties pluginProperties;
+    protected final PluginMetricsConfig metricsConfig;
     private final String springInjectedApplicationName;
 
-    public DefaultTagsMeterRegistryCustomizer(ArmoryObservabilityPluginProperties pluginProperties,
+    public DefaultTagsMeterRegistryCustomizer(PluginConfig metricsConfig,
                                               @Value("${spring.application.name:#{null}}") String springInjectedApplicationName) {
 
-        this.pluginProperties = pluginProperties;
+        this.metricsConfig = metricsConfig.getMetrics();
         this.springInjectedApplicationName = springInjectedApplicationName;
     }
 
     protected ArmoryEnvironmentMetadata getEnvironmentMetadata(BuildProperties buildProperties) {
 
-        String resolvedApplicationName = Optional
-                .ofNullable(buildProperties.getName())
-                .or(() -> Optional.ofNullable(springInjectedApplicationName))
+        String resolvedApplicationName = ofNullable(buildProperties.getName())
+                .or(() -> ofNullable(springInjectedApplicationName))
                 .orElse("UNKNOWN");
 
         return ArmoryEnvironmentMetadata.builder()
@@ -51,9 +52,6 @@ public class DefaultTagsMeterRegistryCustomizer implements MeterRegistryCustomiz
                 .armoryAppVersion(buildProperties.getVersion())
                 .ossAppVersion(buildProperties.get("ossVersion"))
                 .spinnakerRelease(buildProperties.get("spinnakerRelease"))
-                .customerEnvId(pluginProperties.getCustomerEnvId())
-                .customerEnvName(pluginProperties.getCustomerEnvName())
-                .customerName(pluginProperties.getCustomerName())
                 .build();
     }
 
@@ -61,22 +59,18 @@ public class DefaultTagsMeterRegistryCustomizer implements MeterRegistryCustomiz
      * @return Map of environment metadata that we will use as the default tags, with all null/empty values stripped.
      */
     protected Map<String, String> getDefaultTagsAsFilteredMap(ArmoryEnvironmentMetadata environmentMetadata) {
-        Map<String, String> tags = new HashMap<>();
+        Map<String, String> tags = new HashMap<>(metricsConfig.getAdditionalTags());
 
         tags.put("applicationName", environmentMetadata.getApplicationName());   // clouddriver
         tags.put("armoryAppVersion", environmentMetadata.getArmoryAppVersion()); // 2.1.0
         tags.put("ossAppVersion", environmentMetadata.getOssAppVersion());       // 0.22.1
-        tags.put("spinnakerVersion", environmentMetadata.getSpinnakerRelease()); // 2.19.8
-        tags.put("customerEnvId", environmentMetadata.getCustomerEnvId());       // e0fb0422-aa8e-11ea-bb37-0242ac130002
-        tags.put("customerEnvName", environmentMetadata.getCustomerEnvName());   // prod
-        tags.put("customerName", environmentMetadata.getCustomerName());         // armory
+        tags.put("spinnakerRelease", environmentMetadata.getSpinnakerRelease()); // 2.19.8
+        tags.put("hostname", System.getenv("HOSTNAME"));
 
-        // If KUBERNETES_SERVICE_HOST is set, lets assume we are in a K8s environment
-        Optional.ofNullable(System.getenv("KUBERNETES_SERVICE_HOST"))
-                .ifPresent(host -> {
-                    tags.put("k8sVersion", fetchKubernetesVersion(host));
-                    tags.put("podName", System.getenv("HOSTNAME"));
-                });
+        // If KUBERNETES_SERVICE_HOST and KUBERNETES_SERVICE_PORT is set, lets assume we are in a K8s environment
+        ofNullable(System.getenv("KUBERNETES_SERVICE_HOST"))
+                .ifPresent(host -> ofNullable(System.getenv("KUBERNETES_SERVICE_PORT"))
+                        .ifPresent(port -> tags.put("k8sVersion", fetchKubernetesVersion(host, port))));
 
         return tags.entrySet().stream()
                 .filter(it -> (it.getValue() != null && !it.getValue().strip().equals("")))
@@ -110,20 +104,25 @@ public class DefaultTagsMeterRegistryCustomizer implements MeterRegistryCustomiz
     }
 
     /**
-     * This method will attempt to fetch the K8s Git Version from the version endpoint
+     * This method will attempt to fetch the K8s Git Version from the version endpoint.
      *
      * @return the git version of the K8s cluster.
      */
-    protected String fetchKubernetesVersion(String host) {
+    protected String fetchKubernetesVersion(String host, String port) {
         log.info("Fetching version data from the K8s service api with 5 second timeout");
         try {
             var client = new OkHttpClient.Builder()
-                    .callTimeout(5, TimeUnit.SECONDS)
-                    .readTimeout(5, TimeUnit.SECONDS)
-                    .connectTimeout(5, TimeUnit.SECONDS)
+                    .callTimeout(1, TimeUnit.SECONDS)
+                    .readTimeout(1, TimeUnit.SECONDS)
+                    .connectTimeout(1, TimeUnit.SECONDS)
+                    .hostnameVerifier((hostname, session) -> true) // ignore hostnames for K8s API
                     .build();
             var response = client.newCall(new Request.Builder()
-                    .url(String.format("http:%s/version", host)).build()).execute();
+                    .url(String.format("https://%s:%s/version", host, port)).build()).execute();
+
+            if (!response.isSuccessful()) {
+                throw new RuntimeException("Failed to get version metadata from K8s API status code: " + response.code());
+            }
 
             @SuppressWarnings("ConstantConditions")
             Map<String, Object> versionData = new ObjectMapper()
@@ -131,7 +130,7 @@ public class DefaultTagsMeterRegistryCustomizer implements MeterRegistryCustomiz
                     });
             return String.valueOf(versionData.get("gitVersion"));
         } catch (Exception e) {
-            log.warn("Failed to fetch version data from the K8s service API", e);
+            log.warn("Failed to fetch version data from the K8s service API, msg: " + e.getMessage());
             return null;
         }
     }
@@ -151,7 +150,7 @@ public class DefaultTagsMeterRegistryCustomizer implements MeterRegistryCustomiz
 
     @Override
     public void customize(MeterRegistry registry) {
-        if (!pluginProperties.isDefaultTagsDisabled()) {
+        if (!metricsConfig.isDefaultTagsDisabled()) {
             var propertiesPath = getPropertiesPath();
             var buildProperties = getBuildProperties(propertiesPath);
             var environmentMetadata = getEnvironmentMetadata(buildProperties);

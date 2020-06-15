@@ -1,7 +1,7 @@
 package io.armory.plugin.observability.meterregistrycustomizer;
 
 import io.armory.plugin.observability.model.ArmoryEnvironmentMetadata;
-import io.armory.plugin.observability.model.ArmoryObservabilityPluginProperties;
+import io.armory.plugin.observability.model.PluginConfig;
 import io.micrometer.core.instrument.Tag;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,7 +22,7 @@ public class DefaultTagsMeterRegistryCustomizerTest {
 
     @Before
     public void before() {
-        customizer = new DefaultTagsMeterRegistryCustomizer(new ArmoryObservabilityPluginProperties(), MOCK_APPLICATION_NAME);
+        customizer = new DefaultTagsMeterRegistryCustomizer(new PluginConfig(), MOCK_APPLICATION_NAME);
     }
 
     @Test
@@ -60,7 +60,7 @@ public class DefaultTagsMeterRegistryCustomizerTest {
     public void test_that_getDefaultTagsAsFilteredMap_filters_null_values() {
         var res = customizer.getDefaultTagsAsFilteredMap(ArmoryEnvironmentMetadata.builder()
                 .applicationName("foo")
-                .customerEnvName(null)
+                .ossAppVersion(null)
                 .build());
 
         assertEquals(1, res.size());
@@ -93,10 +93,27 @@ public class DefaultTagsMeterRegistryCustomizerTest {
 
     @Test
     public void test_that_getEnvironmentMetadata_lastly_defaults_to_unknown() {
-        var sut = new DefaultTagsMeterRegistryCustomizer(new ArmoryObservabilityPluginProperties(), null);
+        var sut = new DefaultTagsMeterRegistryCustomizer(new PluginConfig(), null);
         var buildProps = mock(BuildProperties.class);
         when(buildProps.getName()).thenReturn(null);
         var metadata = sut.getEnvironmentMetadata(buildProps);
         assertEquals("UNKNOWN", metadata.getApplicationName());
+    }
+
+    @Test
+    public void test_that_additional_tags_are_added() {
+        customizer.metricsConfig.setAdditionalTags(Map.of(
+                "foo", "bar",
+                "someValue", "12345",
+                "spinnakerRelease", "I will be ignored"
+        ));
+        var res = customizer.getDefaultTagsAsFilteredMap(ArmoryEnvironmentMetadata.builder()
+                .spinnakerRelease("I take precedence")
+                .build());
+
+        assertEquals(3, res.size());
+        assertEquals("bar", res.get("foo"));
+        assertEquals("12345", res.get("someValue"));
+        assertEquals("I take precedence", res.get("spinnakerRelease"));
     }
 }

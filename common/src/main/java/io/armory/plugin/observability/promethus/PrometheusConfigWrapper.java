@@ -1,7 +1,7 @@
 package io.armory.plugin.observability.promethus;
 
-import io.armory.plugin.observability.model.ArmoryObservabilityPluginProperties;
-import io.armory.plugin.observability.model.PluginPrometheusConfig;
+import io.armory.plugin.observability.model.PluginConfig;
+import io.armory.plugin.observability.model.PluginMetricsPrometheusConfig;
 import io.micrometer.prometheus.PrometheusConfig;
 
 import java.time.Duration;
@@ -9,10 +9,10 @@ import java.time.temporal.ChronoUnit;
 
 public class PrometheusConfigWrapper implements PrometheusConfig {
 
-    private final PluginPrometheusConfig prometheusConfig;
+    private final PluginMetricsPrometheusConfig prometheusConfig;
 
-    PrometheusConfigWrapper(ArmoryObservabilityPluginProperties pluginProperties) {
-        prometheusConfig = pluginProperties.getPrometheus();
+    PrometheusConfigWrapper(PluginConfig pluginProperties) {
+        prometheusConfig = pluginProperties.getMetrics().getPrometheus();
     }
 
     @Override
