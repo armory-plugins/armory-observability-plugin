@@ -1,7 +1,9 @@
-package io.armory.plugin.observability;
+package io.armory.plugin.observability.meterregistrycustomizer;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.armory.plugin.observability.model.ArmoryEnvironmentMetadata;
+import io.armory.plugin.observability.model.ArmoryObservabilityPluginProperties;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import lombok.extern.slf4j.Slf4j;
@@ -142,7 +144,7 @@ public class DefaultTagsMeterRegistryCustomizer implements MeterRegistryCustomiz
 
     @Override
     public void customize(MeterRegistry registry) {
-        if (!pluginProperties.defaultTagsDisabled) {
+        if (!pluginProperties.isDefaultTagsDisabled()) {
             registry.config().commonTags(getDefaultTags());
         }
     }

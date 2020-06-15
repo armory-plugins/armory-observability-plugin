@@ -1,5 +1,10 @@
 package io.armory.plugin.observability;
 
+import io.armory.plugin.observability.model.ArmoryObservabilityPluginProperties;
+import io.armory.plugin.observability.promethus.PrometheusMeterRegistryWrapper;
+import io.armory.plugin.observability.promethus.PrometheusScrapeEndpoint;
+import io.armory.plugin.observability.meterregistrycustomizer.DefaultTagsMeterRegistryCustomizer;
+import io.armory.plugin.observability.meterregistrycustomizer.MetricFiltersMeterRegistryCustomizer;
 import lombok.extern.slf4j.Slf4j;
 import com.netflix.spinnaker.kork.plugins.api.spring.PrivilegedSpringPlugin;
 import org.pf4j.PluginWrapper;

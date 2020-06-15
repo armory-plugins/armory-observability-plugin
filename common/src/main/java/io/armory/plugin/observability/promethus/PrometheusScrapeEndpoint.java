@@ -1,6 +1,7 @@
-package io.armory.plugin.observability;
+package io.armory.plugin.observability.promethus;
 
 import com.sun.net.httpserver.HttpServer;
+import io.armory.plugin.observability.model.ArmoryObservabilityPluginProperties;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -19,7 +20,7 @@ public class PrometheusScrapeEndpoint {
                                     PrometheusMeterRegistryWrapper registry) {
 
         var prometheusConfig = pluginProperties.getPrometheus();
-        var port = prometheusConfig.scrapePort;
+        var port = prometheusConfig.getScrapePort();
         var path = prometheusConfig.getPath();
 
         ExecutorService executorService = Executors.newSingleThreadExecutor();

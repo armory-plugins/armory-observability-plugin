@@ -1,5 +1,6 @@
-package io.armory.plugin.observability;
+package io.armory.plugin.observability.promethus;
 
+import io.armory.plugin.observability.model.ArmoryObservabilityPluginProperties;
 import io.micrometer.prometheus.PrometheusConfig;
 import io.micrometer.prometheus.PrometheusMeterRegistry;
 

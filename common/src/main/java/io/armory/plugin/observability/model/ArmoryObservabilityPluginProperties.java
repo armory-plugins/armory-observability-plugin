@@ -1,4 +1,4 @@
-package io.armory.plugin.observability;
+package io.armory.plugin.observability.model;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -9,12 +9,12 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties("spinnaker.extensibility.plugins.armory.observability-plugin.config")
 public class ArmoryObservabilityPluginProperties {
 
-    String customerEnvId;
-    String customerEnvName;
-    String customerName;
+    private String customerEnvId;
+    private String customerEnvName;
+    private String customerName;
 
-    PluginPrometheusConfig prometheus = new PluginPrometheusConfig();
+    private PluginPrometheusConfig prometheus = new PluginPrometheusConfig();
 
-    boolean meterRegistryFiltersDisabled;
-    boolean defaultTagsDisabled;
+    private boolean meterRegistryFiltersDisabled;
+    private boolean defaultTagsDisabled;
 }

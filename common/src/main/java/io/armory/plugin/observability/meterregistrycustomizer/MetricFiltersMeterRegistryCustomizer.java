@@ -1,5 +1,6 @@
-package io.armory.plugin.observability;
+package io.armory.plugin.observability.meterregistrycustomizer;
 
+import io.armory.plugin.observability.model.ArmoryObservabilityPluginProperties;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.config.MeterFilter;
 import org.springframework.boot.actuate.autoconfigure.metrics.MeterRegistryCustomizer;
@@ -36,7 +37,7 @@ public class MetricFiltersMeterRegistryCustomizer implements MeterRegistryCustom
 
     @Override
     public void customize(MeterRegistry registry) {
-        if (!pluginProperties.meterRegistryFiltersDisabled) {
+        if (!pluginProperties.isMeterRegistryFiltersDisabled()) {
             METER_FILTERS.forEach(meterFilter -> registry.config().meterFilter(meterFilter));
         }
     }
