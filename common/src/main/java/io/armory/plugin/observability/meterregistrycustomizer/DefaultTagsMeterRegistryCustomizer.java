@@ -27,8 +27,9 @@ import java.util.stream.Collectors;
 @Slf4j
 public class DefaultTagsMeterRegistryCustomizer implements MeterRegistryCustomizer<MeterRegistry> {
 
-    private final ArmoryEnvironmentMetadata environmentMetadata;
-    private final ArmoryObservabilityPluginProperties pluginProperties;
+    private static final String SPRING_BOOT_BUILD_PROPERTIES_PATH = "META-INF/build-info.properties";
+
+    protected final ArmoryObservabilityPluginProperties pluginProperties;
     private final String springInjectedApplicationName;
 
     public DefaultTagsMeterRegistryCustomizer(ArmoryObservabilityPluginProperties pluginProperties,
@@ -36,11 +37,17 @@ public class DefaultTagsMeterRegistryCustomizer implements MeterRegistryCustomiz
 
         this.pluginProperties = pluginProperties;
         this.springInjectedApplicationName = springInjectedApplicationName;
+    }
 
-        var buildProperties = getBuildProperties();
+    protected ArmoryEnvironmentMetadata getEnvironmentMetadata(BuildProperties buildProperties) {
 
-        environmentMetadata = ArmoryEnvironmentMetadata.builder()
-                .applicationName(buildProperties.getName())
+        String resolvedApplicationName = Optional
+                .ofNullable(buildProperties.getName())
+                .or(() -> Optional.ofNullable(springInjectedApplicationName))
+                .orElse("UNKNOWN");
+
+        return ArmoryEnvironmentMetadata.builder()
+                .applicationName(resolvedApplicationName)
                 .armoryAppVersion(buildProperties.getVersion())
                 .ossAppVersion(buildProperties.get("ossVersion"))
                 .spinnakerRelease(buildProperties.get("spinnakerRelease"))
@@ -53,14 +60,10 @@ public class DefaultTagsMeterRegistryCustomizer implements MeterRegistryCustomiz
     /**
      * @return Map of environment metadata that we will use as the default tags, with all null/empty values stripped.
      */
-    private Map<String, String> getDefaultTagsAsFilteredMap() {
+    protected Map<String, String> getDefaultTagsAsFilteredMap(ArmoryEnvironmentMetadata environmentMetadata) {
         Map<String, String> tags = new HashMap<>();
-        String resolvedApplicationName = Optional
-                .ofNullable(environmentMetadata.getApplicationName())
-                .or(() -> Optional.ofNullable(springInjectedApplicationName))
-                .orElse("UNKNOWN");
 
-        tags.put("applicationName", resolvedApplicationName);                    // clouddriver
+        tags.put("applicationName", environmentMetadata.getApplicationName());   // clouddriver
         tags.put("armoryAppVersion", environmentMetadata.getArmoryAppVersion()); // 2.1.0
         tags.put("ossAppVersion", environmentMetadata.getOssAppVersion());       // 0.22.1
         tags.put("spinnakerVersion", environmentMetadata.getSpinnakerRelease()); // 2.19.8
@@ -90,10 +93,10 @@ public class DefaultTagsMeterRegistryCustomizer implements MeterRegistryCustomiz
      *
      * @return build-related information such as group and artifact.
      */
-    private BuildProperties getBuildProperties() {
+    protected BuildProperties getBuildProperties(String propertiesPath) {
         var buildInfoPrefix = "build.";
         var buildInfoProperties = new Properties();
-        try (var is = this.getClass().getClassLoader().getResourceAsStream("META-INF/build-info.properties")) {
+        try (var is = this.getClass().getClassLoader().getResourceAsStream(propertiesPath)) {
             var rawProperties = new Properties();
             rawProperties.load(is);
             rawProperties.stringPropertyNames().stream()
@@ -111,7 +114,7 @@ public class DefaultTagsMeterRegistryCustomizer implements MeterRegistryCustomiz
      *
      * @return the git version of the K8s cluster.
      */
-    private String fetchKubernetesVersion(String host) {
+    protected String fetchKubernetesVersion(String host) {
         log.info("Fetching version data from the K8s service api with 5 second timeout");
         try {
             var client = new OkHttpClient.Builder()
@@ -133,19 +136,28 @@ public class DefaultTagsMeterRegistryCustomizer implements MeterRegistryCustomiz
         }
     }
 
-    private List<Tag> getDefaultTags() {
-        return getDefaultTagsAsFilteredMap().entrySet().stream()
+    protected List<Tag> getDefaultTags(Map<String, String> tags) {
+        return tags.entrySet().stream()
                 .map(tag -> {
                     log.info("Adding default tag {}: {} to default tags list.", tag.getKey(), tag.getValue());
-                    return io.micrometer.core.instrument.Tag.of(tag.getKey(), tag.getValue());
+                    return Tag.of(tag.getKey(), tag.getValue());
                 })
                 .collect(Collectors.toList());
+    }
+
+    protected String getPropertiesPath() {
+        return SPRING_BOOT_BUILD_PROPERTIES_PATH;
     }
 
     @Override
     public void customize(MeterRegistry registry) {
         if (!pluginProperties.isDefaultTagsDisabled()) {
-            registry.config().commonTags(getDefaultTags());
+            var propertiesPath = getPropertiesPath();
+            var buildProperties = getBuildProperties(propertiesPath);
+            var environmentMetadata = getEnvironmentMetadata(buildProperties);
+            var tagsAsMap = getDefaultTagsAsFilteredMap(environmentMetadata);
+            var defaultTags = getDefaultTags(tagsAsMap);
+            registry.config().commonTags(defaultTags);
         }
     }
 }

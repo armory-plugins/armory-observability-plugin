@@ -54,6 +54,11 @@ subprojects { subProject ->
         testImplementation 'org.springframework:spring-test:5.1.7.RELEASE'
         testImplementation 'org.springframework.boot:spring-boot-test:2.1.5.RELEASE'
         testImplementation 'org.springframework.vault:spring-vault-core:2.1.2.RELEASE'
+        testImplementation(group: 'org.pf4j', name: 'pf4j', version: "${pf4jVersion}")
+        testImplementation(group: 'com.netflix.spinnaker.kork', name: 'kork-plugins-api', version: "${korkVersion}")
+        testImplementation "com.netflix.spinnaker.kork:kork-plugins-spring-api:$korkVersion"
+        testImplementation "com.netflix.spinnaker.kork:kork-core:${korkVersion}"
+        testImplementation "com.netflix.spinnaker.kork:kork-web:${korkVersion}"
     }
 
     group = "io.armory.plugins.metrics"
