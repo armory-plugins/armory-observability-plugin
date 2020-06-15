@@ -1,15 +1,11 @@
 package io.armory.plugin.observability.meterregistrycustomizer;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.armory.plugin.observability.model.ArmoryEnvironmentMetadata;
 import io.armory.plugin.observability.model.PluginConfig;
 import io.armory.plugin.observability.model.PluginMetricsConfig;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.autoconfigure.metrics.MeterRegistryCustomizer;
 import org.springframework.boot.info.BuildProperties;
@@ -18,7 +14,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static java.util.Optional.ofNullable;
@@ -67,11 +62,6 @@ public class DefaultTagsMeterRegistryCustomizer implements MeterRegistryCustomiz
         tags.put("spinnakerRelease", environmentMetadata.getSpinnakerRelease()); // 2.19.8
         tags.put("hostname", System.getenv("HOSTNAME"));
 
-        // If KUBERNETES_SERVICE_HOST and KUBERNETES_SERVICE_PORT is set, lets assume we are in a K8s environment
-        ofNullable(System.getenv("KUBERNETES_SERVICE_HOST"))
-                .ifPresent(host -> ofNullable(System.getenv("KUBERNETES_SERVICE_PORT"))
-                        .ifPresent(port -> tags.put("k8sVersion", fetchKubernetesVersion(host, port))));
-
         return tags.entrySet().stream()
                 .filter(it -> (it.getValue() != null && !it.getValue().strip().equals("")))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
@@ -101,38 +91,6 @@ public class DefaultTagsMeterRegistryCustomizer implements MeterRegistryCustomiz
             log.warn("Failed to load META-INF/build-info.properties, msg: {}", e.getMessage());
         }
         return new BuildProperties(buildInfoProperties);
-    }
-
-    /**
-     * This method will attempt to fetch the K8s Git Version from the version endpoint.
-     *
-     * @return the git version of the K8s cluster.
-     */
-    protected String fetchKubernetesVersion(String host, String port) {
-        log.info("Fetching version data from the K8s service api with 5 second timeout");
-        try {
-            var client = new OkHttpClient.Builder()
-                    .callTimeout(1, TimeUnit.SECONDS)
-                    .readTimeout(1, TimeUnit.SECONDS)
-                    .connectTimeout(1, TimeUnit.SECONDS)
-                    .hostnameVerifier((hostname, session) -> true) // ignore hostnames for K8s API
-                    .build();
-            var response = client.newCall(new Request.Builder()
-                    .url(String.format("https://%s:%s/version", host, port)).build()).execute();
-
-            if (!response.isSuccessful()) {
-                throw new RuntimeException("Failed to get version metadata from K8s API status code: " + response.code());
-            }
-
-            @SuppressWarnings("ConstantConditions")
-            Map<String, Object> versionData = new ObjectMapper()
-                    .readValue(response.body().bytes(), new TypeReference<HashMap<String, Object>>() {
-                    });
-            return String.valueOf(versionData.get("gitVersion"));
-        } catch (Exception e) {
-            log.warn("Failed to fetch version data from the K8s service API, msg: " + e.getMessage());
-            return null;
-        }
     }
 
     protected List<Tag> getDefaultTags(Map<String, String> tags) {
