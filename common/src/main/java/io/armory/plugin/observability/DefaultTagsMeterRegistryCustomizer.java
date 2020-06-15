@@ -84,12 +84,19 @@ public class DefaultTagsMeterRegistryCustomizer implements MeterRegistryCustomiz
      * <p>
      * If the file is not present, because the plugin is being loaded into OSS Spinnaker for example, the props will all be null
      *
+     * Duplicates the logic from https://github.com/spring-projects/spring-boot/blob/28e1b90735a57eb637690a4a029b462f8a3eafee/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/info/ProjectInfoAutoConfiguration.java#L68-L86
+     *
      * @return build-related information such as group and artifact.
      */
     private BuildProperties getBuildProperties() {
+        var buildInfoPrefix = "build.";
         var buildInfoProperties = new Properties();
         try (var is = this.getClass().getClassLoader().getResourceAsStream("META-INF/build-info.properties")) {
-            buildInfoProperties.load(is);
+            var rawProperties = new Properties();
+            rawProperties.load(is);
+            rawProperties.stringPropertyNames().stream()
+                    .filter(propName -> propName.startsWith(buildInfoPrefix))
+                    .forEach(propName -> buildInfoProperties.put(propName.substring(buildInfoPrefix.length()), rawProperties.get(propName)));
         } catch (Exception e) {
             log.warn("You can ignore the following warning if you are not running an Armory Wrapper Spinnaker Service for Spinnaker >= 2.19");
             log.warn("Failed to load META-INF/build-info.properties, msg: {}", e.getMessage());
