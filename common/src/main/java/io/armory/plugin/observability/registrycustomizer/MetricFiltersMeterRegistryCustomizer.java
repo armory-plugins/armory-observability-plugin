@@ -1,11 +1,10 @@
-package io.armory.plugin.observability.meterregistrycustomizer;
+package io.armory.plugin.observability.registrycustomizer;
 
 import io.armory.plugin.observability.model.PluginConfig;
 import io.armory.plugin.observability.model.PluginMetricsConfig;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.config.MeterFilter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.actuate.autoconfigure.metrics.MeterRegistryCustomizer;
 
 import java.util.List;
 
@@ -18,7 +17,7 @@ import static io.micrometer.core.instrument.config.MeterFilter.deny;
  * more efficient for metrics platforms that care about the number of unique MTS and or DPM.
  */
 @Slf4j
-public class MetricFiltersMeterRegistryCustomizer implements MeterRegistryCustomizer<MeterRegistry> {
+public class MetricFiltersMeterRegistryCustomizer extends RegistryCustomizer {
 
     /**
      * This may be too primitive but, it can be a place to start.
@@ -39,9 +38,10 @@ public class MetricFiltersMeterRegistryCustomizer implements MeterRegistryCustom
     }
 
     @Override
-    public void customize(MeterRegistry registry) {
+
+    public void doCustomize(MeterRegistry registry) {
         if (!metricsConfig.isMeterRegistryFiltersDisabled()) {
-            log.info("Adding metric filters to {} class", registry.getClass());
+            log.info("Adding meter filters");
             METER_FILTERS.forEach(meterFilter -> registry.config().meterFilter(meterFilter));
         }
     }

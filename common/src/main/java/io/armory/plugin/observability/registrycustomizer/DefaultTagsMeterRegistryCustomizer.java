@@ -1,4 +1,4 @@
-package io.armory.plugin.observability.meterregistrycustomizer;
+package io.armory.plugin.observability.registrycustomizer;
 
 import io.armory.plugin.observability.model.ArmoryEnvironmentMetadata;
 import io.armory.plugin.observability.model.PluginConfig;
@@ -22,7 +22,7 @@ import static java.util.Optional.ofNullable;
  * A registry customizer that will add the default tags that enable observability best practices for Armory.
  */
 @Slf4j
-public class DefaultTagsMeterRegistryCustomizer implements MeterRegistryCustomizer<MeterRegistry> {
+public class DefaultTagsMeterRegistryCustomizer extends RegistryCustomizer {
 
     private static final String SPRING_BOOT_BUILD_PROPERTIES_PATH = "META-INF/build-info.properties";
 
@@ -107,9 +107,8 @@ public class DefaultTagsMeterRegistryCustomizer implements MeterRegistryCustomiz
     }
 
     @Override
-    public void customize(MeterRegistry registry) {
+    void doCustomize(MeterRegistry registry) {
         if (!metricsConfig.isDefaultTagsDisabled()) {
-            log.info("Adding default tags to {} class", registry.getClass());
             var propertiesPath = getPropertiesPath();
             var buildProperties = getBuildProperties(propertiesPath);
             var environmentMetadata = getEnvironmentMetadata(buildProperties);

@@ -1,4 +1,4 @@
-package io.armory.plugin.observability.meterregistrycustomizer;
+package io.armory.plugin.observability.registrycustomizer;
 
 import io.armory.plugin.observability.model.ArmoryEnvironmentMetadata;
 import io.armory.plugin.observability.model.PluginConfig;
