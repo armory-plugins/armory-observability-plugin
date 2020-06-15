@@ -8,5 +8,5 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConfigurationProperties("spinnaker.extensibility.plugins.armory.observability-plugin.config")
 public class PluginConfig {
-    PluginMetricsConfig metrics = new PluginMetricsConfig();
+  PluginMetricsConfig metrics = new PluginMetricsConfig();
 }

@@ -6,8 +6,8 @@ import lombok.Data;
 @Data
 @Builder
 public class ArmoryEnvironmentMetadata {
-    private final String applicationName;
-    private final String armoryAppVersion;
-    private final String ossAppVersion;
-    private final String spinnakerRelease;
+  private final String applicationName;
+  private final String armoryAppVersion;
+  private final String ossAppVersion;
+  private final String spinnakerRelease;
 }
