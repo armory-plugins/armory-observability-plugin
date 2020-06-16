@@ -6,6 +6,4 @@ import lombok.Data;
 public class PluginMetricsPrometheusConfig {
   private int stepInSeconds = 30;
   private boolean descriptions = false;
-  private int scrapePort = 8009;
-  private String path = "/prometheus";
 }

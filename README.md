@@ -77,10 +77,6 @@ spinnaker:
                 # Turn this off to minimize the amount of data sent on each scrape.
                 # Optional, Default: false
                 descriptions: false
-                # Optional, Default: 8009
-                scrapePort: 8009
-                # Optional, Default: /prometheus
-                path: /prometheus
     repositories:
       armory-observability-plugin-releases:
         url: https://raw.githubusercontent.com/armory-plugins/armory-observability-plugin-releases/master/repositories.json            
