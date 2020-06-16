@@ -17,6 +17,7 @@ import org.springframework.boot.info.BuildProperties;
 public class TagsServiceTest {
 
   private static final String MOCK_APPLICATION_NAME = "mock-application-name";
+  private static final String MOCK_PLUGIN_VER = "1.0.0";
   private TagsService sut;
 
   @Before
@@ -62,8 +63,9 @@ public class TagsServiceTest {
         sut.getDefaultTagsAsFilteredMap(
             ArmoryEnvironmentMetadata.builder().applicationName("foo").ossAppVersion(null).build());
 
-    assertEquals(1, res.size());
+    assertEquals(2, res.size());
     assertEquals(res.get("applicationName"), "foo");
+    assertEquals(res.get("lib"), "armory-observability-plugin");
   }
 
   @Test
@@ -78,7 +80,7 @@ public class TagsServiceTest {
   public void test_that_getEnvironmentMetadata_reads_app_name_from_build_props() {
     var buildProps = mock(BuildProperties.class);
     when(buildProps.getName()).thenReturn("foo");
-    var metadata = sut.getEnvironmentMetadata(buildProps);
+    var metadata = sut.getEnvironmentMetadata(buildProps, MOCK_PLUGIN_VER);
     assertEquals("foo", metadata.getApplicationName());
   }
 
@@ -86,7 +88,7 @@ public class TagsServiceTest {
   public void test_that_getEnvironmentMetadata_uses_spring_app_name_props_if_build_props_null() {
     var buildProps = mock(BuildProperties.class);
     when(buildProps.getName()).thenReturn(null);
-    var metadata = sut.getEnvironmentMetadata(buildProps);
+    var metadata = sut.getEnvironmentMetadata(buildProps, MOCK_PLUGIN_VER);
     assertEquals(MOCK_APPLICATION_NAME, metadata.getApplicationName());
   }
 
@@ -95,7 +97,7 @@ public class TagsServiceTest {
     var sut = new TagsService(new PluginConfig(), null);
     var buildProps = mock(BuildProperties.class);
     when(buildProps.getName()).thenReturn(null);
-    var metadata = sut.getEnvironmentMetadata(buildProps);
+    var metadata = sut.getEnvironmentMetadata(buildProps, MOCK_PLUGIN_VER);
     assertEquals("UNKNOWN", metadata.getApplicationName());
   }
 
@@ -110,9 +112,10 @@ public class TagsServiceTest {
         sut.getDefaultTagsAsFilteredMap(
             ArmoryEnvironmentMetadata.builder().spinnakerRelease("I take precedence").build());
 
-    assertEquals(3, res.size());
+    assertEquals(4, res.size());
     assertEquals("bar", res.get("foo"));
     assertEquals("12345", res.get("someValue"));
     assertEquals("I take precedence", res.get("spinnakerRelease"));
+    assertEquals(res.get("lib"), "armory-observability-plugin");
   }
 }
