@@ -7,11 +7,15 @@ import io.micrometer.prometheus.PrometheusMeterRegistry;
 
 public class PrometheusMeterRegistryWrapper extends PrometheusMeterRegistry {
 
-  public PrometheusMeterRegistryWrapper(PluginConfig pluginProperties, PrometheusCollectorRegistryWrapper collectorRegistry, Clock clock) {
+  public PrometheusMeterRegistryWrapper(
+      PluginConfig pluginProperties,
+      PrometheusCollectorRegistryWrapper collectorRegistry,
+      Clock clock) {
     this(new PrometheusConfigWrapper(pluginProperties), collectorRegistry, clock);
   }
 
-  public PrometheusMeterRegistryWrapper(PrometheusConfig config, PrometheusCollectorRegistryWrapper collectorRegistry, Clock clock) {
+  public PrometheusMeterRegistryWrapper(
+      PrometheusConfig config, PrometheusCollectorRegistryWrapper collectorRegistry, Clock clock) {
     super(config, collectorRegistry, clock);
   }
 }
