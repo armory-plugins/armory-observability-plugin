@@ -14,8 +14,8 @@ In software metrics, logging and tracing make up the core categories of observab
 
 ## What does this plugin do?
 
-- Customizing and tweaking the Micrometer registry.
-- Enabling direct transmision of metrics to promethous and skipping the [Spinnaker Monitoring Daemon](https://github.com/spinnaker/spinnaker-monitoring/tree/master/spinnaker-monitoring-daemon)
+- Enables customizing and tweaking the Micrometer registry.
+- Exposes an open metrics endpoint for the micrometer / spectator metrics, allowing tools such as promethous to work without the [Spinnaker Monitoring Daemon](https://github.com/spinnaker/spinnaker-monitoring/tree/master/spinnaker-monitoring-daemon).
 
 ## Potential Future Additions
 - Enable distrubuted tracing, Slueth?
