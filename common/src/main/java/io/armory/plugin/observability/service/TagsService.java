@@ -31,7 +31,8 @@ public class TagsService {
     this.springInjectedApplicationName = springInjectedApplicationName;
   }
 
-  protected ArmoryEnvironmentMetadata getEnvironmentMetadata(BuildProperties buildProperties) {
+  protected ArmoryEnvironmentMetadata getEnvironmentMetadata(
+      BuildProperties buildProperties, String pluginVersion) {
 
     String resolvedApplicationName =
         ofNullable(buildProperties.getName())
@@ -39,6 +40,7 @@ public class TagsService {
             .orElse("UNKNOWN");
 
     return ArmoryEnvironmentMetadata.builder()
+        .pluginVersion(pluginVersion)
         .applicationName(resolvedApplicationName)
         .armoryAppVersion(buildProperties.getVersion())
         .ossAppVersion(buildProperties.get("ossVersion"))
@@ -54,6 +56,8 @@ public class TagsService {
       ArmoryEnvironmentMetadata environmentMetadata) {
     Map<String, String> tags = new HashMap<>(metricsConfig.getAdditionalTags());
 
+    tags.put("lib", "armory-observability-plugin");
+    tags.put("libVersion", environmentMetadata.getPluginVersion());
     tags.put("applicationName", environmentMetadata.getApplicationName()); // clouddriver
     tags.put("armoryAppVersion", environmentMetadata.getArmoryAppVersion()); // 2.1.0
     tags.put("ossAppVersion", environmentMetadata.getOssAppVersion()); // 0.22.1
@@ -98,6 +102,23 @@ public class TagsService {
     return new BuildProperties(buildInfoProperties);
   }
 
+  /** @return the plugin version */
+  protected String getPluginVersion() {
+    try (var is =
+        this.getClass()
+            .getClassLoader()
+            .getResourceAsStream("io/armory/plugin/observability/build.properties")) {
+      var properties = new Properties();
+      properties.load(is);
+      return properties.getProperty("version");
+    } catch (Exception e) {
+      log.warn(
+          "Failed to load the plugin version build props file, returning null msg: {}",
+          e.getMessage());
+      return null;
+    }
+  }
+
   protected List<Tag> getDefaultTags(Map<String, String> tags) {
     return tags.entrySet().stream()
         .map(
@@ -119,7 +140,8 @@ public class TagsService {
     }
     var propertiesPath = getPropertiesPath();
     var buildProperties = getBuildProperties(propertiesPath);
-    var environmentMetadata = getEnvironmentMetadata(buildProperties);
+    var pluginVersion = getPluginVersion();
+    var environmentMetadata = getEnvironmentMetadata(buildProperties, pluginVersion);
     var tagsAsMap = getDefaultTagsAsFilteredMap(environmentMetadata);
     return getDefaultTags(tagsAsMap);
   }

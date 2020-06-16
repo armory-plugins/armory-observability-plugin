@@ -1,0 +1,9 @@
+task injectVersion() {
+    doLast {
+        logger.lifecycle("Injecting version: ${project.version} into Plugin")
+        def root = "${project.buildDir.absolutePath}/resources/main/io/armory/plugin/observability"
+        new File(root).mkdirs()
+        new File("${root}/build.properties").text = "version=${project.version}"
+    }
+}
+tasks.getByName('jar').dependsOn(tasks.getByName('injectVersion'))
