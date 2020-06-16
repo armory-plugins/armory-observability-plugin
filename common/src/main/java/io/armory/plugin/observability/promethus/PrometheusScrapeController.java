@@ -3,11 +3,13 @@ package io.armory.plugin.observability.promethus;
 import io.prometheus.client.exporter.common.TextFormat;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.io.Writer;
+import java.util.Optional;
+import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,12 +33,16 @@ public class PrometheusScrapeController {
   }
 
   @GetMapping()
-  public ResponseEntity<String> scrape() {
+  public ResponseEntity<String> scrape(@Nullable Set<String> includedNames) {
     try {
-      Writer writer = new StringWriter();
-      TextFormat.write004(writer, this.collectorRegistry.metricFamilySamples());
-      HttpHeaders responseHeaders = new HttpHeaders();
+      var responseHeaders = new HttpHeaders();
       responseHeaders.set("Content-Type", TextFormat.CONTENT_TYPE_004);
+      var writer = new StringWriter();
+      var samples =
+          Optional.ofNullable(includedNames)
+              .map(this.collectorRegistry::filteredMetricFamilySamples)
+              .orElse(this.collectorRegistry.metricFamilySamples());
+      TextFormat.write004(writer, samples);
       return new ResponseEntity<>(writer.toString(), responseHeaders, HttpStatus.OK);
     } catch (IOException ex) {
       // This actually never happens since StringWriter::write() doesn't throw any
