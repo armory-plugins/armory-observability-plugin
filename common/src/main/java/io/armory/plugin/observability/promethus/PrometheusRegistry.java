@@ -26,11 +26,13 @@ public class PrometheusRegistry extends PrometheusMeterRegistry {
     this.config().commonTags(tagsService.getDefaultTags());
 
     // Add our meter filters
-    meterFilterService.getMeterFilters().forEach(meterFilter -> this.config().meterFilter(meterFilter));
+    meterFilterService
+        .getMeterFilters()
+        .forEach(meterFilter -> this.config().meterFilter(meterFilter));
   }
 
   public PrometheusRegistry(
-          PrometheusConfig config, PrometheusCollectorRegistry collectorRegistry, Clock clock) {
+      PrometheusConfig config, PrometheusCollectorRegistry collectorRegistry, Clock clock) {
     super(config, collectorRegistry, clock);
   }
 }
