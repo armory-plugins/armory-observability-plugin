@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -33,7 +34,7 @@ public class PrometheusScrapeController {
   }
 
   @GetMapping()
-  public ResponseEntity<String> scrape(@Nullable Set<String> includedNames) {
+  public ResponseEntity<String> scrape(@Nullable @RequestParam Set<String> includedNames) {
     try {
       var responseHeaders = new HttpHeaders();
       responseHeaders.set("Content-Type", TextFormat.CONTENT_TYPE_004);
