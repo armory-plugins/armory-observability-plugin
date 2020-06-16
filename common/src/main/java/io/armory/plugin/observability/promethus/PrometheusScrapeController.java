@@ -24,12 +24,12 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @Slf4j
 @RestController()
-@RequestMapping("/armory-observability/open-metrics")
+@RequestMapping("/armory-observability/metrics")
 public class PrometheusScrapeController {
 
-  private final PrometheusCollectorRegistryWrapper collectorRegistry;
+  private final PrometheusCollectorRegistry collectorRegistry;
 
-  public PrometheusScrapeController(PrometheusCollectorRegistryWrapper collectorRegistry) {
+  public PrometheusScrapeController(PrometheusCollectorRegistry collectorRegistry) {
     this.collectorRegistry = collectorRegistry;
   }
 

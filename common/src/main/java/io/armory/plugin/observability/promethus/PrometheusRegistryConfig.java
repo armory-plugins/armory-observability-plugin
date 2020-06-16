@@ -6,11 +6,11 @@ import io.micrometer.prometheus.PrometheusConfig;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 
-public class PrometheusConfigWrapper implements PrometheusConfig {
+public class PrometheusRegistryConfig implements PrometheusConfig {
 
   private final PluginMetricsPrometheusConfig prometheusConfig;
 
-  PrometheusConfigWrapper(PluginConfig pluginProperties) {
+  PrometheusRegistryConfig(PluginConfig pluginProperties) {
     prometheusConfig = pluginProperties.getMetrics().getPrometheus();
   }
 
