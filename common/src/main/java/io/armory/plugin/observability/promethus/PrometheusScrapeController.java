@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @Slf4j
 @RestController()
-@RequestMapping("/armory-observability/metrics")
+@RequestMapping("/armory-observability/open-metrics")
 public class PrometheusScrapeController {
 
   private final PrometheusCollectorRegistryWrapper collectorRegistry;
