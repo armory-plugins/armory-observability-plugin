@@ -8,6 +8,7 @@ public class PluginMetricsConfig {
   private Map<String, String> additionalTags = Map.of();
 
   private PluginMetricsPrometheusConfig prometheus = new PluginMetricsPrometheusConfig();
+  private PluginMetricsNewRelicConfig newrelic = new PluginMetricsNewRelicConfig();
 
   private boolean meterRegistryFiltersDisabled;
   private boolean defaultTagsDisabled;

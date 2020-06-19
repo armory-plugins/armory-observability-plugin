@@ -2,9 +2,11 @@ package io.armory.plugin.observability;
 
 import com.netflix.spinnaker.kork.plugins.api.spring.PrivilegedSpringPlugin;
 import io.armory.plugin.observability.model.PluginConfig;
+import io.armory.plugin.observability.newrelic.NewRelicRegistrySupplier;
 import io.armory.plugin.observability.promethus.PrometheusCollectorRegistry;
-import io.armory.plugin.observability.promethus.PrometheusRegistry;
+import io.armory.plugin.observability.promethus.PrometheusRegistrySupplier;
 import io.armory.plugin.observability.promethus.PrometheusScrapeController;
+import io.armory.plugin.observability.registry.ArmoryObservabilityCompositeRegistry;
 import io.armory.plugin.observability.service.MeterFilterService;
 import io.armory.plugin.observability.service.TagsService;
 import lombok.extern.slf4j.Slf4j;
@@ -24,9 +26,14 @@ public class ArmoryObservabilityPlugin extends PrivilegedSpringPlugin {
       registerBean(beanDefinitionFor(PluginConfig.class), registry);
       registerBean(beanDefinitionFor(TagsService.class), registry);
       registerBean(beanDefinitionFor(MeterFilterService.class), registry);
+
       registerBean(beanDefinitionFor(PrometheusCollectorRegistry.class), registry);
-      registerBean(primaryBeanDefinitionFor(PrometheusRegistry.class), registry);
+      registerBean(beanDefinitionFor(PrometheusRegistrySupplier.class), registry);
       registerBean(beanDefinitionFor(PrometheusScrapeController.class), registry);
+
+      registerBean(beanDefinitionFor(NewRelicRegistrySupplier.class), registry);
+
+      registerBean(primaryBeanDefinitionFor(ArmoryObservabilityCompositeRegistry.class), registry);
     } catch (Exception e) {
       log.error("Failed to register Armory Metrics Plugin beans", e);
     }

@@ -32,6 +32,9 @@ public class MeterFilterService {
   }
 
   public List<MeterFilter> getMeterFilters() {
+    if (metricsConfig.isMeterRegistryFiltersDisabled()) {
+      return List.of();
+    }
     return List.of(BLOCK_METRICS_THAT_HAVE_PERCENTILE_IN_NAME);
   }
 }

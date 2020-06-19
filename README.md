@@ -36,7 +36,7 @@ spinnaker:
           additionalTags:
             customerName: armory
             customerEnvName: production
-          prometheus.stepInSeconds: 10
+          prometheus.enabled: true
 ```
 
 ### All Options
@@ -70,6 +70,8 @@ spinnaker:
               meterRegistryFiltersDisabled: false
     
               prometheus:
+                # Optional, Default: false
+                enabled: false
                 # The step size to use in computing windowed statistics like max.
                 # To get the most out of these statistics, align the step interval to be close to your scrape interval.
                 # Optional, Default: 30
@@ -78,6 +80,30 @@ spinnaker:
                 # Turn this off to minimize the amount of data sent on each scrape.
                 # Optional, Default: false
                 descriptions: false
+        
+              newrelic:
+                # Optional, Default: false
+                enabled: false
+                # The new relic api key
+                # Required if newrelic is enabled
+                apiKey: encrypted:secrets-manager!r:us-west-2!s:my-secrets!k:new-relic-api-key
+                #The URI for the New Relic metric API. Only necessary if you need to override the default URI.
+                # Optional, Default: https://metric-api.newrelic.com/
+                uri: https://metric-api.newrelic.com/
+                # Turn on "audit mode" in the underlying New Relic Telemetry SDK. This will log all data sent to
+                # the New Relic APIs. Be aware that if there is sensitive information in the data being sent that
+                # it will be sent to wherever the Telemetry SDK logs are configured to go.
+                enableAuditMode: false
+                # How often in seconds you want to send metrics to New Relic
+                # Optional, Default: 30
+                stepInSeconds: 30 
+                # The number of threads to use with the scheduler.
+                # Optional, Default: 2
+                numThreads: 2 
+                # The number of measurements per request to use for the backend. If more
+                # measurements are found, then multiple requests will be made.
+                # Optional, Default: 10000
+                batchSize: 10000 
     repositories:
       armory-observability-plugin-releases:
         url: https://raw.githubusercontent.com/armory-plugins/armory-observability-plugin-releases/master/repositories.json            
