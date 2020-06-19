@@ -1,6 +1,5 @@
 package io.armory.plugin.observability.promethus;
 
-import io.armory.plugin.observability.model.PluginConfig;
 import io.armory.plugin.observability.model.PluginMetricsPrometheusConfig;
 import io.micrometer.prometheus.PrometheusConfig;
 import java.time.Duration;
@@ -10,8 +9,8 @@ public class PrometheusRegistryConfig implements PrometheusConfig {
 
   private final PluginMetricsPrometheusConfig prometheusConfig;
 
-  PrometheusRegistryConfig(PluginConfig pluginProperties) {
-    prometheusConfig = pluginProperties.getMetrics().getPrometheus();
+  PrometheusRegistryConfig(PluginMetricsPrometheusConfig prometheusConfig) {
+    this.prometheusConfig = prometheusConfig;
   }
 
   @Override
