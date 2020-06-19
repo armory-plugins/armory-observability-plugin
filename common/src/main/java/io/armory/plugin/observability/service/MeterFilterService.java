@@ -7,6 +7,7 @@ import io.armory.plugin.observability.model.PluginMetricsConfig;
 import io.micrometer.core.instrument.config.MeterFilter;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 /**
  * https://micrometer.io/docs/concepts#_denyaccept_meters
@@ -15,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
  * be more efficient for metrics platforms that care about the number of unique MTS and or DPM.
  */
 @Slf4j
+@Component
 public class MeterFilterService {
 
   /**

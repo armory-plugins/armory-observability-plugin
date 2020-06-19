@@ -7,10 +7,14 @@ import io.micrometer.core.instrument.Clock;
 import io.micrometer.prometheus.PrometheusConfig;
 import io.micrometer.prometheus.PrometheusMeterRegistry;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Slf4j
+@Component
 public class PrometheusRegistry extends PrometheusMeterRegistry {
 
+  @Autowired
   public PrometheusRegistry(
       PluginConfig pluginProperties,
       PrometheusCollectorRegistry collectorRegistry,
