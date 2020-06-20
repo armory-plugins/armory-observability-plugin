@@ -35,6 +35,12 @@ public class NewRelicRegistrySupplier implements Supplier<NewRelicRegistry> {
     meterFilterService
         .getMeterFilters()
         .forEach(meterFilter -> registry.config().meterFilter(meterFilter));
+
+    registry.gauge(
+        "metrics.dpm",
+        registry,
+        reg -> reg.getMeters().size() * (60d / newRelicConfig.getStepInSeconds()));
+
     registry.start(Executors.defaultThreadFactory());
     return registry;
   }
