@@ -46,7 +46,7 @@ public class ArmoryObservabilityCompositeRegistry extends CompositeMeterRegistry
                     meterFilterService
                         .getMeterFilters()
                         .forEach(meterFilter -> simple.config().meterFilter(meterFilter));
-                    enabledRegistries = List.of();
+                    enabledRegistries = List.of(simple);
                   }
                   return enabledRegistries;
                 })
