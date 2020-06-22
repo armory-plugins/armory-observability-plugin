@@ -1,5 +1,6 @@
 package io.armory.plugin.observability.promethus;
 
+import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.exporter.common.TextFormat;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -27,9 +28,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/armory-observability/metrics")
 public class PrometheusScrapeController {
 
-  private final PrometheusCollectorRegistry collectorRegistry;
+  private final CollectorRegistry collectorRegistry;
 
-  public PrometheusScrapeController(PrometheusCollectorRegistry collectorRegistry) {
+  public PrometheusScrapeController(CollectorRegistry collectorRegistry) {
     this.collectorRegistry = collectorRegistry;
   }
 

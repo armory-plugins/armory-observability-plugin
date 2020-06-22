@@ -6,6 +6,9 @@ import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import org.pf4j.PluginRuntimeException;
 
+/**
+ * New Relic config wrapper that sources its config from the Spring Context Plugin Configuration.
+ */
 public class NewRelicRegistryConfig implements io.micrometer.NewRelicRegistryConfig {
 
   private final PluginMetricsNewRelicConfig newRelicConfig;
@@ -16,7 +19,7 @@ public class NewRelicRegistryConfig implements io.micrometer.NewRelicRegistryCon
 
   @Override
   public String get(String key) {
-    return null;
+    return null; // NOOP, source config from the PluginConfig that is injected
   }
 
   @Override

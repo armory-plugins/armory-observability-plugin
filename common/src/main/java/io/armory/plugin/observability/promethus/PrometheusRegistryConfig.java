@@ -5,6 +5,9 @@ import io.micrometer.prometheus.PrometheusConfig;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 
+/**
+ * Prometheus config wrapper that sources its config from the Spring Context Plugin Configuration.
+ */
 public class PrometheusRegistryConfig implements PrometheusConfig {
 
   private final PluginMetricsPrometheusConfig prometheusConfig;
@@ -15,7 +18,7 @@ public class PrometheusRegistryConfig implements PrometheusConfig {
 
   @Override
   public String get(String key) {
-    return null;
+    return null; // NOOP, source config from the PluginConfig that is injected
   }
 
   @Override
