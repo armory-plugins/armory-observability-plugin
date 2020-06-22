@@ -2,6 +2,7 @@ package io.armory.plugin.observability.service;
 
 import static java.util.Optional.ofNullable;
 
+import com.netflix.spinnaker.kork.version.VersionResolver;
 import io.armory.plugin.observability.model.ArmoryEnvironmentMetadata;
 import io.armory.plugin.observability.model.PluginConfig;
 import io.armory.plugin.observability.model.PluginMetricsConfig;
@@ -21,13 +22,16 @@ public class TagsService {
   private static final String SPRING_BOOT_BUILD_PROPERTIES_PATH = "META-INF/build-info.properties";
 
   protected final PluginMetricsConfig metricsConfig;
+  private final VersionResolver versionResolver;
   private final String springInjectedApplicationName;
 
   public TagsService(
       PluginConfig metricsConfig,
+      VersionResolver versionResolver,
       @Value("${spring.application.name:#{null}}") String springInjectedApplicationName) {
 
     this.metricsConfig = metricsConfig.getMetrics();
+    this.versionResolver = versionResolver;
     this.springInjectedApplicationName = springInjectedApplicationName;
   }
 
@@ -56,12 +60,16 @@ public class TagsService {
       ArmoryEnvironmentMetadata environmentMetadata) {
     Map<String, String> tags = new HashMap<>(metricsConfig.getAdditionalTags());
 
+    ofNullable(environmentMetadata.getOssAppVersion())
+        .or(() -> ofNullable(versionResolver.resolve(environmentMetadata.getApplicationName())))
+        .ifPresent(version -> tags.put("version", version));
+
     tags.put("lib", "armory-observability-plugin");
     tags.put("libVersion", environmentMetadata.getPluginVersion());
-    tags.put("applicationName", environmentMetadata.getApplicationName()); // clouddriver
-    tags.put("armoryAppVersion", environmentMetadata.getArmoryAppVersion()); // 2.1.0
-    tags.put("ossAppVersion", environmentMetadata.getOssAppVersion()); // 0.22.1
-    tags.put("spinnakerRelease", environmentMetadata.getSpinnakerRelease()); // 2.19.8
+    tags.put("applicationName", environmentMetadata.getApplicationName());
+    tags.put("armoryAppVersion", environmentMetadata.getArmoryAppVersion());
+    tags.put("ossAppVersion", environmentMetadata.getOssAppVersion());
+    tags.put("spinnakerRelease", environmentMetadata.getSpinnakerRelease());
     tags.put("hostname", System.getenv("HOSTNAME"));
 
     return tags.entrySet().stream()

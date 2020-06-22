@@ -10,6 +10,5 @@ public class PluginMetricsConfig {
   private PluginMetricsPrometheusConfig prometheus = new PluginMetricsPrometheusConfig();
   private PluginMetricsNewRelicConfig newrelic = new PluginMetricsNewRelicConfig();
 
-  private boolean meterRegistryFiltersDisabled;
   private boolean defaultTagsDisabled;
 }
