@@ -64,10 +64,6 @@ spinnaker:
               # By default this plugin adds a set of sane default tags to help with observability best practices, you can disable those here
               # Optional, Default: false
               defaultTagsDisabled: false
-              
-              # By default this plugin does some sane filtering and transformations on metrics, you can disable those here
-              # Optional, Default: false
-              meterRegistryFiltersDisabled: false
     
               prometheus:
                 # Optional, Default: false
