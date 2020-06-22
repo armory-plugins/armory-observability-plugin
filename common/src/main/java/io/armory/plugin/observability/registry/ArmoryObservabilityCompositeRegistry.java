@@ -13,6 +13,7 @@ import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.actuate.autoconfigure.metrics.MeterRegistryCustomizer;
 
 /**
  * This is the registry that Micrometer/Spectator will use. It will collect all of the enabled
@@ -23,7 +24,8 @@ public class ArmoryObservabilityCompositeRegistry extends CompositeMeterRegistry
 
   public ArmoryObservabilityCompositeRegistry(
       Clock clock,
-      Collection<RegistrySupplier> registrySuppliers,
+      Collection<Supplier<MeterRegistry>> registrySuppliers,
+      Collection<MeterRegistryCustomizer<MeterRegistry>> meterRegistryCustomizers,
       TagsService tagsService,
       MeterFilterService meterFilterService) {
 
@@ -53,6 +55,12 @@ public class ArmoryObservabilityCompositeRegistry extends CompositeMeterRegistry
                   return enabledRegistries;
                 })
             .get());
+
+    this.getRegistries()
+        .forEach(
+            meterRegistry ->
+                meterRegistryCustomizers.forEach(
+                    registryCustomizer -> registryCustomizer.customize(meterRegistry)));
   }
 
   public ArmoryObservabilityCompositeRegistry(Clock clock, Iterable<MeterRegistry> registries) {

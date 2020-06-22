@@ -5,6 +5,8 @@ import io.armory.plugin.observability.model.PluginConfig;
 import io.armory.plugin.observability.newrelic.NewRelicRegistrySupplier;
 import io.armory.plugin.observability.promethus.PrometheusRegistrySupplier;
 import io.armory.plugin.observability.promethus.PrometheusScrapeController;
+import io.armory.plugin.observability.registry.AddDefaultTagsRegistryCustomizer;
+import io.armory.plugin.observability.registry.AddFiltersRegistryCustomizer;
 import io.armory.plugin.observability.registry.ArmoryObservabilityCompositeRegistry;
 import io.armory.plugin.observability.service.MeterFilterService;
 import io.armory.plugin.observability.service.TagsService;
@@ -27,7 +29,9 @@ public class ArmoryObservabilityPlugin extends PrivilegedSpringPlugin {
       // Core plugin beans
       registerBean(beanDefinitionFor(PluginConfig.class), registry);
       registerBean(beanDefinitionFor(TagsService.class), registry);
+      registerBean(beanDefinitionFor(AddDefaultTagsRegistryCustomizer.class), registry);
       registerBean(beanDefinitionFor(MeterFilterService.class), registry);
+      registerBean(beanDefinitionFor(AddFiltersRegistryCustomizer.class), registry);
 
       // Prometheus Beans
       registerBean(beanDefinitionFor(CollectorRegistry.class), registry);
