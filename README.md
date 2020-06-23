@@ -70,7 +70,18 @@ spinnaker:
     
               # Exposes micrometer metrics at /armory-observability/metrics
               #
-              # See: https://gist.github.com/fieldju/7722f36451a652c399db182765046fd3 for adding annotations needed for prometheus to scrape
+              # See: https://gist.github.com/fieldju/7722f36451a652c399db182765046fd3 
+              # for adding annotations needed for prometheus to scrape via Halyard.
+              # 
+              # If you previously used the monitoring daemon to enable prometeus, please note that any dashboards created for that will not work.
+              # The official Prometheus Micrometer registry uses the summary metric type for certain metrics in addition to having a different naming convention.
+              #
+              # See the following gists for the differences:
+              # 
+              # Monitoring Daemon Output
+              # - https://gist.github.com/fieldju/96b8af671f5b7d39d68646329932745e
+              # Output from this plugin
+              # - https://gist.github.com/fieldju/3174f732eb4b5ad191cabbb678a3f277
               #
               prometheus:
                 # Optional, Default: false
@@ -90,7 +101,7 @@ spinnaker:
                 # The new relic api key
                 # Required if newrelic is enabled
                 apiKey: encrypted:secrets-manager!r:us-west-2!s:my-secrets!k:new-relic-api-key
-                #The URI for the New Relic metric API. Only necessary if you need to override the default URI.
+                # The URI for the New Relic metric API. Only necessary if you need to override the default URI.
                 # Optional, Default: https://metric-api.newrelic.com/
                 uri: https://metric-api.newrelic.com/
                 # Turn on "audit mode" in the underlying New Relic Telemetry SDK. This will log all data sent to
