@@ -1,8 +1,10 @@
 package io.armory.plugin.observability.service;
 
+import static io.armory.plugin.observability.service.TagsService.PLUGIN_PROPERTIES_PATH;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -26,10 +28,13 @@ public class TagsServiceTest {
 
   @Mock private VersionResolver versionResolver;
 
+  PluginConfig pluginConfig;
+
   @Before
   public void before() {
     initMocks(this);
-    sut = new TagsService(new PluginConfig(), versionResolver, MOCK_APPLICATION_NAME);
+    pluginConfig = new PluginConfig();
+    sut = new TagsService(pluginConfig, versionResolver, MOCK_APPLICATION_NAME);
   }
 
   @Test
@@ -134,5 +139,32 @@ public class TagsServiceTest {
     when(versionResolver.resolve(appName)).thenReturn(version);
     var tags = sut.getDefaultTagsAsFilteredMap(env);
     assertEquals(version, tags.get("version"));
+  }
+
+  @Test
+  public void test_that_getPluginVersion_can_parse_properties() {
+    var version = sut.getPluginVersion(PLUGIN_PROPERTIES_PATH);
+    assertEquals("foo", version);
+  }
+
+  @Test
+  public void test_that_getPluginVersion_returns_null_if_no_props_found() {
+    var version = sut.getPluginVersion("i-do-not-exist");
+    assertNull(version);
+  }
+
+  @Test
+  public void test_that_getDefaultTags_returns_empty_list_when_disabled() {
+    pluginConfig.getMetrics().setDefaultTagsDisabled(true);
+    var tags = sut.getDefaultTags();
+    assertNotNull(tags);
+    assertEquals(0, tags.size());
+  }
+
+  @Test
+  public void test_that_getDefaultTags_returns_some_tags_even_when_no_props_are_loaded() {
+    var tags = sut.getDefaultTags();
+    assertNotNull(tags);
+    assertTrue(tags.size() > 0);
   }
 }

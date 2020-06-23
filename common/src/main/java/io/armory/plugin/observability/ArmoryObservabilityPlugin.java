@@ -12,6 +12,7 @@ import io.armory.plugin.observability.service.MeterFilterService;
 import io.armory.plugin.observability.service.TagsService;
 import io.prometheus.client.CollectorRegistry;
 import lombok.extern.slf4j.Slf4j;
+import org.pf4j.PluginRuntimeException;
 import org.pf4j.PluginWrapper;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 
@@ -44,17 +45,7 @@ public class ArmoryObservabilityPlugin extends PrivilegedSpringPlugin {
       // Composite Registry
       registerBean(primaryBeanDefinitionFor(ArmoryObservabilityCompositeRegistry.class), registry);
     } catch (Exception e) {
-      log.error("Failed to register Armory Metrics Plugin beans", e);
+      throw new PluginRuntimeException("Failed to register Armory Observability Plugin beans", e);
     }
-  }
-
-  @Override
-  public void start() {
-    log.info("The Armory Metrics Plugin has started");
-  }
-
-  @Override
-  public void stop() {
-    log.info("The Armory Metrics Plugin has stopped");
   }
 }

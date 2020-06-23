@@ -24,6 +24,8 @@ import org.springframework.boot.info.BuildProperties;
 public class TagsService {
 
   private static final String SPRING_BOOT_BUILD_PROPERTIES_PATH = "META-INF/build-info.properties";
+  protected static final String PLUGIN_PROPERTIES_PATH =
+      "io/armory/plugin/observability/build.properties";
 
   protected final PluginMetricsConfig metricsConfig;
   private final VersionResolver versionResolver;
@@ -115,11 +117,8 @@ public class TagsService {
   }
 
   /** @return the plugin version */
-  protected String getPluginVersion() {
-    try (var is =
-        this.getClass()
-            .getClassLoader()
-            .getResourceAsStream("io/armory/plugin/observability/build.properties")) {
+  protected String getPluginVersion(String path) {
+    try (var is = this.getClass().getClassLoader().getResourceAsStream(path)) {
       var properties = new Properties();
       properties.load(is);
       return properties.getProperty("version");
@@ -146,13 +145,18 @@ public class TagsService {
     return SPRING_BOOT_BUILD_PROPERTIES_PATH;
   }
 
+  protected String getPluginPropertiesPath() {
+    return PLUGIN_PROPERTIES_PATH;
+  }
+
   public List<Tag> getDefaultTags() {
     if (metricsConfig.isDefaultTagsDisabled()) {
       return List.of();
     }
-    var propertiesPath = getPropertiesPath();
-    var buildProperties = getBuildProperties(propertiesPath);
-    var pluginVersion = getPluginVersion();
+    var springbootPropertiesPath = getPropertiesPath();
+    var buildProperties = getBuildProperties(springbootPropertiesPath);
+    var pluginPropertiesPath = getPluginPropertiesPath();
+    var pluginVersion = getPluginVersion(pluginPropertiesPath);
     var environmentMetadata = getEnvironmentMetadata(buildProperties, pluginVersion);
     var tagsAsMap = getDefaultTagsAsFilteredMap(environmentMetadata);
     return getDefaultTags(tagsAsMap);

@@ -12,7 +12,7 @@ public class PrometheusRegistryConfig implements PrometheusConfig {
 
   private final PluginMetricsPrometheusConfig prometheusConfig;
 
-  PrometheusRegistryConfig(PluginMetricsPrometheusConfig prometheusConfig) {
+  public PrometheusRegistryConfig(PluginMetricsPrometheusConfig prometheusConfig) {
     this.prometheusConfig = prometheusConfig;
   }
 
