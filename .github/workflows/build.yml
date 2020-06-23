@@ -8,6 +8,8 @@ on:
 
 jobs:
   build:
+    env:
+      COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
     name: Build Plugin
     runs-on: ubuntu-latest
     steps:
