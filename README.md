@@ -1,5 +1,8 @@
 # Armory Observability Plugin
 
+[![][coveralls img]][coveralls]
+[![][license img]][license]
+
 Spinnaker plugin for configuring and customizing observability.
 
 ## What is Observability?
@@ -119,3 +122,9 @@ To debug the plugin inside a Spinnaker service (like Orca) using IntelliJ Idea f
 4) Configure the Spinnaker service the same way specified above.
 5) Create a new IntelliJ run configuration for the service that has the VM option `-Dpf4j.mode=development` and does a `Build Project` before launch.
 6) Debug away...
+
+[coveralls]:https://coveralls.io/github/armory-plugins/armory-observability-plugin
+[coveralls img]:https://coveralls.io/repos/github/armory-plugins/armory-observability-plugin/badge.svg?branch=master
+
+[license]:LICENSE.txt
+[license img]:https://img.shields.io/badge/License-Apache%202-blue.svg
