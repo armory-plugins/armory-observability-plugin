@@ -70,10 +70,14 @@ public class TagsServiceTest {
   }
 
   @Test
-  public void test_that_getDefaultTagsAsFilteredMap_filters_null_values() {
+  public void test_that_getDefaultTagsAsFilteredMap_filters_null_and_empty_values() {
     var res =
         sut.getDefaultTagsAsFilteredMap(
-            ArmoryEnvironmentMetadata.builder().applicationName("foo").ossAppVersion(null).build());
+            ArmoryEnvironmentMetadata.builder()
+                .applicationName("foo")
+                .ossAppVersion(null)
+                .armoryAppVersion("")
+                .build());
 
     assertEquals(2, res.size());
     assertEquals(res.get("applicationName"), "foo");

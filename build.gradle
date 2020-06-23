@@ -1,3 +1,4 @@
+
 import com.netflix.spinnaker.gradle.codestyle.SpinnakerCodeStylePlugin
 
 buildscript {
@@ -18,6 +19,7 @@ buildscript {
 plugins {
     id("com.palantir.git-version").version("0.12.2")
     id("io.spinnaker.plugin.bundler").version("$spinnakerGradleVersion")
+    id "com.github.kt3k.coveralls" version "2.9.0"
 }
 
 spinnakerBundle {
@@ -28,6 +30,25 @@ spinnakerBundle {
 }
 
 version = normalizedVersion()
+
+allprojects {
+    apply plugin: 'jacoco'
+
+    repositories {
+        jcenter()
+        mavenCentral()
+    }
+
+    jacoco {
+        toolVersion = "0.8.5"
+    }
+
+    test {
+        testLogging {
+            events "passed", "skipped", "failed"
+        }
+    }
+}
 
 subprojects { subProject ->
     apply plugin: 'java'
@@ -91,6 +112,46 @@ subprojects { subProject ->
 
     group = "io.armory.plugins.metrics"
     version = rootProject.version
+}
+
+List<String> blackList = []
+def publishedProjects = subprojects.findAll { !blackList.contains(it.path) }
+
+task jacocoMerge(type: JacocoMerge) {
+    publishedProjects.each { subproject ->
+        executionData subproject.tasks.withType(Test)
+    }
+    doFirst {
+        executionData = files(executionData.findAll { it.exists() })
+    }
+}
+
+task aggregatedJacocoReport(type: JacocoReport, group: 'Coverage reports') {
+    description = 'Generates an aggregate report from all subprojects'
+    dependsOn publishedProjects.test, jacocoMerge
+
+    additionalSourceDirs.from = files(publishedProjects.sourceSets.main.allSource.srcDirs)
+    sourceDirectories.from = files(publishedProjects.sourceSets.main.allSource.srcDirs)
+    classDirectories.from = files(publishedProjects.sourceSets.main.output)
+    executionData jacocoMerge.destinationFile
+
+    reports {
+        html.enabled = true // human readable
+        xml.enabled = true // required by coveralls
+    }
+
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: 'io/armory/plugin/observability/model/**')
+        }))
+    }
+}
+
+coveralls {
+    sourceDirs = publishedProjects.sourceSets.main.allSource.srcDirs.flatten()
+    jacocoReportPath = "${buildDir}/reports/jacoco/aggregatedJacocoReport/aggregatedJacocoReport.xml"
+    saveAsFile = true
+    sendToCoveralls = false
 }
 
 String normalizedVersion() {

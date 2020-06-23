@@ -18,7 +18,10 @@ jobs:
         with:
           java-version: 11
       - name: run tests
-        run: ./gradlew test
+        run: |
+          ./gradlew check aggregatedJacocoReport
+          ./gradlew coveralls
+          curl -F 'json_file=@build/coveralls/report.json' 'https://coveralls.io/api/v1/jobs'
       - name: build
         run: ./gradlew releaseBundle
       - name: archive build artifacts
