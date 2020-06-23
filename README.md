@@ -1,5 +1,7 @@
 # Armory Observability Plugin
 
+![CI](https://github.com/armory-plugins/armory-observability-plugin/workflows/CI/badge.svg?branch=master)
+[![][release img]][release]
 [![][coveralls img]][coveralls]
 [![][license img]][license]
 
@@ -137,6 +139,9 @@ To debug the plugin inside a Spinnaker service (like Orca) using IntelliJ Idea f
 4) Configure the Spinnaker service the same way specified above.
 5) Create a new IntelliJ run configuration for the service that has the VM option `-Dpf4j.mode=development` and does a `Build Project` before launch.
 6) Debug away...
+
+[release img]:https://img.shields.io/github/v/release/armory-plugins/armory-observability-plugin
+[release]:https://github.com/armory-plugins/armory-observability-plugin/releases
 
 [coveralls]:https://coveralls.io/github/armory-plugins/armory-observability-plugin
 [coveralls img]:https://coveralls.io/repos/github/armory-plugins/armory-observability-plugin/badge.svg?branch=master
