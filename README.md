@@ -126,5 +126,5 @@ To debug the plugin inside a Spinnaker service (like Orca) using IntelliJ Idea f
 [coveralls]:https://coveralls.io/github/armory-plugins/armory-observability-plugin
 [coveralls img]:https://coveralls.io/repos/github/armory-plugins/armory-observability-plugin/badge.svg?branch=master
 
-[license]:LICENSE.txt
+[license]:LICENSE
 [license img]:https://img.shields.io/badge/License-Apache%202-blue.svg
