@@ -68,6 +68,10 @@ spinnaker:
               # Optional, Default: false
               defaultTagsDisabled: false
     
+              # Exposes micrometer metrics at /armory-observability/metrics
+              #
+              # See: https://gist.github.com/fieldju/7722f36451a652c399db182765046fd3 for adding annotations needed for prometheus to scrape
+              #
               prometheus:
                 # Optional, Default: false
                 enabled: false
