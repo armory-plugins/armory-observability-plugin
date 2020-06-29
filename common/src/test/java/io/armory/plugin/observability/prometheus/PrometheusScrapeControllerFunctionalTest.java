@@ -82,4 +82,15 @@ public class PrometheusScrapeControllerFunctionalTest {
         responseEntity.getHeaders().getContentType().toString());
     assertEquals(expectedContent, responseEntity.getBody());
   }
+
+  @Test
+  public void test_that_the_prometheus_registry_can_handle_tags_that_are_sometimes_absent() {
+    var tagsWithMissingTag = List.of(Tag.of("hostname", "localhost"));
+
+    var fullCollectionOfTags =
+        List.of(Tag.of("hostname", "localhost"), Tag.of("optionalExtraMetadata", "my-cool-value"));
+
+    registry.counter("foo", tagsWithMissingTag).increment();
+    registry.counter("foo", fullCollectionOfTags).increment();
+  }
 }
