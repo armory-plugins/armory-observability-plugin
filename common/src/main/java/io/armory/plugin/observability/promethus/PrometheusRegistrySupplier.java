@@ -20,7 +20,7 @@ import io.armory.plugin.observability.model.PluginConfig;
 import io.armory.plugin.observability.model.PluginMetricsPrometheusConfig;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.prometheus.PrometheusMeterRegistry;
+import io.micrometer.prometheus.MutatedPrometheusMeterRegistry;
 import io.prometheus.client.CollectorRegistry;
 import java.util.function.Supplier;
 
@@ -43,11 +43,11 @@ public class PrometheusRegistrySupplier implements Supplier<MeterRegistry> {
   }
 
   @Override
-  public PrometheusMeterRegistry get() {
+  public MutatedPrometheusMeterRegistry get() {
     if (!prometheusConfig.isEnabled()) {
       return null;
     }
     var config = new PrometheusRegistryConfig(prometheusConfig);
-    return new PrometheusMeterRegistry(config, collectorRegistry, clock);
+    return new MutatedPrometheusMeterRegistry(config, collectorRegistry, clock);
   }
 }

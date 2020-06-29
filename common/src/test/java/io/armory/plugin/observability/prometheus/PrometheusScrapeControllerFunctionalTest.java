@@ -25,8 +25,8 @@ import io.armory.plugin.observability.promethus.PrometheusScrapeController;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Timer;
+import io.micrometer.prometheus.MutatedPrometheusMeterRegistry;
 import io.micrometer.prometheus.PrometheusConfig;
-import io.micrometer.prometheus.PrometheusMeterRegistry;
 import io.prometheus.client.CollectorRegistry;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -44,7 +44,7 @@ import org.mockito.Mock;
 public class PrometheusScrapeControllerFunctionalTest {
 
   CollectorRegistry collectorRegistry;
-  PrometheusMeterRegistry registry;
+  MutatedPrometheusMeterRegistry registry;
 
   @Mock Clock clock;
 
@@ -56,7 +56,8 @@ public class PrometheusScrapeControllerFunctionalTest {
     collectorRegistry = new CollectorRegistry();
     sut = new PrometheusScrapeController(collectorRegistry);
 
-    registry = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT, collectorRegistry, clock);
+    registry =
+        new MutatedPrometheusMeterRegistry(PrometheusConfig.DEFAULT, collectorRegistry, clock);
     var now = Instant.parse("2020-05-26T00:00:00.000Z");
     var later = now.plusSeconds(2);
     when(clock.monotonicTime()).thenReturn(Duration.ofMillis(now.toEpochMilli()).toNanos());
@@ -81,5 +82,37 @@ public class PrometheusScrapeControllerFunctionalTest {
         "text/plain;version=0.0.4;charset=utf-8",
         responseEntity.getHeaders().getContentType().toString());
     assertEquals(expectedContent, responseEntity.getBody());
+  }
+
+  /**
+   * https://github.com/armory-plugins/armory-observability-plugin/issues/3 This test ensures we can
+   * produce the desired prometheus payload.
+   */
+  @Test
+  public void test_that_the_prometheus_registry_can_handle_tags_that_are_sometimes_absent()
+      throws Exception {
+    var expectedScrapeResource =
+        this.getClass()
+            .getClassLoader()
+            .getResource(
+                "io/armory/plugin/observability/prometheus/expected-scrape-with-2-counters-different-tags.txt");
+
+    var expectedContent = Files.readString(Path.of(expectedScrapeResource.toURI()));
+
+    var tagsWithMissingTag = List.of(Tag.of("hostname", "localhost"));
+
+    var fullCollectionOfTags =
+        List.of(Tag.of("hostname", "localhost"), Tag.of("optionalExtraMetadata", "my-cool-value"));
+
+    registry.counter("foo", tagsWithMissingTag).increment();
+    registry.counter("foo", fullCollectionOfTags).increment();
+    var responseEntity = sut.scrape(null);
+    assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
+    //noinspection ConstantConditions
+    assertEquals(
+        "text/plain;version=0.0.4;charset=utf-8",
+        responseEntity.getHeaders().getContentType().toString());
+    // use length since, order is non-deterministic
+    assertEquals(expectedContent.length(), responseEntity.getBody().length());
   }
 }
