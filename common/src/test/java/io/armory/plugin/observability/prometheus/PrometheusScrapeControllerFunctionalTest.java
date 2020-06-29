@@ -84,6 +84,10 @@ public class PrometheusScrapeControllerFunctionalTest {
     assertEquals(expectedContent, responseEntity.getBody());
   }
 
+  /**
+   * https://github.com/armory-plugins/armory-observability-plugin/issues/3 This test ensures we can
+   * produce the desired prometheus payload.
+   */
   @Test
   public void test_that_the_prometheus_registry_can_handle_tags_that_are_sometimes_absent()
       throws Exception {

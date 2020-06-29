@@ -75,6 +75,8 @@ subprojects { subProject ->
     dependencies {
         compileOnly 'org.projectlombok:lombok:+'
         annotationProcessor 'org.projectlombok:lombok:+'
+        testCompileOnly 'org.projectlombok:lombok:+'
+        testAnnotationProcessor 'org.projectlombok:lombok:+'
 
         compileOnly(group: 'org.pf4j', name: 'pf4j', version: "${pf4jVersion}")
         compileOnly(group: 'com.netflix.spinnaker.kork', name: 'kork-plugins-api', version: "${korkVersion}")
@@ -108,6 +110,10 @@ subprojects { subProject ->
         testImplementation "com.netflix.spinnaker.kork:kork-plugins-spring-api:$korkVersion"
         testImplementation "com.netflix.spinnaker.kork:kork-core:${korkVersion}"
         testImplementation "com.netflix.spinnaker.kork:kork-web:${korkVersion}"
+        testImplementation "org.mock-server:mockserver-client-java:5.10.0"
+        testImplementation "org.mock-server:mockserver-junit-rule:5.10.0"
+        testImplementation "org.testcontainers:testcontainers:1.14.3"
+        testImplementation 'io.rest-assured:rest-assured:4.3.0'
     }
 
     group = "io.armory.plugins.metrics"
