@@ -115,7 +115,7 @@ public class PrometheusScrapeControllerIntegrationTest {
 
     // Start Prometheus
     var container =
-        new GenericContainer("prom/prometheus:v2.10.0")
+        new GenericContainer("prom/prometheus:latest")
             .withLogConsumer(logConsumer)
             .withExposedPorts(9090)
             .withCopyFileToContainer(
