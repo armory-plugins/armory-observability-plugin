@@ -127,12 +127,10 @@ public class PrometheusScrapeControllerIntegrationTest {
 
     // Make sure that prometheus was able to scrape our mocked expected controller response
     // that has 2 counters with different tag combinations
-    var it = 0;
     do {
-      log.info("sleeping");
       Thread.sleep(1000);
-      ++it;
-    } while (it != 10);
+    } while (mockServerClient.retrieveRecordedRequests(HttpRequest.request("/prometheus")).length
+        < 1);
 
     var response =
         given()
