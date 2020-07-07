@@ -16,51 +16,52 @@
 
 package io.armory.plugin.observability.promethus;
 
+import io.prometheus.client.Collector;
 import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.exporter.common.TextFormat;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.Optional;
-import java.util.Set;
-import lombok.extern.slf4j.Slf4j;
+import java.io.Writer;
+import java.util.Enumeration;
+import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
+import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.lang.Nullable;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Port of PrometheusScrapeEndpoint but rather than being an actuator endpoint that won't work with
- * plugins, it will be a rest controller bean that we can register.
+ * Port of PrometheusScrapeEndpoint but rather than being an web endpoint that won't work with
+ * plugins, it will be an endpoint
  *
  * <p>See:
  * https://github.com/spring-projects/spring-boot/blob/cd1baf18fe9ec71c11d7d131d6f1a417ec0c00e2/spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/metrics/export/prometheus/PrometheusScrapeEndpoint.java
  */
-@Slf4j
-@RestController()
-@RequestMapping("/armory-observability/metrics")
-public class PrometheusScrapeController {
+// If you use WebEndpoint instead of Endpoint, the plugin throws class def not found error with PF4j
+// ¯\_(ツ)_/¯
+@Endpoint(id = "aop-prometheus")
+public class PrometheusScrapeEndpoint {
 
   private final CollectorRegistry collectorRegistry;
 
-  public PrometheusScrapeController(CollectorRegistry collectorRegistry) {
+  public PrometheusScrapeEndpoint(CollectorRegistry collectorRegistry) {
     this.collectorRegistry = collectorRegistry;
   }
 
-  @GetMapping()
-  public ResponseEntity<String> scrape(@Nullable @RequestParam Set<String> includedNames) {
+  // If you use produces = TextFormat.CONTENT_TYPE_004, for some reason the accept header is ignored
+  // and a 406 is returned :/
+  // So we will use ResponseEntity<String> and set the content type manually.
+  @ReadOperation()
+  public ResponseEntity<String> scrape() {
     try {
+      Writer writer = new StringWriter();
+      Enumeration<Collector.MetricFamilySamples> samples =
+          this.collectorRegistry.metricFamilySamples();
+      TextFormat.write004(writer, samples);
+
       var responseHeaders = new HttpHeaders();
       responseHeaders.set("Content-Type", TextFormat.CONTENT_TYPE_004);
-      var writer = new StringWriter();
-      var samples =
-          Optional.ofNullable(includedNames)
-              .map(this.collectorRegistry::filteredMetricFamilySamples)
-              .orElse(this.collectorRegistry.metricFamilySamples());
       TextFormat.write004(writer, samples);
+
       return new ResponseEntity<>(writer.toString(), responseHeaders, HttpStatus.OK);
     } catch (IOException ex) {
       // This actually never happens since StringWriter::write() doesn't throw any

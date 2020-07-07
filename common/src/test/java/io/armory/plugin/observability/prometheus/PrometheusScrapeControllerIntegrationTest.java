@@ -27,12 +27,10 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
@@ -56,44 +54,9 @@ public class PrometheusScrapeControllerIntegrationTest {
 
   MockServerClient mockServerClient;
 
-  List<GenericContainer> containers;
+  GenericContainer prometheus;
 
-  @Before
-  public void before() {
-    containers = new LinkedList<>();
-  }
-
-  @After
-  public void after() {
-    containers.forEach(GenericContainer::stop);
-  }
-
-  /**
-   * https://github.com/armory-plugins/armory-observability-plugin/issues/3 This test ensures we
-   * prometheus can consume our expected payload.
-   */
-  @Ignore(
-      "Don't need to run this every CI build, was really to tdd that prometheus could handle the payload.")
-  @Test
-  public void
-      test_that_prometheus_can_scrape_a_payload_with_2_counters_with_that_have_the_same_name_but_different_tags()
-          throws Exception {
-    var expectedScrapeResource =
-        this.getClass()
-            .getClassLoader()
-            .getResource(
-                "io/armory/plugin/observability/prometheus/expected-scrape-with-2-counters-different-tags.txt");
-
-    var expectedContent = Files.readString(Path.of(expectedScrapeResource.toURI()));
-
-    // Stub out a mock server to return our expected Prometheus payload
-    mockServerClient
-        .when(HttpRequest.request("/prometheus"))
-        .respond(
-            HttpResponse.response(expectedContent)
-                .withHeader("Content-Type", "text/plain;version=0.0.4;charset=utf-8")
-                .withStatusCode(200));
-
+  public void startPrometheus() throws Exception {
     Testcontainers.exposeHostPorts(mockServerRule.getPort());
     var prometheusWaitStrategy =
         new HttpWaitStrategy()
@@ -117,7 +80,7 @@ public class PrometheusScrapeControllerIntegrationTest {
     assertTrue(promConfig.toFile().setReadable(true, false));
 
     // Start Prometheus
-    var container =
+    prometheus =
         new GenericContainer("prom/prometheus:latest")
             .withLogConsumer(logConsumer)
             .withExposedPorts(9090)
@@ -125,8 +88,42 @@ public class PrometheusScrapeControllerIntegrationTest {
                 MountableFile.forHostPath(promConfig), "/etc/prometheus/prometheus.yml")
             .waitingFor(prometheusWaitStrategy)
             .withStartupTimeout(Duration.ofSeconds(30));
-    containers.add(container);
-    container.start();
+    prometheus.start();
+  }
+
+  @After
+  public void after() {
+    Optional.ofNullable(prometheus).ifPresent(GenericContainer::stop);
+  }
+
+  /**
+   * https://github.com/armory-plugins/armory-observability-plugin/issues/3 This test ensures we
+   * prometheus can consume our expected payload.
+   */
+  @Ignore(
+      "Don't need to run this every CI build, was really to tdd that prometheus could handle the payload.")
+  @Test
+  public void
+      test_that_prometheus_can_scrape_a_payload_with_2_counters_with_that_have_the_same_name_but_different_tags()
+          throws Exception {
+
+    startPrometheus();
+
+    var expectedScrapeResource =
+        this.getClass()
+            .getClassLoader()
+            .getResource(
+                "io/armory/plugin/observability/prometheus/expected-scrape-with-2-counters-different-tags.txt");
+
+    var expectedContent = Files.readString(Path.of(expectedScrapeResource.toURI()));
+
+    // Stub out a mock server to return our expected Prometheus payload
+    mockServerClient
+        .when(HttpRequest.request("/prometheus"))
+        .respond(
+            HttpResponse.response(expectedContent)
+                .withHeader("Content-Type", "text/plain;version=0.0.4;charset=utf-8")
+                .withStatusCode(200));
 
     // Make sure that prometheus was able to scrape our mocked expected controller response
     // that has 2 counters with different tag combinations
@@ -139,7 +136,7 @@ public class PrometheusScrapeControllerIntegrationTest {
         given()
             .accept(ContentType.JSON)
             .queryParam("match[]", "foo_total")
-            .port(container.getMappedPort(9090))
+            .port(prometheus.getMappedPort(9090))
             .when()
             .get("/api/v1/series")
             .as(PromTsApiResponse.class);
