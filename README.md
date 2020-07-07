@@ -70,8 +70,10 @@ spinnaker:
               # Optional, Default: false
               defaultTagsDisabled: false
     
-              # Creates an actuator endpoint for prometheus with id = 'prometheus'
+              # Creates an actuator endpoint for prometheus with id = 'aop-prometheus'
               # See the bottom of this config block
+              #
+              # By default with the endpoint enabled metrics will be exposed on the service port at /aop-prometheus
               #
               # See: https://gist.github.com/fieldju/7722f36451a652c399db182765046fd3 
               # for adding annotations needed for prometheus to scrape via Halyard.
@@ -128,9 +130,9 @@ spinnaker:
 # See: https://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-features.html for more details 
 management:
   endpoints.web:
-    exposure.include: health,info,prometheus
+    exposure.include: health,info,aop-prometheus
     # You can override the path for any actuator endpoint
-    # Optional, Default: prometheus
+    # Optional, Default: aop-prometheus
     path-mapping.prometheus: armory-observability/metrics
   # The port for the actuator endpoints
   # Optional, Default: the server port

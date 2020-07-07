@@ -38,7 +38,7 @@ import org.springframework.http.ResponseEntity;
  */
 // If you use WebEndpoint instead of Endpoint, the plugin throws class def not found error with PF4j
 // ¯\_(ツ)_/¯
-@Endpoint(id = "prometheus")
+@Endpoint(id = "aop-prometheus")
 public class PrometheusScrapeEndpoint {
 
   private final CollectorRegistry collectorRegistry;
