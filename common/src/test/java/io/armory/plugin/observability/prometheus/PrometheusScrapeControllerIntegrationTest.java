@@ -33,7 +33,6 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockserver.client.MockServerClient;
@@ -72,8 +71,6 @@ public class PrometheusScrapeControllerIntegrationTest {
    * https://github.com/armory-plugins/armory-observability-plugin/issues/3 This test ensures we
    * prometheus can consume our expected payload.
    */
-  @Ignore(
-      "Don't need to run this every CI build, was really to tdd that prometheus could handle the payload.")
   @Test
   public void
       test_that_prometheus_can_scrape_a_payload_with_2_counters_with_that_have_the_same_name_but_different_tags()
