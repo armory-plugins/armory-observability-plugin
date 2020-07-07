@@ -21,10 +21,10 @@ In software metrics, logging and tracing make up the core categories of observab
 
 - Enables customizing and tweaking the Micrometer registry.
 - Exposes an [OpenMetrics](https://openmetrics.io/) endpoint for the Micrometer/Spectator metrics
-  - This allows tools such as Promethous or the New Relic OpenMetrics integration to work without the [Spinnaker Monitoring Daemon](https://github.com/spinnaker/spinnaker-monitoring/tree/master/spinnaker-monitoring-daemon).
+  - This allows tools such as Prometheus or the New Relic OpenMetrics integration to work without the [Spinnaker Monitoring Daemon](https://github.com/spinnaker/spinnaker-monitoring/tree/master/spinnaker-monitoring-daemon).
 
 ## Potential Future Additions
-- Enable distrubuted tracing, Slueth?
+- Enable distributed tracing, Slueth?
 - Customize logging to filter noise or have custom appender for shipping important logs to log aggregator
 - Customize Error handling? Can we enable something like [Backstopper](https://github.com/Nike-Inc/backstopper) in a plugin? I have no idea ¯\\_(ツ)_/¯.
 
