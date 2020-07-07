@@ -21,7 +21,7 @@ In software metrics, logging and tracing make up the core categories of observab
 
 - Enables customizing and tweaking the Micrometer registry.
 - Exposes an [OpenMetrics](https://openmetrics.io/) endpoint for the Micrometer/Spectator metrics
-  - This allows tools such as Promethous or the New Relic OpenMetrics integration to work without the [Spinnaker Monitoring Daemon](https://github.com/spinnaker/spinnaker-monitoring/tree/master/spinnaker-monitoring-daemon).
+  - This allows tools such as Prometheus or the New Relic OpenMetrics integration to work without the [Spinnaker Monitoring Daemon](https://github.com/spinnaker/spinnaker-monitoring/tree/master/spinnaker-monitoring-daemon).
 
 ## Potential Future Additions
 - Enable distrubuted tracing, Slueth?
