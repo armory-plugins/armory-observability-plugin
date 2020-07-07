@@ -21,7 +21,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-import io.armory.plugin.observability.promethus.PrometheusScrapeController;
+import io.armory.plugin.observability.promethus.PrometheusScrapeEndpoint;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Timer;
@@ -41,20 +41,20 @@ import org.mockito.Mock;
  * These tests are more functional than unit, because I don't really have the time to reverse
  * engineer the Prometheus registry to mock everything properly.
  */
-public class PrometheusScrapeControllerFunctionalTest {
+public class PrometheusScrapeEndpointFunctionalTest {
 
   CollectorRegistry collectorRegistry;
   MutatedPrometheusMeterRegistry registry;
 
   @Mock Clock clock;
 
-  PrometheusScrapeController sut;
+  PrometheusScrapeEndpoint sut;
 
   @Before
   public void before() {
     initMocks(this);
     collectorRegistry = new CollectorRegistry();
-    sut = new PrometheusScrapeController(collectorRegistry);
+    sut = new PrometheusScrapeEndpoint(collectorRegistry);
 
     registry =
         new MutatedPrometheusMeterRegistry(PrometheusConfig.DEFAULT, collectorRegistry, clock);
@@ -75,7 +75,7 @@ public class PrometheusScrapeControllerFunctionalTest {
             .getResource("io/armory/plugin/observability/prometheus/expected-scrape.txt");
     var expectedContent = Files.readString(Path.of(expectedScrapeResource.toURI()));
 
-    var responseEntity = sut.scrape(null);
+    var responseEntity = sut.scrape();
     assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
     //noinspection ConstantConditions
     assertEquals(
@@ -106,7 +106,7 @@ public class PrometheusScrapeControllerFunctionalTest {
 
     registry.counter("foo", tagsWithMissingTag).increment();
     registry.counter("foo", fullCollectionOfTags).increment();
-    var responseEntity = sut.scrape(null);
+    var responseEntity = sut.scrape();
     assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
     //noinspection ConstantConditions
     assertEquals(

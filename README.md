@@ -70,7 +70,8 @@ spinnaker:
               # Optional, Default: false
               defaultTagsDisabled: false
     
-              # Exposes micrometer metrics at /armory-observability/metrics
+              # Creates an actuator endpoint for prometheus with id = 'prometheus'
+              # See the bottom of this config block
               #
               # See: https://gist.github.com/fieldju/7722f36451a652c399db182765046fd3 
               # for adding annotations needed for prometheus to scrape via Halyard.
@@ -122,7 +123,18 @@ spinnaker:
                 batchSize: 10000 
     repositories:
       armory-observability-plugin-releases:
-        url: https://raw.githubusercontent.com/armory-plugins/armory-observability-plugin-releases/master/repositories.json            
+        url: https://raw.githubusercontent.com/armory-plugins/armory-observability-plugin-releases/master/repositories.json
+# The prometheus integration utilizes the actuator system therefore it is partially configured under the management settings
+# See: https://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-features.html for more details 
+management:
+  endpoints.web:
+    exposure.include: health,info,prometheus
+    # You can override the path for any actuator endpoint
+    # Optional, Default: prometheus
+    path-mapping.prometheus: armory-observability/metrics
+  # The port for the actuator endpoints
+  # Optional, Default: the server port
+  server.port: 9006              
 ```
 
 ## Development
