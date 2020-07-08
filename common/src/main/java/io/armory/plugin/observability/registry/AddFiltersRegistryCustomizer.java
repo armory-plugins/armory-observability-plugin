@@ -19,9 +19,10 @@ package io.armory.plugin.observability.registry;
 import io.armory.plugin.observability.service.MeterFilterService;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.actuate.autoconfigure.metrics.MeterRegistryCustomizer;
 
 @Slf4j
-public class AddFiltersRegistryCustomizer extends RegistryCustomizer {
+public class AddFiltersRegistryCustomizer implements MeterRegistryCustomizer<MeterRegistry> {
 
   private final MeterFilterService meterFilterService;
 
