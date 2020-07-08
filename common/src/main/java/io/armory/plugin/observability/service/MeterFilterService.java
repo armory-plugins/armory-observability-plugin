@@ -16,6 +16,8 @@
 
 package io.armory.plugin.observability.service;
 
+import static io.armory.plugin.observability.filters.ArmoryRecommendedFilters.ARMORY_RECOMMENDED_FILTERS;
+
 import io.armory.plugin.observability.model.PluginConfig;
 import io.armory.plugin.observability.model.PluginMetricsConfig;
 import io.micrometer.core.instrument.config.MeterFilter;
@@ -43,6 +45,9 @@ public class MeterFilterService {
    * @return The list of enabled filters.
    */
   public List<MeterFilter> getMeterFilters() {
+    if (metricsConfig.isArmoryRecommendedFiltersEnabled()) {
+      return ARMORY_RECOMMENDED_FILTERS;
+    }
     return List.of();
   }
 }
