@@ -42,6 +42,14 @@ public class TagsService {
   private static final String SPRING_BOOT_BUILD_PROPERTIES_PATH = "META-INF/build-info.properties";
   protected static final String PLUGIN_PROPERTIES_PATH =
       "io/armory/plugin/observability/build.properties";
+  public static final String SPIN_SVC = "spinSvc";
+  public static final String ARM_SPIN_SVC_VER = "armSpinSvcVer";
+  public static final String OSS_SPIN_SVC_VER = "ossSpinSvcVer";
+  public static final String SPINNAKER_RELEASE = "spinnakerRelease";
+  public static final String HOSTNAME = "hostname";
+  public static final String LIB = "lib";
+  public static final String LIB_VER = "libVer";
+  public static final String LIB_NAME = "aop";
 
   protected final PluginMetricsConfig metricsConfig;
   private final VersionResolver versionResolver;
@@ -94,13 +102,13 @@ public class TagsService {
         .or(() -> ofNullable(versionResolver.resolve(environmentMetadata.getApplicationName())))
         .ifPresent(version -> tags.put("version", version));
 
-    tags.put("lib", "aop");
-    tags.put("libVer", environmentMetadata.getPluginVersion());
-    tags.put("spinSvc", environmentMetadata.getApplicationName());
-    tags.put("armSpinSvcVer", environmentMetadata.getArmoryAppVersion());
-    tags.put("ossSpinSvcVer", environmentMetadata.getOssAppVersion());
-    tags.put("spinnakerRelease", environmentMetadata.getSpinnakerRelease());
-    tags.put("hostname", System.getenv("HOSTNAME"));
+    tags.put(LIB, LIB_NAME);
+    tags.put(LIB_VER, environmentMetadata.getPluginVersion());
+    tags.put(SPIN_SVC, environmentMetadata.getApplicationName());
+    tags.put(ARM_SPIN_SVC_VER, environmentMetadata.getArmoryAppVersion());
+    tags.put(OSS_SPIN_SVC_VER, environmentMetadata.getOssAppVersion());
+    tags.put(SPINNAKER_RELEASE, environmentMetadata.getSpinnakerRelease());
+    tags.put(HOSTNAME, System.getenv("HOSTNAME"));
 
     return tags.entrySet().stream()
         .filter(it -> (it.getValue() != null && !it.getValue().strip().equals("")))

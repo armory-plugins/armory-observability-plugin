@@ -16,7 +16,7 @@
 
 package io.armory.plugin.observability.service;
 
-import static io.armory.plugin.observability.service.TagsService.PLUGIN_PROPERTIES_PATH;
+import static io.armory.plugin.observability.service.TagsService.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -96,8 +96,8 @@ public class TagsServiceTest {
                 .build());
 
     assertEquals(2, res.size());
-    assertEquals(res.get("applicationName"), "foo");
-    assertEquals(res.get("lib"), "armory-observability-plugin");
+    assertEquals(res.get(SPIN_SVC), "foo");
+    assertEquals(res.get(LIB), LIB_NAME);
   }
 
   @Test
@@ -137,10 +137,7 @@ public class TagsServiceTest {
   @Test
   public void test_that_additional_tags_are_added() {
     sut.metricsConfig.setAdditionalTags(
-        Map.of(
-            "foo", "bar",
-            "someValue", "12345",
-            "spinnakerRelease", "I will be ignored"));
+        Map.of("foo", "bar", "someValue", "12345", SPINNAKER_RELEASE, "I will be ignored"));
     var res =
         sut.getDefaultTagsAsFilteredMap(
             ArmoryEnvironmentMetadata.builder().spinnakerRelease("I take precedence").build());
@@ -148,8 +145,8 @@ public class TagsServiceTest {
     assertEquals(4, res.size());
     assertEquals("bar", res.get("foo"));
     assertEquals("12345", res.get("someValue"));
-    assertEquals("I take precedence", res.get("spinnakerRelease"));
-    assertEquals(res.get("lib"), "armory-observability-plugin");
+    assertEquals("I take precedence", res.get(SPINNAKER_RELEASE));
+    assertEquals(res.get(LIB), LIB_NAME);
   }
 
   @Test
