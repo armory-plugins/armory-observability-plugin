@@ -16,20 +16,20 @@
 
 package io.armory.plugin.observability.registry;
 
-import io.armory.plugin.observability.service.MeterCustomizerService;
 import io.armory.plugin.observability.service.MeterFilterService;
-import io.armory.plugin.observability.service.MeterRegistryService;
 import io.armory.plugin.observability.service.TagsService;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleConfig;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.actuate.autoconfigure.metrics.MeterRegistryCustomizer;
 
 /**
  * This is the registry that Micrometer/Spectator will use. It will collect all of the enabled
@@ -40,8 +40,8 @@ public class ArmoryObservabilityCompositeRegistry extends CompositeMeterRegistry
 
   public ArmoryObservabilityCompositeRegistry(
       Clock clock,
-      MeterRegistryService meterRegistryService,
-      MeterCustomizerService meterCustomizerService,
+      Collection<Supplier<MeterRegistry>> registrySuppliers,
+      Collection<MeterRegistryCustomizer<MeterRegistry>> meterRegistryCustomizers,
       TagsService tagsService,
       MeterFilterService meterFilterService) {
 
@@ -50,8 +50,8 @@ public class ArmoryObservabilityCompositeRegistry extends CompositeMeterRegistry
         ((Supplier<List<MeterRegistry>>)
                 () -> {
                   List<MeterRegistry> enabledRegistries =
-                      meterRegistryService.getMeterRegistrySuppliers().stream()
-                          .map(MeterRegistrySupplier::get)
+                      registrySuppliers.stream()
+                          .map(Supplier::get)
                           .filter(Objects::nonNull)
                           .collect(Collectors.toList());
 
@@ -75,9 +75,8 @@ public class ArmoryObservabilityCompositeRegistry extends CompositeMeterRegistry
     this.getRegistries()
         .forEach(
             meterRegistry ->
-                meterCustomizerService
-                    .getRegistryCustomizers()
-                    .forEach(registryCustomizer -> registryCustomizer.customize(meterRegistry)));
+                meterRegistryCustomizers.forEach(
+                    registryCustomizer -> registryCustomizer.customize(meterRegistry)));
   }
 
   public ArmoryObservabilityCompositeRegistry(Clock clock, Iterable<MeterRegistry> registries) {
