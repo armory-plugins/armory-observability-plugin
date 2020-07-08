@@ -21,10 +21,10 @@ In software metrics, logging and tracing make up the core categories of observab
 
 - Enables customizing and tweaking the Micrometer registry.
 - Exposes an [OpenMetrics](https://openmetrics.io/) endpoint for the Micrometer/Spectator metrics
-  - This allows tools such as Promethous or the New Relic OpenMetrics integration to work without the [Spinnaker Monitoring Daemon](https://github.com/spinnaker/spinnaker-monitoring/tree/master/spinnaker-monitoring-daemon).
+  - This allows tools such as Prometheus or the New Relic OpenMetrics integration to work without the [Spinnaker Monitoring Daemon](https://github.com/spinnaker/spinnaker-monitoring/tree/master/spinnaker-monitoring-daemon).
 
 ## Potential Future Additions
-- Enable distrubuted tracing, Slueth?
+- Enable distributed tracing, Slueth?
 - Customize logging to filter noise or have custom appender for shipping important logs to log aggregator
 - Customize Error handling? Can we enable something like [Backstopper](https://github.com/Nike-Inc/backstopper) in a plugin? I have no idea ¯\\_(ツ)_/¯.
 
@@ -70,7 +70,10 @@ spinnaker:
               # Optional, Default: false
               defaultTagsDisabled: false
     
-              # Exposes micrometer metrics at /armory-observability/metrics
+              # Creates an actuator endpoint for prometheus with id = 'aop-prometheus'
+              # See the bottom of this config block
+              #
+              # By default with the endpoint enabled metrics will be exposed on the service port at /aop-prometheus
               #
               # See: https://gist.github.com/fieldju/7722f36451a652c399db182765046fd3 
               # for adding annotations needed for prometheus to scrape via Halyard.
@@ -122,7 +125,18 @@ spinnaker:
                 batchSize: 10000 
     repositories:
       armory-observability-plugin-releases:
-        url: https://raw.githubusercontent.com/armory-plugins/armory-observability-plugin-releases/master/repositories.json            
+        url: https://raw.githubusercontent.com/armory-plugins/armory-observability-plugin-releases/master/repositories.json
+# The prometheus integration utilizes the actuator system therefore it is partially configured under the management settings
+# See: https://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-features.html for more details 
+management:
+  endpoints.web:
+    exposure.include: health,info,aop-prometheus
+    # You can override the path for any actuator endpoint
+    # Optional, Default: aop-prometheus
+    path-mapping.prometheus: armory-observability/metrics
+  # The port for the actuator endpoints
+  # Optional, Default: the server port
+  server.port: 9006              
 ```
 
 ## Development
