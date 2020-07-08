@@ -110,6 +110,7 @@ public class TagsServiceTest {
 
   @Test
   public void test_that_getEnvironmentMetadata_reads_app_name_from_build_props() {
+    sut = new TagsService(pluginConfig, versionResolver, null);
     var buildProps = mock(BuildProperties.class);
     when(buildProps.getName()).thenReturn("foo");
     var metadata = sut.getEnvironmentMetadata(buildProps, MOCK_PLUGIN_VER);
