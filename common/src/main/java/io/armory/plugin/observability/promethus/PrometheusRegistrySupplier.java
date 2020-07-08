@@ -18,16 +18,17 @@ package io.armory.plugin.observability.promethus;
 
 import io.armory.plugin.observability.model.PluginConfig;
 import io.armory.plugin.observability.model.PluginMetricsPrometheusConfig;
-import io.armory.plugin.observability.registry.MeterRegistrySupplier;
 import io.micrometer.core.instrument.Clock;
+import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.prometheus.MutatedPrometheusMeterRegistry;
 import io.prometheus.client.CollectorRegistry;
+import java.util.function.Supplier;
 
 /**
  * Supplier bean so that we don't create an actual bean of the prometheus registry. We do this so
  * that our composite registry is used and we don't confuse Spectator/Micrometer.
  */
-public class PrometheusRegistrySupplier implements MeterRegistrySupplier {
+public class PrometheusRegistrySupplier implements Supplier<MeterRegistry> {
 
   private final PluginMetricsPrometheusConfig prometheusConfig;
   private final CollectorRegistry collectorRegistry;

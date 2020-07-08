@@ -40,7 +40,7 @@ public class ArmoryObservabilityCompositeRegistry extends CompositeMeterRegistry
 
   public ArmoryObservabilityCompositeRegistry(
       Clock clock,
-      Collection<MeterRegistrySupplier> registrySuppliers,
+      Collection<Supplier<MeterRegistry>> registrySuppliers,
       Collection<MeterRegistryCustomizer<MeterRegistry>> meterRegistryCustomizers,
       TagsService tagsService,
       MeterFilterService meterFilterService) {
@@ -51,7 +51,7 @@ public class ArmoryObservabilityCompositeRegistry extends CompositeMeterRegistry
                 () -> {
                   List<MeterRegistry> enabledRegistries =
                       registrySuppliers.stream()
-                          .map(MeterRegistrySupplier::get)
+                          .map(Supplier::get)
                           .filter(Objects::nonNull)
                           .collect(Collectors.toList());
 
