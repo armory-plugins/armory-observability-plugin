@@ -94,11 +94,11 @@ public class TagsService {
         .or(() -> ofNullable(versionResolver.resolve(environmentMetadata.getApplicationName())))
         .ifPresent(version -> tags.put("version", version));
 
-    tags.put("lib", "armory-observability-plugin");
-    tags.put("libVersion", environmentMetadata.getPluginVersion());
-    tags.put("applicationName", environmentMetadata.getApplicationName());
-    tags.put("armoryAppVersion", environmentMetadata.getArmoryAppVersion());
-    tags.put("ossAppVersion", environmentMetadata.getOssAppVersion());
+    tags.put("lib", "aop");
+    tags.put("libVer", environmentMetadata.getPluginVersion());
+    tags.put("spinSvc", environmentMetadata.getApplicationName());
+    tags.put("armSpinSvcVer", environmentMetadata.getArmoryAppVersion());
+    tags.put("ossSpinSvcVer", environmentMetadata.getOssAppVersion());
     tags.put("spinnakerRelease", environmentMetadata.getSpinnakerRelease());
     tags.put("hostname", System.getenv("HOSTNAME"));
 
