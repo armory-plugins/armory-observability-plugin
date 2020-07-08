@@ -57,12 +57,20 @@ public class TagsService {
     this.springInjectedApplicationName = springInjectedApplicationName;
   }
 
+  private String trimToNull(String string) {
+    if (string == null) {
+      return null;
+    }
+    var trimmed = string.strip();
+    return trimmed.isEmpty() ? null : trimmed;
+  }
+
   protected ArmoryEnvironmentMetadata getEnvironmentMetadata(
       BuildProperties buildProperties, String pluginVersion) {
 
     String resolvedApplicationName =
-        ofNullable(buildProperties.getName())
-            .or(() -> ofNullable(springInjectedApplicationName))
+        ofNullable(trimToNull(springInjectedApplicationName))
+            .or(() -> ofNullable(trimToNull(buildProperties.getName())))
             .orElse("UNKNOWN");
 
     return ArmoryEnvironmentMetadata.builder()
