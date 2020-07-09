@@ -18,8 +18,9 @@ package io.armory.plugin.observability.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-import io.armory.plugin.observability.model.PluginConfig;
+import io.armory.plugin.observability.model.MeterRegistryConfig;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -29,13 +30,23 @@ public class MeterFilterServiceTest {
 
   @Before
   public void before() {
-    sut = new MeterFilterService(new PluginConfig());
+    sut = new MeterFilterService();
   }
 
   @Test
-  public void test_that_getMeterFilters_returns_emtpy_list_because_it_is_not_implemented() {
-    var filters = sut.getMeterFilters();
+  public void test_that_getMeterFilters_returns_emtpy_list_by_default() {
+    var filters = sut.getMeterFilters(MeterRegistryConfig.builder().build());
     assertNotNull(filters);
     assertEquals(0, filters.size());
+  }
+
+  @Test
+  public void
+      test_that_getMeterFilters_returns_a_non_empty_list_of_filters_when_armory_recommendations_are_enabled() {
+    var filters =
+        sut.getMeterFilters(
+            MeterRegistryConfig.builder().armoryRecommendedFiltersEnabled(true).build());
+    assertNotNull(filters);
+    assertTrue(filters.size() > 0);
   }
 }

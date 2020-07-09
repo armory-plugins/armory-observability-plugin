@@ -182,9 +182,6 @@ public class TagsService {
   }
 
   public List<Tag> getDefaultTags() {
-    if (metricsConfig.isDefaultTagsDisabled()) {
-      return List.of();
-    }
     var springbootPropertiesPath = getPropertiesPath();
     var buildProperties = getBuildProperties(springbootPropertiesPath);
     var pluginPropertiesPath = getPluginPropertiesPath();

@@ -23,22 +23,14 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-import io.armory.plugin.observability.service.MeterFilterService;
-import io.armory.plugin.observability.service.TagsService;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.logging.LoggingMeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mock;
-import org.springframework.boot.actuate.autoconfigure.metrics.MeterRegistryCustomizer;
 
 public class ArmoryObservabilityCompositeRegistryTest {
-
-  @Mock TagsService tagsService;
-
-  @Mock MeterFilterService meterFilterService;
 
   @Before
   public void before() {
@@ -50,7 +42,9 @@ public class ArmoryObservabilityCompositeRegistryTest {
     var registry = new LoggingMeterRegistry();
     var sut =
         new ArmoryObservabilityCompositeRegistry(
-            Clock.SYSTEM, List.of(() -> registry), List.of(), tagsService, meterFilterService);
+            Clock.SYSTEM,
+            List.of(() -> RegistryConfigWrapper.builder().meterRegistry(registry).build()),
+            List.of());
 
     assertEquals(1, sut.getRegistries().size());
     assertEquals(registry, sut.getRegistries().toArray()[0]);
@@ -60,8 +54,7 @@ public class ArmoryObservabilityCompositeRegistryTest {
   public void
       test_that_ArmoryObservabilityCompositeRegistry_uses_a_simple_registry_when_no_registries_are_enabled() {
     var sut =
-        new ArmoryObservabilityCompositeRegistry(
-            Clock.SYSTEM, List.of(() -> null), List.of(), tagsService, meterFilterService);
+        new ArmoryObservabilityCompositeRegistry(Clock.SYSTEM, List.of(() -> null), List.of());
     assertEquals(1, sut.getRegistries().size());
     assertEquals(SimpleMeterRegistry.class, sut.getRegistries().toArray()[0].getClass());
   }
@@ -69,16 +62,16 @@ public class ArmoryObservabilityCompositeRegistryTest {
   @Test
   public void
       test_that_ArmoryObservabilityCompositeRegistry_calls_the_registry_customizers_for_each_enabled_registry() {
-    var customizer = mock(MeterRegistryCustomizer.class);
+    var customizer = mock(RegistryCustomizer.class);
     var registry = new LoggingMeterRegistry();
     var registry2 = new SimpleMeterRegistry();
     new ArmoryObservabilityCompositeRegistry(
         Clock.SYSTEM,
-        List.of(() -> registry, () -> registry2),
-        List.of(customizer),
-        tagsService,
-        meterFilterService);
+        List.of(
+            () -> RegistryConfigWrapper.builder().meterRegistry(registry).build(),
+            () -> RegistryConfigWrapper.builder().meterRegistry(registry2).build()),
+        List.of(customizer));
 
-    verify(customizer, times(2)).customize(any());
+    verify(customizer, times(2)).customize(any(), any());
   }
 }

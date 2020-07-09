@@ -19,6 +19,7 @@ package io.armory.plugin.observability.registry;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
+import io.armory.plugin.observability.model.MeterRegistryConfig;
 import io.armory.plugin.observability.service.MeterFilterService;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.config.MeterFilter;
@@ -47,8 +48,8 @@ public class AddFiltersRegistryCustomizerTest {
   @Test
   public void test_that_customize_adds_the_enabled_filters_to_the_registry() throws Exception {
     var denyAllFilter = MeterFilter.deny(id -> true);
-    when(meterFilterService.getMeterFilters()).thenReturn(List.of(denyAllFilter));
-    sut.customize(registry);
+    when(meterFilterService.getMeterFilters(any())).thenReturn(List.of(denyAllFilter));
+    sut.customize(registry, MeterRegistryConfig.builder().build());
     verify(config, times(1)).meterFilter(denyAllFilter);
   }
 }
