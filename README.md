@@ -114,11 +114,11 @@ spinnaker:
                 # Turn this off to minimize the amount of data sent on each scrape.
                 # Optional, Default: false
                 descriptions: false
+                # Config related to configuring, filtering, and transforming Micrometer meters
                 meterRegistryConfig: 
                     # By default this plugin adds a set of sane default tags to help with observability best practices, you can disable those here
                     # Optional, Default: false
                     defaultTagsDisabled: false
-                    # Config related to configuring, filtering, and transforming Micrometer meters
                     # Configures an opinionated but sane set of default meter filters: https://micrometer.io/docs/concepts#_meter_filters
                     # For example we filter out controller.invocations to prefer the micrometer generated metric 'http.server.requests'
                     # See the following for more details: 
@@ -151,11 +151,11 @@ spinnaker:
                 # measurements are found, then multiple requests will be made.
                 # Optional, Default: 10000
                 batchSize: 10000
+                # Config related to configuring, filtering, and transforming Micrometer meters
                 meterRegistryConfig: 
                     # By default this plugin adds a set of sane default tags to help with observability best practices, you can disable those here
                     # Optional, Default: false
                     defaultTagsDisabled: false
-                    # Config related to configuring, filtering, and transforming Micrometer meters
                     # Configures an opinionated but sane set of default meter filters: https://micrometer.io/docs/concepts#_meter_filters
                     # For example we filter out controller.invocations to prefer the micrometer generated metric 'http.server.requests'
                     # See the following for more details: 
@@ -171,7 +171,7 @@ spinnaker:
 # See: https://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-features.html for more details 
 management:
   # Percentiles for http.server.requests are off by default, if you want them you can add them here
-  # When you add these, they will generate extra metrics with percentile = 'xxx' as a tag under
+  # When you add these, they will generate extra metrics with percentile = 'xxx' as a tag
   metrics.distribution:
       percentiles[http.server.requests]: 0.95, 0.99
       percentiles-histogram[http.server.requests]: true
