@@ -7,6 +7,13 @@
 
 Spinnaker plugin for configuring and customizing observability.
 
+## Version Compatibility
+ 
+| Plugin  | Spinnaker Platform |
+|:----------- | :--------- |
+| 1.0.0  |  1.20.x |
+
+
 ## What is Observability?
 
 In control theory, observability is a measure of how well internal states of a system can be inferred from knowledge of its external outputs. The observability and controllability of a linear system are mathematical duals. 
