@@ -21,6 +21,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
+import io.armory.plugin.observability.model.MeterRegistryConfig;
 import io.armory.plugin.observability.service.TagsService;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
@@ -50,7 +51,16 @@ public class AddDefaultTagsRegistryCustomizerTest {
   public void test_that_customize_adds_the_tags_to_the_registry_common_tag_config() {
     var tags = List.of(Tag.of("FOO", "BAR"));
     when(tagsService.getDefaultTags()).thenReturn(tags);
-    sut.customize(registry);
+    sut.customize(registry, MeterRegistryConfig.builder().build());
     verify(config, times(1)).commonTags(tags);
+  }
+
+  @Test
+  public void
+      test_that_customize_does_not_adds_the_tags_to_the_registry_common_tag_config_when_disabled() {
+    var tags = List.of(Tag.of("FOO", "BAR"));
+    when(tagsService.getDefaultTags()).thenReturn(tags);
+    sut.customize(registry, MeterRegistryConfig.builder().defaultTagsDisabled(true).build());
+    verify(config, times(0)).commonTags(tags);
   }
 }

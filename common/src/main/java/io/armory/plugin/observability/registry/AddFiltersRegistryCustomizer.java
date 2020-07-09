@@ -16,13 +16,13 @@
 
 package io.armory.plugin.observability.registry;
 
+import io.armory.plugin.observability.model.MeterRegistryConfig;
 import io.armory.plugin.observability.service.MeterFilterService;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.actuate.autoconfigure.metrics.MeterRegistryCustomizer;
 
 @Slf4j
-public class AddFiltersRegistryCustomizer implements MeterRegistryCustomizer<MeterRegistry> {
+public class AddFiltersRegistryCustomizer implements RegistryCustomizer {
 
   private final MeterFilterService meterFilterService;
 
@@ -31,10 +31,10 @@ public class AddFiltersRegistryCustomizer implements MeterRegistryCustomizer<Met
   }
 
   @Override
-  public void customize(MeterRegistry registry) {
+  public void customize(MeterRegistry registry, MeterRegistryConfig meterRegistryConfig) {
     log.info("Adding Meter Filters to registry: {}", registry.getClass().getSimpleName());
     meterFilterService
-        .getMeterFilters()
+        .getMeterFilters(meterRegistryConfig)
         .forEach(meterFilter -> registry.config().meterFilter(meterFilter));
   }
 }

@@ -18,8 +18,7 @@ package io.armory.plugin.observability.service;
 
 import static io.armory.plugin.observability.filters.ArmoryRecommendedFilters.ARMORY_RECOMMENDED_FILTERS;
 
-import io.armory.plugin.observability.model.PluginConfig;
-import io.armory.plugin.observability.model.PluginMetricsConfig;
+import io.armory.plugin.observability.model.MeterRegistryConfig;
 import io.micrometer.core.instrument.config.MeterFilter;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -33,19 +32,15 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class MeterFilterService {
 
-  private final PluginMetricsConfig metricsConfig;
-
-  public MeterFilterService(PluginConfig pluginConfig) {
-    metricsConfig = pluginConfig.getMetrics();
-  }
-
   /**
    * TODO, pattern for impl TBD.
    *
    * @return The list of enabled filters.
+   * @param meterRegistryConfig
    */
-  public List<MeterFilter> getMeterFilters() {
-    if (metricsConfig.isArmoryRecommendedFiltersEnabled()) {
+  public List<MeterFilter> getMeterFilters(MeterRegistryConfig meterRegistryConfig) {
+    if (meterRegistryConfig.isArmoryRecommendedFiltersEnabled()) {
+      log.info("Armory Recommended filters are enabled returning those");
       return ARMORY_RECOMMENDED_FILTERS;
     }
     return List.of();

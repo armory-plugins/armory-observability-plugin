@@ -25,7 +25,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PluginMetricsNewRelicConfig {
+public class PluginMetricsNewRelicConfig extends BaseMetricsIntegrationConfig {
   // New Relic Specific Settings
   @Builder.Default private boolean enabled = false;
   @Builder.Default private String apiKey = null;

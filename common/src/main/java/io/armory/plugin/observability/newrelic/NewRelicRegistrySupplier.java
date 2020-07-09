@@ -18,9 +18,10 @@ package io.armory.plugin.observability.newrelic;
 
 import io.armory.plugin.observability.model.PluginConfig;
 import io.armory.plugin.observability.model.PluginMetricsNewRelicConfig;
+import io.armory.plugin.observability.registry.RegistryConfigWrapper;
 import io.armory.plugin.observability.service.TagsService;
-import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.newrelic.NewRelicRegistry;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.function.Supplier;
 
@@ -29,7 +30,7 @@ import java.util.function.Supplier;
  * implementation to confuse Spectator/Micrometer. This Supplier configures a New Relic Micrometer
  * Registry Instance.
  */
-public class NewRelicRegistrySupplier implements Supplier<MeterRegistry> {
+public class NewRelicRegistrySupplier implements Supplier<RegistryConfigWrapper> {
 
   private final PluginMetricsNewRelicConfig newRelicConfig;
   private final TagsService tagsService;
@@ -42,7 +43,7 @@ public class NewRelicRegistrySupplier implements Supplier<MeterRegistry> {
   }
 
   @Override
-  public NewRelicRegistry get() {
+  public RegistryConfigWrapper get() {
     if (!newRelicConfig.isEnabled()) {
       return null;
     }
@@ -52,12 +53,14 @@ public class NewRelicRegistrySupplier implements Supplier<MeterRegistry> {
 
     registry.gauge(
         "metrics.dpm",
-        tagsService.getDefaultTags(),
+        newRelicConfig.getMeterRegistryConfig().isDefaultTagsDisabled() ? tagsService.getDefaultTags() : List.of(),
         registry,
-        reg ->
-            reg.getMeters().size() * (ONE_MINUTE_IN_SECONDS / newRelicConfig.getStepInSeconds()));
+        reg -> reg.getMeters().size() * (ONE_MINUTE_IN_SECONDS / newRelicConfig.getStepInSeconds()));
 
     registry.start(Executors.defaultThreadFactory());
-    return registry;
+    return RegistryConfigWrapper.builder()
+        .meterRegistry(registry)
+        .meterRegistryConfig(newRelicConfig.getMeterRegistryConfig())
+        .build();
   }
 }

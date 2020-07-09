@@ -30,7 +30,7 @@ In software metrics, logging and tracing make up the core categories of observab
 
 ## Plugin Configuration
 
-### Condensed Example
+### Condensed Prometheus Example
 ```yaml
 spinnaker:
   extensibility:
@@ -38,11 +38,29 @@ spinnaker:
       Armory.ObservabilityPlugin:
         enabled: true
         config.metrics:
-          armoryRecommendedFiltersEnabled: true
           additionalTags:
             customerName: armory
             customerEnvName: production
-          prometheus.enabled: true
+          prometheus:
+            enabled: true
+            meterRegistryConfig.armoryRecommendedFiltersEnabled: true
+```
+
+### Condensed NR Example
+```yaml
+spinnaker:
+  extensibility:
+    plugins:
+      Armory.ObservabilityPlugin:
+        enabled: true
+        config.metrics:
+          additionalTags:
+            customerName: armory
+            customerEnvName: fieldju-local
+          newrelic:
+            enabled: true
+            apiKey: encrypted:secrets-manager!r:us-west-2!s:spinnaker-development-secrets!k:new-relic-insert-key
+            meterRegistryConfig.armoryRecommendedFiltersEnabled: true
 ```
 
 ### All Options (we recommend this goes in spinnaker-local.yaml)
@@ -54,14 +72,6 @@ spinnaker:
         enabled: true
         config:
           metrics:
-              # Configures an opinionated but sane set of default meter filters: https://micrometer.io/docs/concepts#_meter_filters
-              # For example we filter out controller.invocations to prefer the micrometer generated metric 'http.server.requests'
-              # See the following for more details: 
-              # https://github.com/armory-plugins/armory-observability-plugin/blob/master/common/src/main/java/io/armory/plugin/observability/filters/ArmoryRecommendedFilters.java
-              # https://github.com/armory-plugins/armory-observability-plugin/blob/master/common/src/main/java/io/armory/plugin/observability/filters/Filters.java
-              # See bottom of config for controlling percentiles
-              # Optional, Default: false
-              armoryRecommendedFiltersEnabled: true
               # Key value map of extra static default tags to add when generated the default tags
               # Optional, Default: empty map
               additionalTags:
@@ -74,11 +84,7 @@ spinnaker:
                   # Halyard generated UUID for non-managed and non-sass customers
                   # Optional, Default: omitted from default tags
                   customerEnvId: e0fb0422-aa8e-11ea-bb37-0242ac130002
-              
-              # By default this plugin adds a set of sane default tags to help with observability best practices, you can disable those here
-              # Optional, Default: false
-              defaultTagsDisabled: false
-    
+
               # Creates an actuator endpoint for prometheus with id = 'aop-prometheus'
               # See the bottom of this config block
               #
@@ -108,6 +114,19 @@ spinnaker:
                 # Turn this off to minimize the amount of data sent on each scrape.
                 # Optional, Default: false
                 descriptions: false
+                meterRegistryConfig: 
+                    # By default this plugin adds a set of sane default tags to help with observability best practices, you can disable those here
+                    # Optional, Default: false
+                    defaultTagsDisabled: false
+                    # Config related to configuring, filtering, and transforming Micrometer meters
+                    # Configures an opinionated but sane set of default meter filters: https://micrometer.io/docs/concepts#_meter_filters
+                    # For example we filter out controller.invocations to prefer the micrometer generated metric 'http.server.requests'
+                    # See the following for more details: 
+                    # https://github.com/armory-plugins/armory-observability-plugin/blob/master/common/src/main/java/io/armory/plugin/observability/filters/ArmoryRecommendedFilters.java
+                    # https://github.com/armory-plugins/armory-observability-plugin/blob/master/common/src/main/java/io/armory/plugin/observability/filters/Filters.java
+                    # See bottom of config for controlling percentiles
+                    # Optional, Default: false
+                    armoryRecommendedFiltersEnabled: true
         
               newrelic:
                 # Optional, Default: false
@@ -131,7 +150,20 @@ spinnaker:
                 # The number of measurements per request to use for the backend. If more
                 # measurements are found, then multiple requests will be made.
                 # Optional, Default: 10000
-                batchSize: 10000 
+                batchSize: 10000
+                meterRegistryConfig: 
+                    # By default this plugin adds a set of sane default tags to help with observability best practices, you can disable those here
+                    # Optional, Default: false
+                    defaultTagsDisabled: false
+                    # Config related to configuring, filtering, and transforming Micrometer meters
+                    # Configures an opinionated but sane set of default meter filters: https://micrometer.io/docs/concepts#_meter_filters
+                    # For example we filter out controller.invocations to prefer the micrometer generated metric 'http.server.requests'
+                    # See the following for more details: 
+                    # https://github.com/armory-plugins/armory-observability-plugin/blob/master/common/src/main/java/io/armory/plugin/observability/filters/ArmoryRecommendedFilters.java
+                    # https://github.com/armory-plugins/armory-observability-plugin/blob/master/common/src/main/java/io/armory/plugin/observability/filters/Filters.java
+                    # See bottom of config for controlling percentiles
+                    # Optional, Default: false
+                    armoryRecommendedFiltersEnabled: true
     repositories:
       armory-observability-plugin-releases:
         url: https://raw.githubusercontent.com/armory-plugins/armory-observability-plugin-releases/master/repositories.json

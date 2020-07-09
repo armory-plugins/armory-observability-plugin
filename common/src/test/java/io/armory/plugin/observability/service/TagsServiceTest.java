@@ -172,14 +172,6 @@ public class TagsServiceTest {
   }
 
   @Test
-  public void test_that_getDefaultTags_returns_empty_list_when_disabled() {
-    pluginConfig.getMetrics().setDefaultTagsDisabled(true);
-    var tags = sut.getDefaultTags();
-    assertNotNull(tags);
-    assertEquals(0, tags.size());
-  }
-
-  @Test
   public void test_that_getDefaultTags_returns_some_tags_even_when_no_props_are_loaded() {
     var tags = sut.getDefaultTags();
     assertNotNull(tags);

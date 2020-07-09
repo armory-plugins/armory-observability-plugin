@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-package io.armory.plugin.observability.model;
+package io.armory.plugin.observability.registry;
 
-import java.util.Map;
+import io.armory.plugin.observability.model.MeterRegistryConfig;
+import io.micrometer.core.instrument.MeterRegistry;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
-public class PluginMetricsConfig {
-  private Map<String, String> additionalTags = Map.of();
-
-  private PluginMetricsPrometheusConfig prometheus = new PluginMetricsPrometheusConfig();
-  private PluginMetricsNewRelicConfig newrelic = new PluginMetricsNewRelicConfig();
-
-  private boolean armoryRecommendedFiltersEnabled = false;
+@Builder
+public class RegistryConfigWrapper {
+  private MeterRegistry meterRegistry;
+  @Builder.Default private MeterRegistryConfig meterRegistryConfig = new MeterRegistryConfig();
 }

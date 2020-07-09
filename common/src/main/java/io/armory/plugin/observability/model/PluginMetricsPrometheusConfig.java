@@ -25,7 +25,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PluginMetricsPrometheusConfig {
+public class PluginMetricsPrometheusConfig extends BaseMetricsIntegrationConfig {
   @Builder.Default private boolean enabled = false;
   @Builder.Default private int stepInSeconds = 30;
   @Builder.Default private boolean descriptions = false;
