@@ -11,7 +11,7 @@ Spinnaker plugin for configuring and customizing observability.
  
 | Plugin  | Spinnaker Platform |
 |:----------- | :--------- |
-| 1.0.0  |  1.20.x |
+| 1.+ |  1.20.+ |
 
 
 ## What is Observability?
