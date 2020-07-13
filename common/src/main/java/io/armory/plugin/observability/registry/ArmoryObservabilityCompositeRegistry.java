@@ -22,11 +22,13 @@ import com.netflix.spectator.api.DefaultRegistry;
 import com.netflix.spinnaker.kork.metrics.SpectatorMeterRegistry;
 import io.armory.plugin.observability.model.MeterRegistryConfig;
 import io.micrometer.core.instrument.Clock;
+import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
@@ -84,7 +86,44 @@ public class ArmoryObservabilityCompositeRegistry extends CompositeMeterRegistry
     );
   }
 
-  public ArmoryObservabilityCompositeRegistry(Clock clock, Iterable<MeterRegistry> registries) {
+    /**
+     * If the list of enabled registries for this composite registry contains an instance of
+     * SpectatorMeterRegistry than no aop registries are enabled and we want to proxy calls of getMeters to the
+     * SpectatorMeterRegistry instance, so that meters are mapped properly to support legacy dashboards through
+     * spectator and the monitoring daemon.
+     * @return The set of registered meters.
+     */
+    @Override
+    public List<Meter> getMeters() {
+        return this.getRegistries().stream()
+                .filter(it -> it.getClass() == SpectatorMeterRegistry.class)
+                .findFirst()
+                .map(MeterRegistry::getMeters)
+                .orElse(super.getMeters());
+    }
+
+    /**
+     * If the list of enabled registries for this composite registry contains an instance of
+     * SpectatorMeterRegistry than no aop registries are enabled and we want to proxy calls of forEachMeter to the
+     * SpectatorMeterRegistry instance, so that meters are mapped properly to support legacy dashboards through
+     * spectator and the monitoring daemon.
+     *
+     * Iterate over each meter in the registry.
+     *
+     * @param consumer Consumer of each meter during iteration.
+     */
+    @Override
+    public void forEachMeter(Consumer<? super Meter> consumer) {
+        this.getRegistries().stream()
+                .filter(it -> it.getClass() == SpectatorMeterRegistry.class)
+                .findFirst()
+                .ifPresentOrElse(
+                        meterRegistry -> meterRegistry.forEachMeter(consumer),
+                        () -> super.forEachMeter(consumer)
+                );
+    }
+
+    public ArmoryObservabilityCompositeRegistry(Clock clock, Iterable<MeterRegistry> registries) {
     super(clock, registries);
   }
 }
