@@ -131,6 +131,7 @@ task aggregatedJacocoReport(type: JacocoReport, group: 'Coverage reports') {
         classDirectories.setFrom(files(classDirectories.files.collect {
             fileTree(dir: it, exclude: 'io/armory/plugin/observability/model/**')
             fileTree(dir: it, exclude: 'io/micrometer/**')
+            fileTree(dir: it, exclude: 'com/netflix/**')
         }))
     }
 }

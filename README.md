@@ -63,6 +63,17 @@ spinnaker:
             meterRegistryConfig.armoryRecommendedFiltersEnabled: true
 ```
 
+### Example for making existing <= 1.19.x dashboards work through spectator and the monitoring daemon
+```yaml
+spinnaker.extensibility:
+  plugins:
+    Armory.ObservabilityPlugin:
+      enabled: true
+  repositories:
+    armory-observability-plugin-releases:
+      url: https://raw.githubusercontent.com/armory-plugins/armory-observability-plugin-releases/master/repositories.json
+```
+
 ### All Options (we recommend this goes in spinnaker-local.yaml)
 ```yaml
 spinnaker:

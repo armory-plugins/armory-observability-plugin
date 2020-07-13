@@ -18,12 +18,12 @@ package io.armory.plugin.observability.registry;
 
 import static java.util.Optional.ofNullable;
 
+import com.netflix.spectator.api.DefaultRegistry;
+import com.netflix.spinnaker.kork.metrics.SpectatorMeterRegistry;
 import io.armory.plugin.observability.model.MeterRegistryConfig;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
-import io.micrometer.core.instrument.simple.SimpleConfig;
-import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -57,8 +57,8 @@ public class ArmoryObservabilityCompositeRegistry extends CompositeMeterRegistry
                   // default to the simple registry and assume that Spectator with the spinnaker
                   // monitoring daemon will be used.
                   if (enabledRegistries.size() == 0) {
-                    log.warn("None of the supported Armory Observability Plugin registries where enabled defaulting a Simple Meter Registry which Spectator will use.");
-                    enabledRegistries = List.of(new SimpleMeterRegistry(SimpleConfig.DEFAULT, clock));
+                    log.warn("None of the supported Armory Observability Plugin registries where enabled defaulting a Spectator Meter Registry which Spectator will use and is compatible with the legacy Spinnaker Monitoring Daemon 3rd party dashboards.");
+                    enabledRegistries = List.of(new SpectatorMeterRegistry(new DefaultRegistry(com.netflix.spectator.api.Clock.SYSTEM)));
                   }
                   return enabledRegistries;
                 })

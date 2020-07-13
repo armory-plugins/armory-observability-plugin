@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MeterRegistryConfig {
-  private boolean armoryRecommendedFiltersEnabled = false;
-  private boolean defaultTagsDisabled = false;
+  @Builder.Default private boolean armoryRecommendedFiltersEnabled = false;
+  @Builder.Default private boolean defaultTagsDisabled = false;
 }

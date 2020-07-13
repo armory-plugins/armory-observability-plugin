@@ -23,6 +23,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
 
+import com.netflix.spinnaker.kork.metrics.SpectatorMeterRegistry;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.logging.LoggingMeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
@@ -52,11 +53,11 @@ public class ArmoryObservabilityCompositeRegistryTest {
 
   @Test
   public void
-      test_that_ArmoryObservabilityCompositeRegistry_uses_a_simple_registry_when_no_registries_are_enabled() {
+      test_that_ArmoryObservabilityCompositeRegistry_uses_a_spectator_meter_registry_when_no_registries_are_enabled() {
     var sut =
         new ArmoryObservabilityCompositeRegistry(Clock.SYSTEM, List.of(() -> null), List.of());
     assertEquals(1, sut.getRegistries().size());
-    assertEquals(SimpleMeterRegistry.class, sut.getRegistries().toArray()[0].getClass());
+    assertEquals(SpectatorMeterRegistry.class, sut.getRegistries().toArray()[0].getClass());
   }
 
   @Test
