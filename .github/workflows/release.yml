@@ -30,7 +30,6 @@ jobs:
           echo ::set-output name=PROJECT::$(basename `pwd`)
           echo ::set-output name=PROJECT_KEBAB::$(basename `pwd` | sed 's/\([a-z0-9]\)\([A-Z]\)/\1_\L\2/g')
           echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
-          echo ::set-output name=REPO::${GITHUB_REPOSITORY}
 
       - name: create release
         id: create_release
@@ -72,14 +71,8 @@ jobs:
           asset_content_type: application/zip
 
       - name: add release to plugin repo
-        id: add-release
-        uses: armory-io/plugin-metadata-updater@master
-        env:
-          GITHUB_OAUTH: ${{ secrets.TOKEN }}
-        with:
-          metadata: build/distributions/plugin-info.json
-          binary_url: https://github.com/${{ steps.get_project_info.outputs.REPO }}/releases/download/${{ steps.get_project_info.outputs.VERSION }}/${{ steps.get_project_info.outputs.PROJECT }}-${{ steps.get_project_info.outputs.VERSION }}.zip
-          metadata_repo_url: https://github.com/armory-plugins/armory-observability-plugin-releases
+        run: |
+          curl -v -XPOST -u "${{ secrets.USERNAME }}:${{ secrets.TOKEN }}" -H "Accept: application/vnd.github.everest-preview+json" -H "Content-Type: application/json" https://api.github.com/repos/armory-plugins/armory-observability-plugin-releases/dispatches --data "{\"event_type\": \"onPluginRelease\", \"client_payload\": {\"org\": \"armory-plugins\", \"repo\": \"${{ steps.get_project_info.outputs.PROJECT }}\", \"releaseRepo\": \"armory-observability-plugin-releases\", \"version\": \"${{ steps.get_project_info.outputs.VERSION }}\", \"artifactName\": \"${{ steps.get_project_info.outputs.PROJECT }}-${{ steps.get_project_info.outputs.VERSION }}.zip\", \"released\": $(cat build/distributions/plugin-info.json)}}"
 
       - name: setup gcloud
         uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
