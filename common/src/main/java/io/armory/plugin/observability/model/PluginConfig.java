@@ -17,12 +17,24 @@
 package io.armory.plugin.observability.model;
 
 import lombok.Data;
+import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
 @Data
 @Configuration
 @ConfigurationProperties("spinnaker.extensibility.plugins.armory.observability-plugin.config")
-public class PluginConfig {
-  PluginMetricsConfig metrics = new PluginMetricsConfig();
+public class PluginConfig extends WebSecurityConfigurerAdapter {
+    PluginMetricsConfig metrics = new PluginMetricsConfig();
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        if (metrics.getPrometheus().isEnabled()) {
+            http.requestMatcher(EndpointRequest.to("aop-prometheus")).authorizeRequests((requests) ->
+                    requests.anyRequest().permitAll());
+        }
+    }
+
 }
