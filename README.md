@@ -30,10 +30,15 @@ In software metrics, logging and tracing make up the core categories of observab
 - Exposes an [OpenMetrics](https://openmetrics.io/) endpoint for the Micrometer/Spectator metrics
   - This allows tools such as Prometheus or the New Relic OpenMetrics integration to work without the [Spinnaker Monitoring Daemon](https://github.com/spinnaker/spinnaker-monitoring/tree/master/spinnaker-monitoring-daemon).
 
+> WARNING:  Exposing your metrics endpoint CAN be potentially risky if your services are externally accessible. It's HIGHLY recommended that you understand the impacts and security risks.  For example, this exposes
+> and endpoint on gate, which then becomes PUBLIC for scraping gate metric data.  You likely should filter that either on ingress or through another security method!  This plugin CURRENTLY does not 
+> support enabling this
+
 ## Potential Future Additions
 - Enable distributed tracing, Slueth?
 - Customize logging to filter noise or have custom appender for shipping important logs to log aggregator
 - Customize Error handling? Can we enable something like [Backstopper](https://github.com/Nike-Inc/backstopper) in a plugin? I have no idea ¯\\_(ツ)_/¯.
+- Ability to move prometheus from endpoint to a separate service on a different port, allowing it to not be exposed
 
 ## Plugin Configuration
 
