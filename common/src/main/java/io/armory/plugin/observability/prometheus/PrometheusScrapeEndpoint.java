@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.armory.plugin.observability.promethus;
+package io.armory.plugin.observability.prometheus;
 
 import io.prometheus.client.Collector;
 import io.prometheus.client.CollectorRegistry;

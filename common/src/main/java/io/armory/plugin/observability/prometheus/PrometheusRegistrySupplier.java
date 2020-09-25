@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.armory.plugin.observability.promethus;
+package io.armory.plugin.observability.prometheus;
 
 import io.armory.plugin.observability.model.PluginConfig;
 import io.armory.plugin.observability.model.PluginMetricsPrometheusConfig;
