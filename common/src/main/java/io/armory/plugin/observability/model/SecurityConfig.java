@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
+//To avoid collision with other WebSecurityConfigurerAdapters
 @Order(Ordered.HIGHEST_PRECEDENCE + 27)
 @Configuration
 @EnableWebSecurity
