@@ -45,6 +45,7 @@ public class NewRelicRegistryConfigTest {
     assertEquals(delegate.getNumThreads(), sut.numThreads());
     assertEquals(step, sut.step());
     assertEquals(delegate.getUri(), sut.uri());
+    assertEquals(5, delegate.getConnectDurationSeconds());
   }
 
   @Test(expected = PluginRuntimeException.class)
@@ -53,4 +54,5 @@ public class NewRelicRegistryConfigTest {
     var sut = new NewRelicRegistryConfig(delegate);
     sut.apiKey();
   }
+
 }

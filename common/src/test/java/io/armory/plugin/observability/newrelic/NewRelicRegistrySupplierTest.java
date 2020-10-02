@@ -16,28 +16,44 @@
 
 package io.armory.plugin.observability.newrelic;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 import io.armory.plugin.observability.model.PluginConfig;
 import io.armory.plugin.observability.model.PluginMetricsConfig;
 import io.armory.plugin.observability.model.PluginMetricsNewRelicConfig;
 import io.armory.plugin.observability.service.TagsService;
+import io.micrometer.core.instrument.push.PushRegistryConfig;
+import io.micrometer.core.ipc.http.HttpSender;
+import io.micrometer.core.ipc.http.HttpUrlConnectionSender;
+import io.micrometer.newrelic.NewRelicRegistry;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mock;
+import org.mockito.*;
+import org.mockito.stubbing.OngoingStubbing;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.ThreadFactory;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 public class NewRelicRegistrySupplierTest {
 
   PluginMetricsNewRelicConfig config;
 
   @Mock TagsService tagsService;
+  @Mock HttpUrlConnectionSender sender;
 
   NewRelicRegistrySupplier sut;
 
   @Before
-  public void before() {
+  public void before() throws IOException {
     initMocks(this);
     var pluginConfig = new PluginConfig();
     var metricsConfig = new PluginMetricsConfig();
@@ -45,6 +61,9 @@ public class NewRelicRegistrySupplierTest {
     config = PluginMetricsNewRelicConfig.builder().apiKey("foo").build();
     metricsConfig.setNewrelic(config);
     sut = new NewRelicRegistrySupplier(pluginConfig, tagsService);
+    when(sender.post(anyString())).thenCallRealMethod();
+    when(sender.newRequest(anyString())).thenCallRealMethod();
+    sut.sender = sender;
   }
 
   @Test
@@ -59,4 +78,27 @@ public class NewRelicRegistrySupplierTest {
     var actual = sut.get();
     assertNotNull(actual);
   }
+
+  @Test
+  public void verifySendOfMetrics() throws Exception {
+    config.setEnabled(true);
+    config.setStepInSeconds(1);
+
+    ArgumentCaptor<HttpSender.Request> captor = ArgumentCaptor.forClass(HttpSender.Request.class);
+    when(sender.send(captor.capture())).thenReturn(new HttpSender.Response(202, "Success"));
+    NewRelicRegistry registry = (NewRelicRegistry) sut.get().getMeterRegistry();
+    registry.start(r -> new Thread(r));
+    registry.counter("testCounter").increment();
+    Thread.sleep(2*1000l);
+    registry.stop();
+    assertTrue("Received " + decompressByteData(captor.getValue().getEntity()), decompressByteData(captor.getValue().getEntity()).contains("testCounter"));
+  }
+
+  private String decompressByteData(byte[] result) throws IOException {
+    GZIPInputStream inputStream = new GZIPInputStream(new ByteArrayInputStream(result));
+    String results = new String(inputStream.readAllBytes());
+    inputStream.close();
+    return results;
+  }
+
 }
