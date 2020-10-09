@@ -21,7 +21,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-import io.armory.plugin.observability.promethus.PrometheusScrapeEndpoint;
+import io.armory.plugin.observability.prometheus.PrometheusScrapeEndpoint;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Timer;

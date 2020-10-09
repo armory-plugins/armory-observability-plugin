@@ -23,7 +23,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 import io.armory.plugin.observability.model.PluginConfig;
 import io.armory.plugin.observability.model.PluginMetricsConfig;
 import io.armory.plugin.observability.model.PluginMetricsPrometheusConfig;
-import io.armory.plugin.observability.promethus.PrometheusRegistrySupplier;
+import io.armory.plugin.observability.prometheus.PrometheusRegistrySupplier;
 import io.micrometer.core.instrument.Clock;
 import io.prometheus.client.CollectorRegistry;
 import org.junit.Before;
