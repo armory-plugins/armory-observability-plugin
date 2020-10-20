@@ -1,0 +1,20 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: spinnaker-clouddriver
+  labels:
+    app: spin
+    release: prometheus-operator
+spec:
+  jobLabel: "app.kubernetes.io/name"
+  podTargetLabels:
+    - "app.kubernetes.io/name"
+  namespaceSelector:
+    matchNames:
+      - spinnaker
+  selector:
+    matchLabels:
+      "app.kubernetes.io/name": clouddriver
+  podMetricsEndpoints:
+    - port: "7002"
+      path: /aop-prometheus
