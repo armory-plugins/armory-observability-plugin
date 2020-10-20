@@ -16,6 +16,6 @@ spec:
       any: true
   endpoints:
     # "port" is string only. "targetPort" is integer or string.
-    - targetPort: http
+    - port: http
       interval: 10s
       path: "/aop-prometheus"
