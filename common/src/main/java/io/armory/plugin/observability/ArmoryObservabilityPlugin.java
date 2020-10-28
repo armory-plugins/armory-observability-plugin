@@ -18,9 +18,10 @@ package io.armory.plugin.observability;
 
 import com.netflix.spinnaker.kork.plugins.api.spring.PrivilegedSpringPlugin;
 import io.armory.plugin.observability.model.PluginConfig;
+import io.armory.plugin.observability.model.SecurityConfig;
 import io.armory.plugin.observability.newrelic.NewRelicRegistrySupplier;
-import io.armory.plugin.observability.promethus.PrometheusRegistrySupplier;
-import io.armory.plugin.observability.promethus.PrometheusScrapeEndpoint;
+import io.armory.plugin.observability.prometheus.PrometheusRegistrySupplier;
+import io.armory.plugin.observability.prometheus.PrometheusScrapeEndpoint;
 import io.armory.plugin.observability.registry.AddDefaultTagsRegistryCustomizer;
 import io.armory.plugin.observability.registry.AddFiltersRegistryCustomizer;
 import io.armory.plugin.observability.registry.ArmoryObservabilityCompositeRegistry;
@@ -49,6 +50,7 @@ public class ArmoryObservabilityPlugin extends PrivilegedSpringPlugin {
       registerBean(beanDefinitionFor(AddDefaultTagsRegistryCustomizer.class), registry);
       registerBean(beanDefinitionFor(MeterFilterService.class), registry);
       registerBean(beanDefinitionFor(AddFiltersRegistryCustomizer.class), registry);
+      registerBean(beanDefinitionFor(SecurityConfig.class), registry);
 
       // Prometheus Beans
       registerBean(beanDefinitionFor(CollectorRegistry.class), registry);

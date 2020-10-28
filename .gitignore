@@ -6,5 +6,7 @@ build
 
 .idea
 .vscode
-
 common/out/
+
+*.ipr
+*.iws

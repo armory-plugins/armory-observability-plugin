@@ -20,7 +20,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import io.armory.plugin.observability.model.PluginMetricsPrometheusConfig;
-import io.armory.plugin.observability.promethus.PrometheusRegistryConfig;
+import io.armory.plugin.observability.prometheus.PrometheusRegistryConfig;
 import java.time.Duration;
 import org.junit.Before;
 import org.junit.Test;
