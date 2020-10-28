@@ -39,4 +39,9 @@ public class PluginMetricsNewRelicConfig extends BaseMetricsIntegrationConfig {
 
   @Builder.Default private int connectDurationSeconds = 5;
   @Builder.Default private int readDurationSeconds = 5;
+
+  @Builder.Default private String proxyHost = null;
+  @Builder.Default private Integer proxyPort= null;
+
+
 }
