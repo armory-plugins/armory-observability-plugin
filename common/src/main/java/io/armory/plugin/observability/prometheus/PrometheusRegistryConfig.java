@@ -44,6 +44,6 @@ public class PrometheusRegistryConfig implements PrometheusConfig {
 
   @Override
   public Duration step() {
-    return Duration.of(prometheusConfig.getStepInSeconds(), ChronoUnit.SECONDS);
+    return Duration.ofSeconds(prometheusConfig.getStepInSeconds());
   }
 }
