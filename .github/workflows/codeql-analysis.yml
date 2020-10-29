@@ -3,6 +3,8 @@
 #
 # You may wish to alter this file to override the set of languages analyzed,
 # or to provide custom queries or build logic.
+# Updated on 10/29/2020
+
 name: "CodeQL"
 
 on:
