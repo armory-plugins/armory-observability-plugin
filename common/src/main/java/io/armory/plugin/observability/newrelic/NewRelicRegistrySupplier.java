@@ -23,7 +23,10 @@ import io.armory.plugin.observability.service.TagsService;
 import io.micrometer.core.ipc.http.HttpSender;
 import io.micrometer.core.ipc.http.HttpUrlConnectionSender;
 import io.micrometer.newrelic.NewRelicRegistry;
+import org.springframework.context.annotation.Bean;
 
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -41,11 +44,16 @@ public class NewRelicRegistrySupplier implements Supplier<RegistryConfigWrapper>
     private final TagsService tagsService;
     private static final double ONE_MINUTE_IN_SECONDS = 60d;
 
+
     public NewRelicRegistrySupplier(PluginConfig pluginConfig, TagsService tagsService) {
 
         newRelicConfig = pluginConfig.getMetrics().getNewrelic();
         this.tagsService = tagsService;
-        this.sender =  new HttpUrlConnectionSender(Duration.ofSeconds(newRelicConfig.getConnectDurationSeconds()),Duration.ofSeconds(newRelicConfig.getReadDurationSeconds()));
+        Proxy proxy = null;
+        if (newRelicConfig.getProxyHost() != null && newRelicConfig.getProxyPort() != null) {
+            proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(newRelicConfig.getProxyHost(), newRelicConfig.getProxyPort()));
+        }
+        this.sender =  new HttpUrlConnectionSender(Duration.ofSeconds(newRelicConfig.getConnectDurationSeconds()),Duration.ofSeconds(newRelicConfig.getReadDurationSeconds()), proxy);
     }
 
     @Override
