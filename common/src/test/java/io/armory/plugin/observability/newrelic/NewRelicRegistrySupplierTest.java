@@ -22,7 +22,7 @@ import io.armory.plugin.observability.model.PluginMetricsNewRelicConfig;
 import io.armory.plugin.observability.service.TagsService;
 import io.micrometer.core.ipc.http.HttpSender;
 import io.micrometer.core.ipc.http.HttpUrlConnectionSender;
-import io.micrometer.newrelic.NewRelicRegistry;
+import com.newrelic.telemetry.micrometer.NewRelicRegistry;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;

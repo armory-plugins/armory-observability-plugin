@@ -24,7 +24,8 @@ import com.newrelic.telemetry.micrometer.NewRelicRegistry;
 
 import io.micrometer.core.ipc.http.HttpSender;
 import io.micrometer.core.ipc.http.HttpUrlConnectionSender;
-import io.micrometer.newrelic.NewRelicRegistry;
+import com.newrelic.telemetry.micrometer.NewRelicRegistry;
+
 import org.springframework.context.annotation.Bean;
 
 import java.net.InetSocketAddress;
