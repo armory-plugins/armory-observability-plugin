@@ -20,8 +20,17 @@ import io.armory.plugin.observability.model.PluginConfig;
 import io.armory.plugin.observability.model.PluginMetricsNewRelicConfig;
 import io.armory.plugin.observability.registry.RegistryConfigWrapper;
 import io.armory.plugin.observability.service.TagsService;
-//import io.micrometer.newrelic.NewRelicRegistry;
 import com.newrelic.telemetry.micrometer.NewRelicRegistry;
+
+import io.micrometer.core.ipc.http.HttpSender;
+import io.micrometer.core.ipc.http.HttpUrlConnectionSender;
+import io.micrometer.newrelic.NewRelicRegistry;
+import org.springframework.context.annotation.Bean;
+
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.time.Duration;
+
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.function.Supplier;
@@ -33,35 +42,42 @@ import java.util.function.Supplier;
  */
 public class NewRelicRegistrySupplier implements Supplier<RegistryConfigWrapper> {
 
-  private final PluginMetricsNewRelicConfig newRelicConfig;
-  private final TagsService tagsService;
-  private static final double ONE_MINUTE_IN_SECONDS = 60d;
+    protected HttpUrlConnectionSender sender;
+    private final PluginMetricsNewRelicConfig newRelicConfig;
+    private final TagsService tagsService;
+    private static final double ONE_MINUTE_IN_SECONDS = 60d;
 
-  public NewRelicRegistrySupplier(PluginConfig pluginConfig, TagsService tagsService) {
 
-    newRelicConfig = pluginConfig.getMetrics().getNewrelic();
-    this.tagsService = tagsService;
-  }
+    public NewRelicRegistrySupplier(PluginConfig pluginConfig, TagsService tagsService) {
 
-  @Override
-  public RegistryConfigWrapper get() {
-    if (!newRelicConfig.isEnabled()) {
-      return null;
+        newRelicConfig = pluginConfig.getMetrics().getNewrelic();
+        this.tagsService = tagsService;
+        Proxy proxy = null;
+        if (newRelicConfig.getProxyHost() != null && newRelicConfig.getProxyPort() != null) {
+            proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(newRelicConfig.getProxyHost(), newRelicConfig.getProxyPort()));
+        }
+        this.sender =  new HttpUrlConnectionSender(Duration.ofSeconds(newRelicConfig.getConnectDurationSeconds()),Duration.ofSeconds(newRelicConfig.getReadDurationSeconds()), proxy);
     }
 
-    var config = new NewRelicRegistryConfig(newRelicConfig);
-    var registry = new NewRelicRegistry.NewRelicRegistryBuilder(config).build();
+    @Override
+    public RegistryConfigWrapper get() {
+        if (!newRelicConfig.isEnabled()) {
+            return null;
+        }
 
-    registry.gauge(
-        "metrics.dpm",
-        newRelicConfig.getMeterRegistryConfig().isDefaultTagsDisabled() ? tagsService.getDefaultTags() : List.of(),
-        registry,
-        reg -> reg.getMeters().size() * (ONE_MINUTE_IN_SECONDS / newRelicConfig.getStepInSeconds()));
+        var config = new NewRelicRegistryConfig(newRelicConfig);
+        var registry = new NewRelicRegistry.NewRelicRegistryBuilder(config).httpSender(sender).build();
 
-    registry.start(Executors.defaultThreadFactory());
-    return RegistryConfigWrapper.builder()
-        .meterRegistry(registry)
-        .meterRegistryConfig(newRelicConfig.getMeterRegistryConfig())
-        .build();
-  }
+        registry.gauge(
+                "metrics.dpm",
+                newRelicConfig.getMeterRegistryConfig().isDefaultTagsDisabled() ? tagsService.getDefaultTags() : List.of(),
+                registry,
+                reg -> reg.getMeters().size() * (ONE_MINUTE_IN_SECONDS / newRelicConfig.getStepInSeconds()));
+
+        registry.start(Executors.defaultThreadFactory());
+        return RegistryConfigWrapper.builder()
+                .meterRegistry(registry)
+                .meterRegistryConfig(newRelicConfig.getMeterRegistryConfig())
+                .build();
+    }
 }
