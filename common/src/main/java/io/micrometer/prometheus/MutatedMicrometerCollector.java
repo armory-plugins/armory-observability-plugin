@@ -1,6 +1,6 @@
 /*
  * This file uses the source code from https://github.com/micrometer-metrics/micrometer/pull/2653
- * licensed under the Apache 2.0 license.
+ * imported in the 1.3.5 micrometer-core lib licensed under the Apache 2.0 license.
  *
  * Licensed under the Apache License, Version 2.0 (the "License") you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
@@ -26,12 +26,9 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.toList;
 
 /**
- * {@link Collector} for Micrometer.
- *
  * @author Jon Schneider
- * @author Johnny Lim
  */
-class MutatedMicrometerCollector extends Collector implements Collector.Describable {
+class MutatedMicrometerCollector extends Collector {
 
     static final class TagsHolder {
         final List<String> keys;
@@ -104,6 +101,7 @@ class MutatedMicrometerCollector extends Collector implements Collector.Describa
         return children.isEmpty();
     }
 
+
     @Override
     public List<MetricFamilySamples> collect() {
         Map<String, Family> families = new HashMap<>();
@@ -121,34 +119,6 @@ class MutatedMicrometerCollector extends Collector implements Collector.Describa
         return families.values().stream()
                 .map(family -> new MetricFamilySamples(family.conventionName, family.type, help, family.samples))
                 .collect(toList());
-    }
-
-    @Override
-    public List<MetricFamilySamples> describe() {
-        switch (id.getType()) {
-            case COUNTER:
-                return Collections.singletonList(
-                        new MetricFamilySamples(conventionName, Type.COUNTER, help, Collections.emptyList()));
-
-            case GAUGE:
-                return Collections.singletonList(
-                        new MetricFamilySamples(conventionName, Type.GAUGE, help, Collections.emptyList()));
-
-            case TIMER:
-            case DISTRIBUTION_SUMMARY:
-                return Arrays.asList(
-                        new MetricFamilySamples(conventionName, Type.HISTOGRAM, help, Collections.emptyList()),
-                        new MetricFamilySamples(conventionName + "_max", Type.GAUGE, help, Collections.emptyList()));
-
-            case LONG_TASK_TIMER:
-                return Arrays.asList(
-                        new MetricFamilySamples(conventionName, Type.HISTOGRAM, help, Collections.emptyList()),
-                        new MetricFamilySamples(conventionName, Type.UNKNOWN, help, Collections.emptyList()));
-
-            default:
-                return Collections.singletonList(
-                        new MetricFamilySamples(conventionName, Type.UNKNOWN, help, Collections.emptyList()));
-        }
     }
 
     interface Child {

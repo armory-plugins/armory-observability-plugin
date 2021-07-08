@@ -25,7 +25,7 @@ import org.pf4j.PluginRuntimeException;
 /**
  * New Relic config wrapper that sources its config from the Spring Context Plugin Configuration.
  */
-public class NewRelicRegistryConfig implements com.newrelic.telemetry.micrometer.NewRelicRegistryConfig {
+public class NewRelicRegistryConfig implements io.micrometer.NewRelicRegistryConfig {
 
   private final PluginMetricsNewRelicConfig newRelicConfig;
 
