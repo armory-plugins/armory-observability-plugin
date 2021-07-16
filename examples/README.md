@@ -57,4 +57,4 @@ spec:
     path: /aop-prometheus
 ```
 
-OSS community maintains [spinnaker-mixin](https://gitlab.com/uneeq-oss/spinnaker-mixin) as a collection of Grafana dashboards for the metrics exposed by Armory Observability Plugin. 
+OSS community maintains [spinnaker-mixin](https://github.com/uneeq-oss/spinnaker-mixin) as a collection of Grafana dashboards for the metrics exposed by Armory Observability Plugin. 
