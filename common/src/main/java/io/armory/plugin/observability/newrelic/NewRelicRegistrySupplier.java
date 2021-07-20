@@ -20,14 +20,17 @@ import io.armory.plugin.observability.model.PluginConfig;
 import io.armory.plugin.observability.model.PluginMetricsNewRelicConfig;
 import io.armory.plugin.observability.registry.RegistryConfigWrapper;
 import io.armory.plugin.observability.service.TagsService;
+import io.micrometer.newrelic.NewRelicRegistry;
+
 import io.micrometer.core.ipc.http.HttpSender;
 import io.micrometer.core.ipc.http.HttpUrlConnectionSender;
-import io.micrometer.newrelic.NewRelicRegistry;
+
 import org.springframework.context.annotation.Bean;
 
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.time.Duration;
+
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.function.Supplier;

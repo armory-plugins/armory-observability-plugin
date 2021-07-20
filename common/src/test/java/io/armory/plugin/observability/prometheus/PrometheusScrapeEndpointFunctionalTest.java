@@ -33,6 +33,8 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -113,6 +115,9 @@ public class PrometheusScrapeEndpointFunctionalTest {
         "text/plain;version=0.0.4;charset=utf-8",
         responseEntity.getHeaders().getContentType().toString());
     // use length since, order is non-deterministic
-    assertEquals(expectedContent.length(), responseEntity.getBody().length());
+    // Since multiple HELP/TYPE will be removed we are expecting the length to be equal to
+    // the original - length(chars to be removed)
+    String duplicate="# HELP foo_total  \n# TYPE foo_total counter ";
+    assertEquals(expectedContent.length()-duplicate.length(), responseEntity.getBody().length());
   }
 }
