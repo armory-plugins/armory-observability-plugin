@@ -18,7 +18,6 @@ allprojects {
     apply plugin: 'jacoco'
 
     repositories {
-        jcenter()
         mavenCentral()
     }
 
@@ -46,8 +45,13 @@ subprojects { subProject ->
 
     repositories {
         mavenCentral()
-        jcenter()
-        maven { url "http://dl.bintray.com/spinnaker/spinnaker/" }
+        maven {
+            url 'https://armory.jfrog.io/armory/gradle-dev-local/'
+            credentials {
+                username = "${artifactory_user}"
+                password = "${artifactory_password}"
+            }
+        }
     }
 
     compileJava {
