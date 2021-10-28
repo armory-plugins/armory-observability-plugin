@@ -18,7 +18,6 @@ allprojects {
     apply plugin: 'jacoco'
 
     repositories {
-        jcenter()
         mavenCentral()
     }
 
@@ -46,8 +45,6 @@ subprojects { subProject ->
 
     repositories {
         mavenCentral()
-        jcenter()
-        maven { url "http://dl.bintray.com/spinnaker/spinnaker/" }
     }
 
     compileJava {
@@ -61,10 +58,10 @@ subprojects { subProject ->
         testAnnotationProcessor 'org.projectlombok:lombok:+'
 
         compileOnly(group: 'org.pf4j', name: 'pf4j', version: "${pf4jVersion}")
-        compileOnly(group: 'com.netflix.spinnaker.kork', name: 'kork-plugins-api', version: "${korkVersion}")
-        compileOnly "com.netflix.spinnaker.kork:kork-plugins-spring-api:$korkVersion"
-        compileOnly "com.netflix.spinnaker.kork:kork-core:${korkVersion}"
-        compileOnly "com.netflix.spinnaker.kork:kork-web:${korkVersion}"
+        compileOnly(group: 'io.spinnaker.kork', name: 'kork-plugins-api', version: "${korkVersion}")
+        compileOnly "io.spinnaker.kork:kork-plugins-spring-api:$korkVersion"
+        compileOnly "io.spinnaker.kork:kork-core:${korkVersion}"
+        compileOnly "io.spinnaker.kork:kork-web:${korkVersion}"
 
         // Start Prometheus deps
         implementation("io.micrometer:micrometer-registry-prometheus:1.3.5") {
@@ -88,10 +85,10 @@ subprojects { subProject ->
         testImplementation 'org.springframework.boot:spring-boot-test:2.1.5.RELEASE'
         testImplementation 'org.springframework.vault:spring-vault-core:2.1.2.RELEASE'
         testImplementation(group: 'org.pf4j', name: 'pf4j', version: "${pf4jVersion}")
-        testImplementation(group: 'com.netflix.spinnaker.kork', name: 'kork-plugins-api', version: "${korkVersion}")
-        testImplementation "com.netflix.spinnaker.kork:kork-plugins-spring-api:$korkVersion"
-        testImplementation "com.netflix.spinnaker.kork:kork-core:${korkVersion}"
-        testImplementation "com.netflix.spinnaker.kork:kork-web:${korkVersion}"
+        testImplementation(group: 'io.spinnaker.kork', name: 'kork-plugins-api', version: "${korkVersion}")
+        testImplementation "io.spinnaker.kork:kork-plugins-spring-api:$korkVersion"
+        testImplementation "io.spinnaker.kork:kork-core:${korkVersion}"
+        testImplementation "io.spinnaker.kork:kork-web:${korkVersion}"
         testImplementation "org.mock-server:mockserver-client-java:5.10.0"
         testImplementation "org.mock-server:mockserver-junit-rule:5.10.0"
         testImplementation "org.testcontainers:testcontainers:1.14.3"
