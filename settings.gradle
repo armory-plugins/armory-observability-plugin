@@ -1,21 +1,7 @@
 pluginManagement {
     repositories {
-        maven {
-            url 'https://armory.jfrog.io/armory/gradle-plugins/'
-            credentials {
-                username = "${artifactory_user}"
-                password = "${artifactory_password}"
-            }
-        }
         mavenLocal()
         gradlePluginPortal()
-    }
-    resolutionStrategy {
-        eachPlugin {
-            if (requested.id.namespace == 'spinnaker') {
-                useModule('com.netflix.spinnaker.gradle:spinnaker-gradle-project:7.0.1')
-            }
-        }
     }
 }
 
