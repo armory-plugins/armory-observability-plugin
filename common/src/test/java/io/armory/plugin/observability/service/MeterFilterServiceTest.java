@@ -22,6 +22,9 @@ import static org.junit.Assert.assertTrue;
 
 import io.armory.plugin.observability.filters.Filters;
 import io.armory.plugin.observability.model.MeterRegistryConfig;
+import io.micrometer.core.instrument.Meter;
+import io.micrometer.core.instrument.Tags;
+import io.micrometer.core.instrument.config.MeterFilterReply;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -69,5 +72,13 @@ public class MeterFilterServiceTest {
     assertNotNull(filters);
     assertEquals(1, filters.size());
     assertEquals(filters.get(0), Filters.DENY_CONTROLLER_INVOCATIONS_METRICS);
+  }
+
+
+  @Test
+  public void testThatWhiteListExcludesKubernetesMetrics() { //K8s metrics are INSANELY large... we want to exclude them...
+    assertEquals(MeterFilterReply.DENY, Filters.WHITELIST_ONLY_FILTER.accept(new Meter.Id("kubernetes", Tags.empty(), null, null, Meter.Type.GAUGE)));
+    assertEquals(MeterFilterReply.NEUTRAL, Filters.WHITELIST_ONLY_FILTER.accept(new Meter.Id("aws.something.something", Tags.empty(), null, null, Meter.Type.GAUGE)));
+    assertEquals(MeterFilterReply.NEUTRAL, Filters.WHITELIST_ONLY_FILTER.accept(new Meter.Id("jdbc.connections.active", Tags.empty(), null, null, Meter.Type.GAUGE)));
   }
 }

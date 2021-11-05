@@ -2,6 +2,7 @@ package io.armory.plugin.observability.filters;
 
 import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.config.MeterFilter;
+import org.jetbrains.annotations.NotNull;
 
 public class Filters {
 
@@ -25,7 +26,7 @@ public class Filters {
   public static final MeterFilter DENY_CONTROLLER_INVOCATIONS_METRICS = MeterFilter.denyNameStartsWith("controller.invocations");
   public static final MeterFilter WHITELIST_ONLY_FILTER = MeterFilter.denyUnless(Filters::isInWhiteListOnly);
 
-  private static boolean isInWhiteListOnly(Meter.Id id) {
+  private static boolean isInWhiteListOnly(@NotNull Meter.Id id) {
 
     //This is for metrics that the observability plugin has access to - some of these may not be relevant, aka NR metrics, for many cases... but just in case :)
     return id.getName().startsWith("jdbc.connections") //jdbc metrics
