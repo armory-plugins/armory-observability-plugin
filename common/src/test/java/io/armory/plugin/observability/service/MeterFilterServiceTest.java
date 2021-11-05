@@ -20,6 +20,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import io.armory.plugin.observability.filters.Filters;
 import io.armory.plugin.observability.model.MeterRegistryConfig;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,5 +49,25 @@ public class MeterFilterServiceTest {
             MeterRegistryConfig.builder().armoryRecommendedFiltersEnabled(true).build());
     assertNotNull(filters);
     assertTrue(filters.size() > 0);
+  }
+  @Test
+  public void
+      test_that_getMeterFilters_returns_a_non_empty_list_of_filters_when_whitelisting_is_enabled() {
+    var filters =
+        sut.getMeterFilters(
+            MeterRegistryConfig.builder().whiteListedMetrics(true).build());
+    assertNotNull(filters);
+    assertEquals(1, filters.size());
+    assertEquals(filters.get(0), io.armory.plugin.observability.filters.Filters.WHITELIST_ONLY_FILTER);
+  }
+  @Test
+  public void
+      whenArmoryFilterAndWhiteListBothSetIgnoreWhitelist() {
+    var filters =
+        sut.getMeterFilters(
+            MeterRegistryConfig.builder().whiteListedMetrics(true).armoryRecommendedFiltersEnabled(true).build());
+    assertNotNull(filters);
+    assertEquals(1, filters.size());
+    assertEquals(filters.get(0), Filters.DENY_CONTROLLER_INVOCATIONS_METRICS);
   }
 }

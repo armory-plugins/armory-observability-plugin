@@ -16,12 +16,14 @@
 
 package io.armory.plugin.observability.service;
 
-import static io.armory.plugin.observability.filters.ArmoryRecommendedFilters.ARMORY_RECOMMENDED_FILTERS;
-
+import io.armory.plugin.observability.filters.Filters;
 import io.armory.plugin.observability.model.MeterRegistryConfig;
 import io.micrometer.core.instrument.config.MeterFilter;
-import java.util.List;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.List;
+
+import static io.armory.plugin.observability.filters.Filters.DENY_CONTROLLER_INVOCATIONS_METRICS;
 
 /**
  * https://micrometer.io/docs/concepts#_denyaccept_meters
@@ -41,7 +43,11 @@ public class MeterFilterService {
   public List<MeterFilter> getMeterFilters(MeterRegistryConfig meterRegistryConfig) {
     if (meterRegistryConfig.isArmoryRecommendedFiltersEnabled()) {
       log.info("Armory Recommended filters are enabled returning those");
-      return ARMORY_RECOMMENDED_FILTERS;
+      return List.of(DENY_CONTROLLER_INVOCATIONS_METRICS);
+    }
+    if (meterRegistryConfig.isWhiteListedMetrics()) {
+      log.info("Curated set of whitelist filters is enabled... rejecting all others");
+      return List.of(Filters.WHITELIST_ONLY_FILTER);
     }
     return List.of();
   }
