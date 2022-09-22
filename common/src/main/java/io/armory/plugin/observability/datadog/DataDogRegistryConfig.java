@@ -7,7 +7,7 @@ import java.util.Optional;
 import org.pf4j.PluginRuntimeException;
 
 public class DataDogRegistryConfig implements io.micrometer.datadog.DatadogConfig{
-    private final DataDogRegistryConfig datadogConfig;
+    private final PluginMetricsDatadogConfig datadogConfig;
     public DataDogRegistryConfig (PluginMetricsDatadogConfig datadogConfig){
         this.datadogConfig = datadogConfig;
     }
@@ -19,21 +19,16 @@ public class DataDogRegistryConfig implements io.micrometer.datadog.DatadogConfi
 
     @Override
     public String apiKey() {
-        return Optional.ofNullable(datadogConfig.apiKey())
+        return Optional.ofNullable(datadogConfig.getApiKey())
                 .orElseThrow(() ->
                         new PluginRuntimeException(
                                 "The datadog API key is a required plugin config property"));
     }
 
     @Override
-    public String applicationKey() { return datadogConfig.applicationKey(); }
+    public String applicationKey() { return datadogConfig.getApplicationKey(); }
 
     @Override
-    public String uri() { return datadogConfig.uri(); }
+    public String uri() { return datadogConfig.getUri(); }
 
-    @Override
-    public String hosTag() { return datadogConfig.hosTag(); }
-
-    @Override
-    public boolean descriptions() { return datadogConfig.descriptions(); }
 }
