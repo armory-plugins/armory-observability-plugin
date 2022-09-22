@@ -2,9 +2,7 @@ package io.armory.plugin.observability.datadog;
 
 import io.armory.plugin.observability.model.PluginConfig;
 import io.armory.plugin.observability.model.PluginMetricsDatadogConfig;
-import io.armory.plugin.observability.model.PluginMetricsNewRelicConfig;
 import io.armory.plugin.observability.registry.RegistryConfigWrapper;
-import io.armory.plugin.observability.service.TagsService;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.datadog.DatadogMeterRegistry;
 
