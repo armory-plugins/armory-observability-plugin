@@ -18,7 +18,7 @@ package io.armory.plugin.observability;
 
 import com.netflix.spinnaker.kork.plugins.api.spring.PrivilegedSpringPlugin;
 
-import io.armory.plugin.observability.datadog.DataDogRegistrySuppplier;
+import io.armory.plugin.observability.datadog.DataDogRegistrySupplier;
 import io.armory.plugin.observability.model.PluginConfig;
 import io.armory.plugin.observability.model.SecurityConfig;
 import io.armory.plugin.observability.newrelic.NewRelicRegistrySupplier;
@@ -63,7 +63,7 @@ public class ArmoryObservabilityPlugin extends PrivilegedSpringPlugin {
       registerBean(beanDefinitionFor(NewRelicRegistrySupplier.class), registry);
       
       // DataDog Bean
-      registerBean(beanDefinitionFor(DataDogRegistrySuppplier.class), registry);
+      registerBean(beanDefinitionFor(DataDogRegistrySupplier.class), registry);
       // Composite Registry
       registerBean(primaryBeanDefinitionFor(ArmoryObservabilityCompositeRegistry.class), registry);
     } catch (Exception e) {
