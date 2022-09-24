@@ -5,6 +5,7 @@ import io.armory.plugin.observability.model.PluginMetricsDatadogConfig;
 import io.armory.plugin.observability.registry.RegistryConfigWrapper;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.datadog.DatadogMeterRegistry;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Supplier;
 
@@ -15,7 +16,7 @@ public class DataDogRegistrySupplier implements Supplier<RegistryConfigWrapper> 
     private final DatadogMeterRegistry collectorRegistry;
     private final Clock clock;
 
-    public DataDogRegistrySupplier (PluginConfig pluginConfig, DatadogMeterRegistry collectorRegistry, Clock clock) {
+    public DataDogRegistrySupplier (@NotNull PluginConfig pluginConfig, DatadogMeterRegistry collectorRegistry, Clock clock) {
         datadogConfig = pluginConfig.getMetrics().getDatadog();
         this.collectorRegistry = collectorRegistry;
         this.clock = clock;
@@ -27,9 +28,10 @@ public class DataDogRegistrySupplier implements Supplier<RegistryConfigWrapper> 
         return null;
       }
       var config = new DataDogRegistryConfig(datadogConfig);
-      var registry = DatadogMeterRegistry.builder(config);
-      return RegistryConfigWrapper.builder()
-              .meterRegistry(collectorRegistry)
-              .build();
+      var registry = DatadogMeterRegistry.builder(config).build();
+      registry.start();
+        return RegistryConfigWrapper.builder()
+                .meterRegistry(registry)
+                .build();
     }
 }
