@@ -86,6 +86,7 @@ subprojects { subProject ->
             exclude group: 'io.micrometer', module: 'micrometer-core'
             exclude group: 'org.slf4j', module: 'slf4j-api'
         }
+        implementation('io.micrometer:micrometer-core:1.9.1')
         // End Datadog Deps
         annotationProcessor(group: 'org.pf4j', name: 'pf4j', version: "${pf4jVersion}")
 
