@@ -63,7 +63,7 @@ public class ArmoryObservabilityPlugin extends PrivilegedSpringPlugin {
       registerBean(beanDefinitionFor(NewRelicRegistrySupplier.class), registry);
       
       // DataDog Bean
-      registerBean(beanDefinitionFor(DataDogRegistrySupplier.class), registry);
+      //registerBean(beanDefinitionFor(DataDogRegistrySupplier.class), registry);
       // Composite Registry
       registerBean(primaryBeanDefinitionFor(ArmoryObservabilityCompositeRegistry.class), registry);
     } catch (Exception e) {
