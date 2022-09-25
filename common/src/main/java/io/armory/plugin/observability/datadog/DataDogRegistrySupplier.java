@@ -29,9 +29,9 @@ public class DataDogRegistrySupplier implements Supplier<RegistryConfigWrapper> 
       }
       var config = new DataDogRegistryConfig(datadogConfig);
       var registry = DatadogMeterRegistry.builder(config).build();
-      registry.start();
         return RegistryConfigWrapper.builder()
                 .meterRegistry(registry)
+                .meterRegistryConfig(datadogConfig.getMeterRegistryConfig())
                 .build();
     }
 }
