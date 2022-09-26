@@ -16,22 +16,27 @@
 
 package io.armory.plugin.observability.model;
 
+import com.netflix.spinnaker.kork.plugins.api.spring.ExposeToApp;
+import io.micrometer.core.instrument.Clock;
 import lombok.Data;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import io.micrometer.core.instrument.Clock;
 
 @Data
 @Configuration
 @ConfigurationProperties("spinnaker.extensibility.plugins.armory.observability-plugin.config")
+@Slf4j
 public class PluginConfig  {
     PluginMetricsConfig metrics = new PluginMetricsConfig();
 
     @Bean
-    @ConditionalOnMissingBean
+    @ExposeToApp
     public Clock micrometerClock() {
+
+        log.info("Bean clock created");
         return Clock.SYSTEM;
+
     }
 }
