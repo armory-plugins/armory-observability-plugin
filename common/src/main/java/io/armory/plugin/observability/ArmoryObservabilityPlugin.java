@@ -54,9 +54,9 @@ public class ArmoryObservabilityPlugin extends PrivilegedSpringPlugin {
       registerBean(beanDefinitionFor(SecurityConfig.class), registry);
 
        //Prometheus Beans
-      registerBean(beanDefinitionFor(CollectorRegistry.class), registry);
-      registerBean(beanDefinitionFor(PrometheusRegistrySupplier.class), registry);
-      registerBean(beanDefinitionFor(PrometheusScrapeEndpoint.class), registry);
+      //registerBean(beanDefinitionFor(CollectorRegistry.class), registry);
+      //registerBean(beanDefinitionFor(PrometheusRegistrySupplier.class), registry);
+      //registerBean(beanDefinitionFor(PrometheusScrapeEndpoint.class), registry);
 
       // New Relic Bean
       registerBean(beanDefinitionFor(NewRelicRegistrySupplier.class), registry);
@@ -66,8 +66,6 @@ public class ArmoryObservabilityPlugin extends PrivilegedSpringPlugin {
       // Composite Registry
       registerBean(primaryBeanDefinitionFor(ArmoryObservabilityCompositeRegistry.class), registry);
 
-      //
-      //registerBean(beanDefinitionFor(Clock), registry);
     } catch (Exception e) {
       throw new PluginRuntimeException("Failed to register Armory Observability Plugin beans", e);
     }
