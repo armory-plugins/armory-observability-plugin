@@ -34,8 +34,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.pf4j.PluginRuntimeException;
 import org.pf4j.PluginWrapper;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.context.annotation.Bean;
 
 /** Main entry point into the Armory Observability Plugin. */
 @Slf4j
@@ -43,11 +41,6 @@ public class ArmoryObservabilityPlugin extends PrivilegedSpringPlugin {
 
   public ArmoryObservabilityPlugin(PluginWrapper wrapper) {
     super(wrapper);
-  }
-  @Bean
-  @ConditionalOnMissingBean
-  public Clock clock() {
-    return Clock.SYSTEM;
   }
   @Override
   public void registerBeanDefinitions(BeanDefinitionRegistry registry) {
@@ -61,9 +54,9 @@ public class ArmoryObservabilityPlugin extends PrivilegedSpringPlugin {
       registerBean(beanDefinitionFor(SecurityConfig.class), registry);
 
        //Prometheus Beans
-      registerBean(beanDefinitionFor(CollectorRegistry.class), registry);
-      registerBean(beanDefinitionFor(PrometheusRegistrySupplier.class), registry);
-      registerBean(beanDefinitionFor(PrometheusScrapeEndpoint.class), registry);
+      //registerBean(beanDefinitionFor(CollectorRegistry.class), registry);
+      //registerBean(beanDefinitionFor(PrometheusRegistrySupplier.class), registry);
+      //registerBean(beanDefinitionFor(PrometheusScrapeEndpoint.class), registry);
 
       // New Relic Bean
       registerBean(beanDefinitionFor(NewRelicRegistrySupplier.class), registry);
