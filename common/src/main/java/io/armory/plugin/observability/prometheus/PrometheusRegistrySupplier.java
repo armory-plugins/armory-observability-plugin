@@ -53,9 +53,4 @@ public class PrometheusRegistrySupplier implements Supplier<RegistryConfigWrappe
         .meterRegistryConfig(prometheusConfig.getMeterRegistryConfig())
         .build();
   }
-  @Bean
-  @ConditionalOnMissingBean
-  public Clock micrometerClock() {
-    return Clock.SYSTEM;
-  }
 }

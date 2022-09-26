@@ -18,11 +18,10 @@ public class DataDogRegistrySupplier implements Supplier<RegistryConfigWrapper> 
     private final PluginMetricsDatadogConfig datadogConfig;
     //private final DatadogMeterRegistry collectorRegistry;
     protected HttpUrlConnectionSender sender;
-    private final Clock clock;
+   // private final Clock clock;
 
-    public DataDogRegistrySupplier (@NotNull PluginConfig pluginConfig, Clock clock) {
+    public DataDogRegistrySupplier (@NotNull PluginConfig pluginConfig) {
         datadogConfig = pluginConfig.getMetrics().getDatadog();
-        this.clock = clock;
         this.sender =  new HttpUrlConnectionSender(Duration.ofSeconds(datadogConfig.getConnectDurationSeconds()),Duration.ofSeconds(datadogConfig.getReadDurationSeconds()));
     }
 
