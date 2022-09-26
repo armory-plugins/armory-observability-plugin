@@ -60,7 +60,7 @@ public class ArmoryObservabilityPlugin extends PrivilegedSpringPlugin {
       registerBean(beanDefinitionFor(AddFiltersRegistryCustomizer.class), registry);
       registerBean(beanDefinitionFor(SecurityConfig.class), registry);
 
-       Prometheus Beans
+       //Prometheus Beans
       registerBean(beanDefinitionFor(CollectorRegistry.class), registry);
       registerBean(beanDefinitionFor(PrometheusRegistrySupplier.class), registry);
       registerBean(beanDefinitionFor(PrometheusScrapeEndpoint.class), registry);
