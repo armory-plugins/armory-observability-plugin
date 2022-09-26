@@ -17,7 +17,6 @@
 package io.armory.plugin.observability;
 
 import com.netflix.spinnaker.kork.plugins.api.spring.PrivilegedSpringPlugin;
-
 import io.armory.plugin.observability.datadog.DataDogRegistrySupplier;
 import io.armory.plugin.observability.model.PluginConfig;
 import io.armory.plugin.observability.model.SecurityConfig;
@@ -29,11 +28,14 @@ import io.armory.plugin.observability.registry.AddFiltersRegistryCustomizer;
 import io.armory.plugin.observability.registry.ArmoryObservabilityCompositeRegistry;
 import io.armory.plugin.observability.service.MeterFilterService;
 import io.armory.plugin.observability.service.TagsService;
+import io.micrometer.core.instrument.Clock;
 import io.prometheus.client.CollectorRegistry;
 import lombok.extern.slf4j.Slf4j;
 import org.pf4j.PluginRuntimeException;
 import org.pf4j.PluginWrapper;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.context.annotation.Bean;
 
 /** Main entry point into the Armory Observability Plugin. */
 @Slf4j
@@ -42,7 +44,11 @@ public class ArmoryObservabilityPlugin extends PrivilegedSpringPlugin {
   public ArmoryObservabilityPlugin(PluginWrapper wrapper) {
     super(wrapper);
   }
-
+  @Bean
+  @ConditionalOnMissingBean
+  public Clock clock() {
+    return Clock.SYSTEM;
+  }
   @Override
   public void registerBeanDefinitions(BeanDefinitionRegistry registry) {
     try {
@@ -54,10 +60,10 @@ public class ArmoryObservabilityPlugin extends PrivilegedSpringPlugin {
       registerBean(beanDefinitionFor(AddFiltersRegistryCustomizer.class), registry);
       registerBean(beanDefinitionFor(SecurityConfig.class), registry);
 
-      // Prometheus Beans
-      //registerBean(beanDefinitionFor(CollectorRegistry.class), registry);
-      //registerBean(beanDefinitionFor(PrometheusRegistrySupplier.class), registry);
-      //registerBean(beanDefinitionFor(PrometheusScrapeEndpoint.class), registry);
+       Prometheus Beans
+      registerBean(beanDefinitionFor(CollectorRegistry.class), registry);
+      registerBean(beanDefinitionFor(PrometheusRegistrySupplier.class), registry);
+      registerBean(beanDefinitionFor(PrometheusScrapeEndpoint.class), registry);
 
       // New Relic Bean
       registerBean(beanDefinitionFor(NewRelicRegistrySupplier.class), registry);
