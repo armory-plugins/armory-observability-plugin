@@ -17,12 +17,21 @@
 package io.armory.plugin.observability.model;
 
 import lombok.Data;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import io.micrometer.core.instrument.Clock;
 
 @Data
 @Configuration
 @ConfigurationProperties("spinnaker.extensibility.plugins.armory.observability-plugin.config")
 public class PluginConfig  {
     PluginMetricsConfig metrics = new PluginMetricsConfig();
+
+    @Bean
+    @ConditionalOnMissingBean
+    public Clock micrometerClock() {
+        return Clock.SYSTEM;
+    }
 }
