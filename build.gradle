@@ -62,6 +62,7 @@ subprojects { subProject ->
         compileOnly "io.spinnaker.kork:kork-plugins-spring-api:$korkVersion"
         compileOnly "io.spinnaker.kork:kork-core:${korkVersion}"
         compileOnly "io.spinnaker.kork:kork-web:${korkVersion}"
+        implementation ('org.springframework.boot:spring-boot-starter-actuator')
         // Start Datadog Deps
         implementation('io.micrometer:micrometer-registry-datadog:1.9.1') {
             exclude group: 'io.micrometer', module: 'micrometer-core'
@@ -83,7 +84,7 @@ subprojects { subProject ->
         // End New Relic Deps
         // Start Datadog Deps
         implementation('io.micrometer:micrometer-registry-datadog:1.9.1') {
-            exclude group: 'io.micrometer', module: 'micrometer-core'
+            //exclude group: 'io.micrometer', module: 'micrometer-core'
             exclude group: 'org.slf4j', module: 'slf4j-api'
         }
         // End Datadog Deps
