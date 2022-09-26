@@ -16,12 +16,9 @@
 
 package io.armory.plugin.observability.model;
 
-import com.netflix.spinnaker.kork.plugins.api.spring.ExposeToApp;
-import io.micrometer.core.instrument.Clock;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Data
@@ -30,13 +27,4 @@ import org.springframework.context.annotation.Configuration;
 @Slf4j
 public class PluginConfig  {
     PluginMetricsConfig metrics = new PluginMetricsConfig();
-
-    @Bean
-    @ExposeToApp
-    public Clock micrometerClock() {
-
-        log.info("Bean clock created");
-        return Clock.SYSTEM;
-
-    }
 }

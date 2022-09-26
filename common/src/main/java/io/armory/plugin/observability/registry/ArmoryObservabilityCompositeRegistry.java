@@ -16,6 +16,7 @@
 
 package io.armory.plugin.observability.registry;
 
+import com.netflix.spinnaker.kork.plugins.api.spring.ExposeToApp;
 import io.armory.plugin.observability.model.MeterRegistryConfig;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -23,6 +24,7 @@ import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleConfig;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Bean;
 
 import java.util.Collection;
 import java.util.List;
@@ -38,7 +40,14 @@ import static java.util.Optional.ofNullable;
  */
 @Slf4j
 public class ArmoryObservabilityCompositeRegistry extends CompositeMeterRegistry {
+    @Bean
+    @ExposeToApp
+    public Clock micrometerClock() {
 
+        log.info("Bean clock created");
+        return Clock.SYSTEM;
+
+    }
   public ArmoryObservabilityCompositeRegistry(
       Clock clock,
       Collection<Supplier<RegistryConfigWrapper>> registrySuppliers,
