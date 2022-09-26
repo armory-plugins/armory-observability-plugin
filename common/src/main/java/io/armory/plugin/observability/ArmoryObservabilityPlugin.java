@@ -40,11 +40,6 @@ import org.springframework.context.annotation.Bean;
 /** Main entry point into the Armory Observability Plugin. */
 @Slf4j
 public class ArmoryObservabilityPlugin extends PrivilegedSpringPlugin {
-  @Bean
-  @ExposeToApp
-  public Clock clock() {
-    return Clock.SYSTEM;
-  }
   public ArmoryObservabilityPlugin(PluginWrapper wrapper) {
     super(wrapper);
   }
