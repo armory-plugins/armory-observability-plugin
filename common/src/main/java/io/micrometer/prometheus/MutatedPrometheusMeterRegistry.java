@@ -53,6 +53,7 @@ public class MutatedPrometheusMeterRegistry extends MeterRegistry {
   private final CollectorRegistry registry;
   private final ConcurrentMap<String, MutatedMicrometerCollector> collectorMap = new ConcurrentHashMap<>();
   private final PrometheusConfig prometheusConfig;
+  private HistogramFlavor flavor;
 
   public MutatedPrometheusMeterRegistry(PrometheusConfig config) {
     this(config, new CollectorRegistry(), Clock.SYSTEM);
@@ -107,7 +108,8 @@ public class MutatedPrometheusMeterRegistry extends MeterRegistry {
   }
 
   @Override
-  public DistributionSummary newDistributionSummary(Meter.Id id, DistributionStatisticConfig distributionStatisticConfig, double scale) {
+  public DistributionSummary newDistributionSummary(Meter.Id id, DistributionStatisticConfig distributionStatisticConfig, double scale, HistogramFlavor flavor) {
+    this.flavor = flavor;
     //MutatedMicrometerCollector collector = collectorByName(id);
     PrometheusDistributionSummary summary = new PrometheusDistributionSummary(id, clock, distributionStatisticConfig, scale);
     List<String> tagValues = tagValues(id);
@@ -171,7 +173,8 @@ public class MutatedPrometheusMeterRegistry extends MeterRegistry {
   }
 
   @Override
-  protected io.micrometer.core.instrument.Timer newTimer(Meter.Id id, DistributionStatisticConfig distributionStatisticConfig, PauseDetector pauseDetector) {
+  protected io.micrometer.core.instrument.Timer newTimer(Meter.Id id, DistributionStatisticConfig distributionStatisticConfig, PauseDetector pauseDetector, HistogramFlavor flavor) {
+    this.flavor = flavor;
     //MutatedMicrometerCollector collector = collectorByName(id);
     PrometheusTimer timer = new PrometheusTimer(id, clock, distributionStatisticConfig, pauseDetector);
     List<String> tagValues = tagValues(id);
