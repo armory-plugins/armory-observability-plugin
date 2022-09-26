@@ -16,6 +16,7 @@
 
 package io.armory.plugin.observability;
 
+import com.netflix.spinnaker.kork.plugins.api.spring.ExposeToApp;
 import com.netflix.spinnaker.kork.plugins.api.spring.PrivilegedSpringPlugin;
 import io.armory.plugin.observability.datadog.DataDogRegistrySupplier;
 import io.armory.plugin.observability.model.PluginConfig;
@@ -34,11 +35,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.pf4j.PluginRuntimeException;
 import org.pf4j.PluginWrapper;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.context.annotation.Bean;
 
 /** Main entry point into the Armory Observability Plugin. */
 @Slf4j
 public class ArmoryObservabilityPlugin extends PrivilegedSpringPlugin {
-
+  @Bean
+  @ExposeToApp
+  public Clock clock() {
+    return Clock.SYSTEM;
+  }
   public ArmoryObservabilityPlugin(PluginWrapper wrapper) {
     super(wrapper);
   }

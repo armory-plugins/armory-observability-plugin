@@ -71,16 +71,16 @@ subprojects { subProject ->
 
         // Start New Relic Deps
         implementation('com.newrelic.telemetry:micrometer-registry-new-relic:0.5.0') {
-            //exclude group: 'io.micrometer', module: 'micrometer-core'
+            exclude group: 'io.micrometer', module: 'micrometer-core'
             exclude group: 'org.slf4j', module: 'slf4j-api'
         }
         // End New Relic Deps
         // Start Datadog Deps
         implementation('io.micrometer:micrometer-registry-datadog:1.9.4') {
-            exclude group: 'io.micrometer', module: 'micrometer-core'
+            //exclude group: 'io.micrometer', module: 'micrometer-core'
             exclude group: 'org.slf4j', module: 'slf4j-api'
         }
-        implementation('io.micrometer:micrometer-core:.5.0')
+        //implementation('io.micrometer:micrometer-core:.5.0')
         // End Datadog Deps
         annotationProcessor(group: 'org.pf4j', name: 'pf4j', version: "${pf4jVersion}")
 
