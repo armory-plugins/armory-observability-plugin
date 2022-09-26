@@ -40,14 +40,6 @@ import static java.util.Optional.ofNullable;
  */
 @Slf4j
 public class ArmoryObservabilityCompositeRegistry extends CompositeMeterRegistry {
-    @Bean
-    @ExposeToApp
-    public Clock micrometerClock() {
-
-        log.info("Bean clock created");
-        return Clock.SYSTEM;
-
-    }
   public ArmoryObservabilityCompositeRegistry(
       Clock clock,
       Collection<Supplier<RegistryConfigWrapper>> registrySuppliers,
