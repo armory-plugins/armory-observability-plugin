@@ -42,7 +42,7 @@ import java.util.function.ToDoubleFunction;
 import java.util.function.ToLongFunction;
 import java.util.stream.Stream;
 
-import static io.micrometer.prometheus.HistogramFlavor.Prometheus;
+import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.StreamSupport.stream;
 
@@ -109,8 +109,7 @@ public class MutatedPrometheusMeterRegistry extends MeterRegistry {
   @Override
   public DistributionSummary newDistributionSummary(Meter.Id id, DistributionStatisticConfig distributionStatisticConfig, double scale) {
     //MutatedMicrometerCollector collector = collectorByName(id);
-    HistogramFlavor flavor = Prometheus;
-    PrometheusDistributionSummary summary = new PrometheusDistributionSummary(id, clock, distributionStatisticConfig, scale, flavor);
+    PrometheusDistributionSummary summary = new PrometheusDistributionSummary(id, clock, distributionStatisticConfig, scale);
     List<String> tagValues = tagValues(id);
     applyToCollector(id, (collector) -> {
       collector.add(id.getTags(), (conventionName, tags) -> {
@@ -174,8 +173,7 @@ public class MutatedPrometheusMeterRegistry extends MeterRegistry {
   @Override
   protected io.micrometer.core.instrument.Timer newTimer(Meter.Id id, DistributionStatisticConfig distributionStatisticConfig, PauseDetector pauseDetector) {
     //MutatedMicrometerCollector collector = collectorByName(id);
-    HistogramFlavor flavor = Prometheus;
-    PrometheusTimer timer = new PrometheusTimer(id, clock, distributionStatisticConfig, pauseDetector, flavor);
+    PrometheusTimer timer = new PrometheusTimer(id, clock, distributionStatisticConfig, pauseDetector);
     List<String> tagValues = tagValues(id);
     applyToCollector(id, (collector) -> {
       collector.add(id.getTags(), (conventionName, tags) -> {
