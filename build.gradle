@@ -62,9 +62,10 @@ subprojects { subProject ->
         compileOnly "io.spinnaker.kork:kork-plugins-spring-api:$korkVersion"
         compileOnly "io.spinnaker.kork:kork-core:${korkVersion}"
         compileOnly "io.spinnaker.kork:kork-web:${korkVersion}"
+        compileOnly "io.micrometer:micrometer-core:1.5.0"
         // Start Prometheus deps
         implementation("io.micrometer:micrometer-registry-prometheus:1.5.0") {
-           // exclude group: 'io.micrometer', module: 'micrometer-core'
+            exclude group: 'io.micrometer', module: 'micrometer-core'
         }
         implementation group: 'io.prometheus', name: 'simpleclient_common', version: '0.9.0'// needs to match micrometer-registry-prometheus
         // End Prometheus deps
@@ -80,7 +81,6 @@ subprojects { subProject ->
             exclude group: 'io.micrometer', module: 'micrometer-core'
             exclude group: 'org.slf4j', module: 'slf4j-api'
         }
-        //implementation('io.micrometer:micrometer-core:.5.0')
         // End Datadog Deps
         annotationProcessor(group: 'org.pf4j', name: 'pf4j', version: "${pf4jVersion}")
 
