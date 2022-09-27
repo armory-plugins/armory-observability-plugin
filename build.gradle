@@ -63,10 +63,10 @@ subprojects { subProject ->
         compileOnly "io.spinnaker.kork:kork-core:${korkVersion}"
         compileOnly "io.spinnaker.kork:kork-web:${korkVersion}"
         // Start Prometheus deps
-        //implementation("io.micrometer:micrometer-registry-prometheus:1.5.0") {
-        //    exclude group: 'io.micrometer', module: 'micrometer-core'
-        //}
-        //implementation group: 'io.prometheus', name: 'simpleclient_common', version: '0.9.0'// needs to match micrometer-registry-prometheus
+        implementation("io.micrometer:micrometer-registry-prometheus:1.5.0") {
+            exclude group: 'io.micrometer', module: 'micrometer-core'
+        }
+        implementation group: 'io.prometheus', name: 'simpleclient_common', version: '0.9.0'// needs to match micrometer-registry-prometheus
         // End Prometheus deps
 
         // Start New Relic Deps
@@ -76,7 +76,7 @@ subprojects { subProject ->
         }
         // End New Relic Deps
         // Start Datadog Deps
-        implementation('io.micrometer:micrometer-registry-datadog:1.5.0') {
+        implementation('io.micrometer:micrometer-registry-datadog:1.9.1') {
             //exclude group: 'io.micrometer', module: 'micrometer-core'
             exclude group: 'org.slf4j', module: 'slf4j-api'
         }
