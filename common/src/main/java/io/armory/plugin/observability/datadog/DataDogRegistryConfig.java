@@ -31,4 +31,6 @@ public class DataDogRegistryConfig implements io.micrometer.datadog.DatadogConfi
     public String uri() { return datadogConfig.getUri(); }
 
     @Override public boolean descriptions() { return false; }
+
+    @Override public String hostTag() {return "hostTag"; }
 }
