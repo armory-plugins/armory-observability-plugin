@@ -1,10 +1,9 @@
 package io.armory.plugin.observability.datadog;
 
 import io.armory.plugin.observability.model.PluginMetricsDatadogConfig;
-import java.time.Duration;
-import java.time.temporal.ChronoUnit;
-import java.util.Optional;
 import org.pf4j.PluginRuntimeException;
+
+import java.util.Optional;
 
 public class DataDogRegistryConfig implements io.micrometer.datadog.DatadogConfig{
     private final PluginMetricsDatadogConfig datadogConfig;
@@ -31,4 +30,5 @@ public class DataDogRegistryConfig implements io.micrometer.datadog.DatadogConfi
     @Override
     public String uri() { return datadogConfig.getUri(); }
 
+    @Override public boolean descriptions() { return false; }
 }
