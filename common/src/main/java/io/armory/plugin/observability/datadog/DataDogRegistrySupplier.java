@@ -3,12 +3,9 @@ package io.armory.plugin.observability.datadog;
 import io.armory.plugin.observability.model.PluginConfig;
 import io.armory.plugin.observability.model.PluginMetricsDatadogConfig;
 import io.armory.plugin.observability.registry.RegistryConfigWrapper;
-import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.ipc.http.HttpUrlConnectionSender;
 import io.micrometer.datadog.DatadogMeterRegistry;
 import org.jetbrains.annotations.NotNull;
-import io.micrometer.core.ipc.http.HttpSender;
-
 import java.time.Duration;
 import java.util.function.Supplier;
 
@@ -16,9 +13,7 @@ import java.util.function.Supplier;
 public class DataDogRegistrySupplier implements Supplier<RegistryConfigWrapper> {
 
     private final PluginMetricsDatadogConfig datadogConfig;
-    //private final DatadogMeterRegistry collectorRegistry;
     protected HttpUrlConnectionSender sender;
-   // private final Clock clock;
 
     public DataDogRegistrySupplier (@NotNull PluginConfig pluginConfig) {
         datadogConfig = pluginConfig.getMetrics().getDatadog();
