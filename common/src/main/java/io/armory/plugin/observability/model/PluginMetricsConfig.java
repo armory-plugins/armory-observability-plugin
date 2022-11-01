@@ -25,6 +25,6 @@ public class PluginMetricsConfig {
 
   private PluginMetricsPrometheusConfig prometheus = new PluginMetricsPrometheusConfig();
   private PluginMetricsNewRelicConfig newrelic = new PluginMetricsNewRelicConfig();
-
+  private PluginMetricsDatadogConfig datadog = new PluginMetricsDatadogConfig();
   private boolean armoryRecommendedFiltersEnabled = false;
 }

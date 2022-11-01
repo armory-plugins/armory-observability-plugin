@@ -75,7 +75,23 @@ spinnaker:
             apiKey: encrypted:secrets-manager!r:us-west-2!s:spinnaker-development-secrets!k:new-relic-insert-key
             meterRegistryConfig.armoryRecommendedFiltersEnabled: true
 ```
-
+### Condensed Datadog Example
+```yaml
+spinnaker:
+  extensibility:
+    plugins:
+      Armory.ObservabilityPlugin:
+        enabled: true
+        config.metrics:
+          additionalTags:
+            customerName: armory
+            customerEnvName: manuel-local
+          datadog:
+            enabled: true
+            apiKey: encrypted:k8s!n:datadog!k:apiKey
+            applicationKey: encrypted:k8s!n:datadog!k:applicationKey
+            meterRegistryConfig.armoryRecommendedFiltersEnabled: true
+```
 ### All Options (we recommend this goes in spinnaker-local.yaml)
 ```yaml
 spinnaker:
@@ -177,6 +193,35 @@ spinnaker:
                     # See bottom of config for controlling percentiles
                     # Optional, Default: false
                     armoryRecommendedFiltersEnabled: true
+                    
+              datadog:
+                # Optional, Default: false
+                enabled: false
+                # The datadog api key
+                # Required if datadog is enabled
+                apiKey: encrypted:k8s!n:datadog!k:apiKey
+                # The datadog application key
+                # Required if datadog is enabled
+                applicationKey: encrypted:k8s!n:datadog!k:applicationKey
+                # The URI for the Datadog metric API. Only necessary if you need to override the default URI.
+                # Optional, Default: https://api.datadoghq.com
+                uri: https://api.datadoghq.com
+                # How often in seconds you want to send metrics to Datadog
+                # Optional, Default: 30
+                stepInSeconds: 30
+                # Config related to configuring, filtering, and transforming Micrometer meters
+                meterRegistryConfig:
+                  # By default this plugin adds a set of sane default tags to help with observability best practices, you can disable those here
+                  # Optional, Default: false
+                  defaultTagsDisabled: false
+                  # Configures an opinionated but sane set of default meter filters: https://micrometer.io/docs/concepts#_meter_filters
+                  # For example we filter out controller.invocations to prefer the micrometer generated metric 'http.server.requests'
+                  # See the following for more details: 
+                  # https://github.com/armory-plugins/armory-observability-plugin/blob/master/common/src/main/java/io/armory/plugin/observability/filters/ArmoryRecommendedFilters.java
+                  # https://github.com/armory-plugins/armory-observability-plugin/blob/master/common/src/main/java/io/armory/plugin/observability/filters/Filters.java
+                  # See bottom of config for controlling percentiles
+                  # Optional, Default: false
+                  armoryRecommendedFiltersEnabled: true
     repositories:
       armory-observability-plugin-releases:
         url: https://raw.githubusercontent.com/armory-plugins/armory-observability-plugin-releases/master/repositories.json

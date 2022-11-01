@@ -17,6 +17,7 @@
 package io.armory.plugin.observability;
 
 import com.netflix.spinnaker.kork.plugins.api.spring.PrivilegedSpringPlugin;
+import io.armory.plugin.observability.datadog.DataDogRegistrySupplier;
 import io.armory.plugin.observability.model.PluginConfig;
 import io.armory.plugin.observability.model.SecurityConfig;
 import io.armory.plugin.observability.newrelic.NewRelicRegistrySupplier;
@@ -36,11 +37,9 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 /** Main entry point into the Armory Observability Plugin. */
 @Slf4j
 public class ArmoryObservabilityPlugin extends PrivilegedSpringPlugin {
-
   public ArmoryObservabilityPlugin(PluginWrapper wrapper) {
     super(wrapper);
   }
-
   @Override
   public void registerBeanDefinitions(BeanDefinitionRegistry registry) {
     try {
@@ -52,16 +51,19 @@ public class ArmoryObservabilityPlugin extends PrivilegedSpringPlugin {
       registerBean(beanDefinitionFor(AddFiltersRegistryCustomizer.class), registry);
       registerBean(beanDefinitionFor(SecurityConfig.class), registry);
 
-      // Prometheus Beans
+       //Prometheus Beans
       registerBean(beanDefinitionFor(CollectorRegistry.class), registry);
       registerBean(beanDefinitionFor(PrometheusRegistrySupplier.class), registry);
       registerBean(beanDefinitionFor(PrometheusScrapeEndpoint.class), registry);
 
       // New Relic Bean
       registerBean(beanDefinitionFor(NewRelicRegistrySupplier.class), registry);
-
+      
+      // DataDog Bean
+      registerBean(beanDefinitionFor(DataDogRegistrySupplier.class), registry);
       // Composite Registry
       registerBean(primaryBeanDefinitionFor(ArmoryObservabilityCompositeRegistry.class), registry);
+
     } catch (Exception e) {
       throw new PluginRuntimeException("Failed to register Armory Observability Plugin beans", e);
     }

@@ -16,20 +16,21 @@
 
 package io.armory.plugin.observability.registry;
 
-import static java.util.Optional.ofNullable;
-
 import io.armory.plugin.observability.model.MeterRegistryConfig;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleConfig;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import lombok.extern.slf4j.Slf4j;
+
+import static java.util.Optional.ofNullable;
 
 /**
  * This is the registry that Micrometer/Spectator will use. It will collect all of the enabled
@@ -37,12 +38,10 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class ArmoryObservabilityCompositeRegistry extends CompositeMeterRegistry {
-
   public ArmoryObservabilityCompositeRegistry(
       Clock clock,
       Collection<Supplier<RegistryConfigWrapper>> registrySuppliers,
       Collection<RegistryCustomizer> meterRegistryCustomizers) {
-
     this(
         clock,
         ((Supplier<List<MeterRegistry>>)
@@ -87,4 +86,5 @@ public class ArmoryObservabilityCompositeRegistry extends CompositeMeterRegistry
   public ArmoryObservabilityCompositeRegistry(Clock clock, Iterable<MeterRegistry> registries) {
     super(clock, registries);
   }
+
 }
