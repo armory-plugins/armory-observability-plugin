@@ -75,7 +75,7 @@ jobs:
           curl -v -XPOST -u "${{ secrets.USERNAME }}:${{ secrets.TOKEN }}" -H "Accept: application/vnd.github.everest-preview+json" -H "Content-Type: application/json" https://api.github.com/repos/armory-plugins/armory-observability-plugin-releases/dispatches --data "{\"event_type\": \"onPluginRelease\", \"client_payload\": {\"org\": \"armory-plugins\", \"repo\": \"${{ steps.get_project_info.outputs.PROJECT }}\", \"releaseRepo\": \"armory-observability-plugin-releases\", \"version\": \"${{ steps.get_project_info.outputs.VERSION }}\", \"artifactName\": \"${{ steps.get_project_info.outputs.PROJECT }}-${{ steps.get_project_info.outputs.VERSION }}.zip\", \"released\": $(cat build/distributions/plugin-info.json)}}"
 
       - name: setup gcloud
-        uses: google-github-actions/setup-gcloud@master
+        uses: google-github-actions/setup-gcloud@main
         with:
           project_id: cloud-armory
           service_account_key: ${{ secrets.GCP_KEY }}
