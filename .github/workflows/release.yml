@@ -53,35 +53,6 @@ jobs:
           asset_name: ${{ steps.get_project_info.outputs.PROJECT }}-${{ steps.get_project_info.outputs.VERSION }}.zip
           asset_content_type: application/zip
 
-      - name: build docker image
-        id: build-docker-image
-        run: |
-          docker build -t gcr.io/cloud-armory/${{ steps.get_project_info.outputs.PROJECT_KEBAB }}:${{ steps.get_project_info.outputs.VERSION }} -f ./Dockerfile .
-          docker save -o ./${{ steps.get_project_info.outputs.PROJECT_KEBAB }}-${{ steps.get_project_info.outputs.VERSION }}.tar gcr.io/cloud-armory/${{ steps.get_project_info.outputs.PROJECT_KEBAB }}:${{ steps.get_project_info.outputs.VERSION }}
-
-      - name: upload image to release
-        id: upload-image-to-release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./${{ steps.get_project_info.outputs.PROJECT_KEBAB }}-${{ steps.get_project_info.outputs.VERSION }}.tar
-          asset_name: ${{ steps.get_project_info.outputs.PROJECT_KEBAB }}-${{ steps.get_project_info.outputs.VERSION }}.tar
-          asset_content_type: application/zip
-
       - name: add release to plugin repo
         run: |
-          curl -v -XPOST -u "${{ secrets.USERNAME }}:${{ secrets.TOKEN }}" -H "Accept: application/vnd.github.everest-preview+json" -H "Content-Type: application/json" https://api.github.com/repos/armory-plugins/armory-observability-plugin-releases/dispatches --data "{\"event_type\": \"onPluginRelease\", \"client_payload\": {\"org\": \"armory-plugins\", \"repo\": \"${{ steps.get_project_info.outputs.PROJECT }}\", \"releaseRepo\": \"armory-observability-plugin-releases\", \"version\": \"${{ steps.get_project_info.outputs.VERSION }}\", \"artifactName\": \"${{ steps.get_project_info.outputs.PROJECT }}-${{ steps.get_project_info.outputs.VERSION }}.zip\", \"released\": $(cat build/distributions/plugin-info.json)}}"
-
-      - name: setup gcloud
-        uses: google-github-actions/setup-gcloud@main
-        with:
-          project_id: cloud-armory
-          service_account_key: ${{ secrets.GCP_KEY }}
-          export_default_credentials: true
-
-      - name: push image to registry
-        run: |
-          gcloud auth configure-docker -q
-          docker push gcr.io/cloud-armory/${{ steps.get_project_info.outputs.PROJECT_KEBAB }}:${{ steps.get_project_info.outputs.VERSION }}
+          curl -v -XPOST -u "okoye:${{ secrets.RELEASE_TOKEN }}" -H "Accept: application/vnd.github.everest-preview+json" -H "Content-Type: application/json" https://api.github.com/repos/okoye/spinnaker-plugins/dispatches --data "{\"event_type\": \"onPluginRelease\", \"client_payload\": {\"org\": \"okoye\", \"repo\": \"${{ steps.get_project_info.outputs.PROJECT }}\", \"releaseRepo\": \"spinnaker-plugins\", \"version\": \"${{ steps.get_project_info.outputs.VERSION }}\", \"artifactName\": \"${{ steps.get_project_info.outputs.PROJECT }}-${{ steps.get_project_info.outputs.VERSION }}.zip\", \"released\": $(cat build/distributions/plugin-info.json)}}"
