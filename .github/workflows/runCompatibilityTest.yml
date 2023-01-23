@@ -2,22 +2,28 @@ name: Run Compatibility Test
 
 on:
   repository_dispatch:
-    types: CompatibilityTest
+    types: RunCompatibilityTest
 
 jobs:
-  test:
-    name: Test Plugin
+  stackTest:
+    name: Compatibility test for service:${{ github.event.client_payload.service }} version:${{ github.event.client_payload.version }} pluginSha:${{ github.event.client_payload.sha }}
     runs-on: ubuntu-latest
     steps:
       - name: checkout code
         uses: actions/checkout@v2
         with:
           ref: ${{ github.event.client_payload.sha }}
+
       - name: set up java
         uses: actions/setup-java@v1
         with:
           java-version: 11
-      - uses: armory-io/plugin-test-runner@main
+
+      - name: run tests
+        uses: armory-io/plugin-test-runner@main
+        env:
+          ORG_GRADLE_PROJECT_artifactory_user: ${{ secrets.ARTIFACTORY_USER }}
+          ORG_GRADLE_PROJECT_artifactory_password: ${{ secrets.ARTIFACTORY_TOKEN }}
         with:
           service: ${{ github.event.client_payload.service }}
           version: ${{ github.event.client_payload.version }}
