@@ -20,6 +20,7 @@ public class PluginMetricsDatadogConfig extends BaseMetricsIntegrationConfig {
 
     // Push Registry Settings
     @Builder.Default private int stepInSeconds = 30;
+    @Builder.Default private int batchSize = 10000;
 
     @Builder.Default private int connectDurationSeconds = 5;
     @Builder.Default private int readDurationSeconds = 5;
