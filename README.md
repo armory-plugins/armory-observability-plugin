@@ -209,6 +209,12 @@ spinnaker:
                 # How often in seconds you want to send metrics to Datadog
                 # Optional, Default: 30
                 stepInSeconds: 30
+                # The number of measurements per request to use for the backend. If more
+                # measurements are found, then multiple requests will be made.
+                # There is no way of limit the payload size so a combination of stepInSeconds and 
+                # batchSize will avoid the payload too large error
+                # Optional, Default: 10000
+                batchSize: 10000
                 # Config related to configuring, filtering, and transforming Micrometer meters
                 meterRegistryConfig:
                   # By default this plugin adds a set of sane default tags to help with observability best practices, you can disable those here

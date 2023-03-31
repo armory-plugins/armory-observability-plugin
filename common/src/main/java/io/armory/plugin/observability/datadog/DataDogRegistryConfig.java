@@ -33,4 +33,6 @@ public class DataDogRegistryConfig implements io.micrometer.datadog.DatadogConfi
     @Override public boolean descriptions() { return false; }
 
     @Override public String hostTag() {return "hostTag"; }
+
+    @Override public int batchSize() {return datadogConfig.getBatchSize();}
 }
