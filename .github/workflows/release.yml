@@ -30,6 +30,18 @@ jobs:
           echo ::set-output name=PROJECT::$(basename `pwd`)
           echo ::set-output name=PROJECT_KEBAB::$(basename `pwd` | sed 's/\([a-z0-9]\)\([A-Z]\)/\1_\L\2/g')
           echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
+          echo ::set-output name=REPO::${GITHUB_REPOSITORY}
+
+      - name: build docker image
+        run: |
+          docker build -t armory/${{ steps.get_project_info.outputs.PROJECT }}:${{ steps.get_project_info.outputs.VERSION }} -f build-tools/Dockerfile .
+
+      - name: Login to Docker Hub
+        run: docker login -u ${{ secrets.DOCKER_HUB_USER }} -p '${{ secrets.DOCKER_HUB_PASS }}'
+
+      - name: Publish Image to Docker Hub
+        run: |
+          docker push armory/${{ steps.get_project_info.outputs.PROJECT }}:${{ steps.get_project_info.outputs.VERSION }}
 
       - name: create release
         id: create_release
@@ -53,35 +65,17 @@ jobs:
           asset_name: ${{ steps.get_project_info.outputs.PROJECT }}-${{ steps.get_project_info.outputs.VERSION }}.zip
           asset_content_type: application/zip
 
-      - name: build docker image
-        id: build-docker-image
-        run: |
-          docker build -t gcr.io/cloud-armory/${{ steps.get_project_info.outputs.PROJECT_KEBAB }}:${{ steps.get_project_info.outputs.VERSION }} -f ./Dockerfile .
-          docker save -o ./${{ steps.get_project_info.outputs.PROJECT_KEBAB }}-${{ steps.get_project_info.outputs.VERSION }}.tar gcr.io/cloud-armory/${{ steps.get_project_info.outputs.PROJECT_KEBAB }}:${{ steps.get_project_info.outputs.VERSION }}
-
-      - name: upload image to release
-        id: upload-image-to-release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./${{ steps.get_project_info.outputs.PROJECT_KEBAB }}-${{ steps.get_project_info.outputs.VERSION }}.tar
-          asset_name: ${{ steps.get_project_info.outputs.PROJECT_KEBAB }}-${{ steps.get_project_info.outputs.VERSION }}.tar
-          asset_content_type: application/zip
-
       - name: add release to plugin repo
+        id: add-release
+        uses: armory-io/plugin-metadata-updater@master
+        env:
+          JAVA_HOME: ''
+          GITHUB_OAUTH: ${{ secrets.TOKEN }}
+        with:
+          metadata: build/distributions/plugin-info.json
+          binary_url: https://github.com/${{ steps.get_project_info.outputs.REPO }}/releases/download/${{ steps.get_project_info.outputs.VERSION }}/${{ steps.get_project_info.outputs.PROJECT }}-${{ steps.get_project_info.outputs.VERSION }}.zip
+          metadata_repo_url: https://github.com/armory-plugins/pluginRepository
+
+      - name: add release to global plugin repo
         run: |
           curl -v -XPOST -u "${{ secrets.USERNAME }}:${{ secrets.TOKEN }}" -H "Accept: application/vnd.github.everest-preview+json" -H "Content-Type: application/json" https://api.github.com/repos/armory-plugins/armory-observability-plugin-releases/dispatches --data "{\"event_type\": \"onPluginRelease\", \"client_payload\": {\"org\": \"armory-plugins\", \"repo\": \"${{ steps.get_project_info.outputs.PROJECT }}\", \"releaseRepo\": \"armory-observability-plugin-releases\", \"version\": \"${{ steps.get_project_info.outputs.VERSION }}\", \"artifactName\": \"${{ steps.get_project_info.outputs.PROJECT }}-${{ steps.get_project_info.outputs.VERSION }}.zip\", \"released\": $(cat build/distributions/plugin-info.json)}}"
-
-      - name: setup gcloud
-        uses: google-github-actions/setup-gcloud@master
-        with:
-          project_id: cloud-armory
-          service_account_key: ${{ secrets.GCP_KEY }}
-          export_default_credentials: true
-
-      - name: push image to registry
-        run: |
-          gcloud auth configure-docker -q
-          docker push gcr.io/cloud-armory/${{ steps.get_project_info.outputs.PROJECT_KEBAB }}:${{ steps.get_project_info.outputs.VERSION }}
