@@ -1,0 +1,59 @@
+name: Build CD Images
+
+on:
+  push:
+    branches:
+      - master
+      - "release-[0-9]+.[0-9]+.x"
+
+jobs:
+  publish_images:
+    runs-on: ubuntu-latest
+    env:
+      GRADLE_ARGS: -Partifactory_user=${{secrets.ARTIFACTORY_USER}} -Partifactory_password=${{secrets.ARTIFACTORY_TOKEN}}
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v2
+
+      - name: setup JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+
+      - name: build
+        run: ./gradlew releaseBundle $GRADLE_ARGS
+
+      - name: archive build artifacts
+        uses: actions/upload-artifact@v1
+        with:
+          name: dist
+          path: build/distributions
+
+      - name: install JFrog CLI
+        uses: jfrog/setup-jfrog-cli@v1
+
+      - name: generate variables
+        id: variables
+        uses: armory-io/astrolabe-build-defaults@main
+
+      - name: build docker image
+        id: build-docker-image
+        run: |
+          docker build -t ${{ steps.variables.outputs.artifactory_image_name }} -f build-tools/Dockerfile .
+
+      - name: Publish Image To Artifactory
+        env:
+          ARTIFACTORY_TOKEN: ${{ secrets.ARTIFACTORY_TOKEN_FOR_IMAGE_PUBLISH }}
+        run: |
+          jfrog config add deploy --artifactory-url ${{ steps.variables.outputs.artifactory_url }} --access-token ${ARTIFACTORY_TOKEN} --interactive=false
+
+          jfrog rt dp ${{ steps.variables.outputs.artifactory_image_name }} ${{ steps.variables.outputs.artifactory_docker_repository }} \
+            --build-name=${{ steps.variables.outputs.build_name }} \
+            --build-number=${{ steps.variables.outputs.build_number }}
+
+          jfrog rt sp "${{ steps.variables.outputs.artifactory_docker_repository }}/armory/${{ steps.variables.outputs.repo }}/${{ steps.variables.outputs.version }}/manifest.json" "spinnaker-plugin=true"
+
+          jfrog rt bag ${{ steps.variables.outputs.build_name }} ${{ steps.variables.outputs.build_number }}
+
+          jfrog rt bp ${{ steps.variables.outputs.build_name }} ${{ steps.variables.outputs.build_number }} \
+            --build-url=${{ steps.variables.outputs.build_url }}
