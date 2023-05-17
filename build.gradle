@@ -14,24 +14,6 @@ spinnakerBundle {
 
 version = normalizedVersion()
 
-allprojects {
-    apply plugin: 'jacoco'
-
-    repositories {
-        mavenCentral()
-    }
-
-    jacoco {
-        toolVersion = "0.8.5"
-    }
-
-    test {
-        testLogging {
-            events "passed", "skipped", "failed"
-        }
-    }
-}
-
 subprojects { subProject ->
     apply plugin: 'java'
     apply plugin: "maven-publish"
@@ -40,9 +22,16 @@ subprojects { subProject ->
         apply plugin: "io.spinnaker.plugin.service-extension"
     }
 
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
-
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+    if (korkVersion.endsWith("-SNAPSHOT")) {
+        repositories {
+            mavenLocal()
+            maven{
+                url "https://nexus.opsmx.net/repository/maven-snapshots/"
+            }
+        }
+    }
     repositories {
         mavenCentral()
     }
@@ -57,6 +46,7 @@ subprojects { subProject ->
         testCompileOnly 'org.projectlombok:lombok:+'
         testAnnotationProcessor 'org.projectlombok:lombok:+'
 
+        implementation "org.apache.groovy:groovy:4.0.9"
         compileOnly(group: 'org.pf4j', name: 'pf4j', version: "${pf4jVersion}")
         compileOnly(group: 'io.spinnaker.kork', name: 'kork-plugins-api', version: "${korkVersion}")
         compileOnly "io.spinnaker.kork:kork-plugins-spring-api:$korkVersion"
@@ -83,20 +73,24 @@ subprojects { subProject ->
         // End Datadog Deps
         annotationProcessor(group: 'org.pf4j', name: 'pf4j', version: "${pf4jVersion}")
 
-        testImplementation 'junit:junit:4.12'
-        testImplementation "org.mockito:mockito-core:2.+"
-        testImplementation 'org.springframework:spring-test:5.1.7.RELEASE'
-        testImplementation 'org.springframework.boot:spring-boot-test:2.1.5.RELEASE'
-        testImplementation 'org.springframework.vault:spring-vault-core:2.1.2.RELEASE'
+        testImplementation "org.junit.jupiter:junit-jupiter-api:5.9.2"
+        testImplementation "org.junit.jupiter:junit-jupiter-engine:5.9.2"
+
+        testImplementation "org.mockito:mockito-core:4.8.1"
+        testImplementation 'org.springframework:spring-test:6.0.8'
+        testImplementation 'org.springframework.boot:spring-boot-test:3.0.6'
+        testImplementation 'org.springframework.vault:spring-vault-core:3.0.2'
         testImplementation(group: 'org.pf4j', name: 'pf4j', version: "${pf4jVersion}")
         testImplementation(group: 'io.spinnaker.kork', name: 'kork-plugins-api', version: "${korkVersion}")
         testImplementation "io.spinnaker.kork:kork-plugins-spring-api:$korkVersion"
         testImplementation "io.spinnaker.kork:kork-core:${korkVersion}"
         testImplementation "io.spinnaker.kork:kork-web:${korkVersion}"
-        testImplementation "org.mock-server:mockserver-client-java:5.10.0"
+        testImplementation "org.mock-server:mockserver-client-java:5.15.0"
+        testImplementation "org.mock-server:mockserver-junit-jupiter:5.15.0"
+
+        testImplementation "org.testcontainers:testcontainers:1.18.0"
+        testImplementation "io.rest-assured:rest-assured:5.3.0"
         testImplementation "org.mock-server:mockserver-junit-rule:5.10.0"
-        testImplementation "org.testcontainers:testcontainers:1.14.3"
-        testImplementation 'io.rest-assured:rest-assured:4.3.0'
     }
 
     group = "io.armory.plugins.metrics"
@@ -122,7 +116,7 @@ task aggregatedJacocoReport(type: JacocoReport, group: 'Coverage reports') {
     additionalSourceDirs.from = files(publishedProjects.sourceSets.main.allSource.srcDirs)
     sourceDirectories.from = files(publishedProjects.sourceSets.main.allSource.srcDirs)
     classDirectories.from = files(publishedProjects.sourceSets.main.output)
-    executionData jacocoMerge.destinationFile
+
 
     reports {
         html.enabled = true // human readable
@@ -139,7 +133,6 @@ task aggregatedJacocoReport(type: JacocoReport, group: 'Coverage reports') {
 
 coveralls {
     sourceDirs = publishedProjects.sourceSets.main.allSource.srcDirs.flatten()
-    jacocoReportPath = "${buildDir}/reports/jacoco/aggregatedJacocoReport/aggregatedJacocoReport.xml"
     saveAsFile = true
     sendToCoveralls = false
 }
