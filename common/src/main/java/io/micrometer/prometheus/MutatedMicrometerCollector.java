@@ -46,7 +46,7 @@ class MutatedMicrometerCollector extends Collector {
             List<String> values = new ArrayList<>(tags.size());
 
             for (Tag tag : tags) {
-                keys.add(tag.getKey());
+                keys.add(NamingConvention.snakeCase.tagKey(tag.getKey()));
                 values.add(tag.getValue());
             }
 

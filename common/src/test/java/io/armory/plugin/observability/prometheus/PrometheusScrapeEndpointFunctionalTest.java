@@ -120,4 +120,19 @@ public class PrometheusScrapeEndpointFunctionalTest {
     String duplicate="# HELP foo_total  \n# TYPE foo_total counter ";
     assertEquals(expectedContent.length()-duplicate.length(), responseEntity.getBody().length());
   }
+
+  @Test
+  public void test_that_the_prometheus_registry_will_always_return_tags_with_snakeCase() {
+    var tags = List.of(Tag.of("my.Tag", "myValue"));
+    registry.counter("foo", tags).increment();
+    var responseEntity = sut.scrape();
+    assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
+    //noinspection ConstantConditions
+    assertEquals(
+        "text/plain;version=0.0.4;charset=utf-8",
+        responseEntity.getHeaders().getContentType().toString());
+    assertTrue(responseEntity.getBody().contains("my_Tag"));
+    assertEquals(false, responseEntity.getBody().contains("my.Tag"));
+
+  }
 }
