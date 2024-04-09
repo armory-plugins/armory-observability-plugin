@@ -50,8 +50,7 @@ public class TagsService {
   public static final String LIB = "lib";
   public static final String LIB_VER = "libVer";
   public static final String LIB_NAME = "aop";
-  public static final String MAIN_APPLICATION_CLASS = "main-application-class".replaceAll("-", "_");
-
+  public static final String MAIN_APPLICATION_CLASS = "main-application-class";
 
   protected final PluginMetricsConfig metricsConfig;
   private final VersionResolver versionResolver;
@@ -67,6 +66,9 @@ public class TagsService {
     this.springInjectedApplicationName = springInjectedApplicationName;
   }
 
+  private String toSnakeCaseKey(String key) {
+    return key.replaceAll("-", "_");
+  }
   private String trimToNull(String string) {
     if (string == null) {
       return null;
@@ -74,6 +76,7 @@ public class TagsService {
     var trimmed = string.strip();
     return trimmed.isEmpty() ? null : trimmed;
   }
+
 
   protected ArmoryEnvironmentMetadata getEnvironmentMetadata(
       BuildProperties buildProperties, String pluginVersion) {
@@ -89,6 +92,7 @@ public class TagsService {
         .armoryAppVersion(buildProperties.getVersion())
         .ossAppVersion(buildProperties.get("ossVersion"))
         .spinnakerRelease(buildProperties.get("spinnakerRelease"))
+        .mainApplicationClass(buildProperties.get("main-application-class"))
         .build();
   }
 
@@ -110,7 +114,7 @@ public class TagsService {
     tags.put(ARM_SPIN_SVC_VER, environmentMetadata.getArmoryAppVersion());
     tags.put(OSS_SPIN_SVC_VER, environmentMetadata.getOssAppVersion());
     tags.put(SPINNAKER_RELEASE, environmentMetadata.getSpinnakerRelease());
-    tags.put(MAIN_APPLICATION_CLASS), environmentMetadata.getSpinnakerRelease());
+    tags.put(toSnakeCaseKey(MAIN_APPLICATION_CLASS), environmentMetadata.getMainApplicationClass());
     tags.put(HOSTNAME, System.getenv("HOSTNAME"));
 
     return tags.entrySet().stream()
