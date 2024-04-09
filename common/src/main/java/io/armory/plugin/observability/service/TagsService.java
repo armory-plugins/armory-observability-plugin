@@ -50,7 +50,7 @@ public class TagsService {
   public static final String LIB = "lib";
   public static final String LIB_VER = "libVer";
   public static final String LIB_NAME = "aop";
-  public static final String MAIN_APPLICATION_CLASS = "main-application-class";
+  public static final String MAIN_APPLICATION_CLASS = "main-application-class".replaceAll("-", "_");
 
 
   protected final PluginMetricsConfig metricsConfig;
