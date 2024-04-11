@@ -136,7 +136,7 @@ public class PrometheusScrapeEndpointFunctionalTest {
 
   @Test
   public void test_that_the_prometheus_registry_will_always_return_tags_with_snakeCase_2() {
-    var tags = List.of(Tag.of("my.Tag", "main-application-test"));
+    var tags = List.of(Tag.of("main-application-test", "myValue"));
     registry.counter("foo", tags).increment();
     var responseEntity = sut.scrape();
     assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
@@ -144,8 +144,8 @@ public class PrometheusScrapeEndpointFunctionalTest {
     assertEquals(
             "text/plain;version=0.0.4;charset=utf-8",
             responseEntity.getHeaders().getContentType().toString());
-    assertTrue(responseEntity.getBody().contains("my_Tag"));
-    assertEquals(false, responseEntity.getBody().contains("my.Tag"));
+    assertTrue(responseEntity.getBody().contains("main_application_test"));
+    assertEquals(false, responseEntity.getBody().contains("main-application-test"));
 
   }
 }
