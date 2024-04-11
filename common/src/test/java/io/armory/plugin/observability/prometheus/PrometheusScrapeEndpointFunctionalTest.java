@@ -16,28 +16,26 @@
 
 package io.armory.plugin.observability.prometheus;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
-
-import io.armory.plugin.observability.prometheus.PrometheusScrapeEndpoint;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Timer;
 import io.micrometer.prometheus.MutatedPrometheusMeterRegistry;
 import io.micrometer.prometheus.PrometheusConfig;
 import io.prometheus.client.CollectorRegistry;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 /**
  * These tests are more functional than unit, because I don't really have the time to reverse
@@ -131,6 +129,21 @@ public class PrometheusScrapeEndpointFunctionalTest {
     assertEquals(
         "text/plain;version=0.0.4;charset=utf-8",
         responseEntity.getHeaders().getContentType().toString());
+    assertTrue(responseEntity.getBody().contains("my_Tag"));
+    assertEquals(false, responseEntity.getBody().contains("my.Tag"));
+
+  }
+
+  @Test
+  public void test_that_the_prometheus_registry_will_always_return_tags_with_snakeCase_2() {
+    var tags = List.of(Tag.of("my.Tag", "main-application-test"));
+    registry.counter("foo", tags).increment();
+    var responseEntity = sut.scrape();
+    assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
+    //noinspection ConstantConditions
+    assertEquals(
+            "text/plain;version=0.0.4;charset=utf-8",
+            responseEntity.getHeaders().getContentType().toString());
     assertTrue(responseEntity.getBody().contains("my_Tag"));
     assertEquals(false, responseEntity.getBody().contains("my.Tag"));
 

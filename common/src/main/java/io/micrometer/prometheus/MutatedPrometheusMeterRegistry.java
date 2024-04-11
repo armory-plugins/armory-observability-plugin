@@ -27,6 +27,7 @@ import io.micrometer.core.instrument.internal.DefaultMeter;
 import io.micrometer.core.lang.Nullable;
 import io.prometheus.client.Collector;
 import io.prometheus.client.CollectorRegistry;
+import io.prometheus.client.exemplars.ExemplarSampler;
 import io.prometheus.client.exporter.common.TextFormat;
 
 import java.io.IOException;
@@ -42,7 +43,6 @@ import java.util.function.ToDoubleFunction;
 import java.util.function.ToLongFunction;
 import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.StreamSupport.stream;
 
@@ -54,16 +54,26 @@ public class MutatedPrometheusMeterRegistry extends MeterRegistry {
   private final ConcurrentMap<String, MutatedMicrometerCollector> collectorMap = new ConcurrentHashMap<>();
   private final PrometheusConfig prometheusConfig;
 
+  @Nullable
+  private final ExemplarSampler exemplarSampler;
+
+
   public MutatedPrometheusMeterRegistry(PrometheusConfig config) {
     this(config, new CollectorRegistry(), Clock.SYSTEM);
   }
 
   public MutatedPrometheusMeterRegistry(PrometheusConfig config, CollectorRegistry registry, Clock clock) {
+    this(config, registry, clock, null);
+  }
+  public MutatedPrometheusMeterRegistry(PrometheusConfig config, CollectorRegistry registry, Clock clock, @Nullable ExemplarSampler exemplarSampler) {
     super(clock);
+//    config.requireValid();
+    this.prometheusConfig = config;
     this.registry = registry;
+    this.exemplarSampler = exemplarSampler;
+
     config().namingConvention(new PrometheusNamingConvention());
     config().onMeterRemoved(this::onMeterRemoved);
-    this.prometheusConfig = config;
   }
 
   private static List<String> tagValues(Meter.Id id) {
@@ -107,9 +117,10 @@ public class MutatedPrometheusMeterRegistry extends MeterRegistry {
   }
 
   @Override
-  public DistributionSummary newDistributionSummary(Meter.Id id, DistributionStatisticConfig distributionStatisticConfig, double scale) {
-    //MutatedMicrometerCollector collector = collectorByName(id);
-    PrometheusDistributionSummary summary = new PrometheusDistributionSummary(id, clock, distributionStatisticConfig, scale);
+  public DistributionSummary newDistributionSummary(Meter.Id id,
+                                                    DistributionStatisticConfig distributionStatisticConfig, double scale) {
+    PrometheusDistributionSummary summary = new PrometheusDistributionSummary(id, clock,
+            distributionStatisticConfig, scale, prometheusConfig.histogramFlavor(), exemplarSampler);
     List<String> tagValues = tagValues(id);
     applyToCollector(id, (collector) -> {
       collector.add(id.getTags(), (conventionName, tags) -> {
@@ -173,7 +184,8 @@ public class MutatedPrometheusMeterRegistry extends MeterRegistry {
   @Override
   protected io.micrometer.core.instrument.Timer newTimer(Meter.Id id, DistributionStatisticConfig distributionStatisticConfig, PauseDetector pauseDetector) {
     //MutatedMicrometerCollector collector = collectorByName(id);
-    PrometheusTimer timer = new PrometheusTimer(id, clock, distributionStatisticConfig, pauseDetector);
+    PrometheusTimer timer = new PrometheusTimer(id, clock, distributionStatisticConfig, pauseDetector,
+            prometheusConfig.histogramFlavor(), exemplarSampler);
     List<String> tagValues = tagValues(id);
     applyToCollector(id, (collector) -> {
       collector.add(id.getTags(), (conventionName, tags) -> {
@@ -253,7 +265,7 @@ public class MutatedPrometheusMeterRegistry extends MeterRegistry {
     LongTaskTimer ltt = new DefaultLongTaskTimer(id, clock);
     List<String> tagValues = tagValues(id);
     applyToCollector(id, (collector) -> {
-      collector.add(id.getTags(), (conventionName, tags) -> Stream.of(new MutatedMicrometerCollector.Family(Collector.Type.UNTYPED, conventionName,
+      collector.add(id.getTags(), (conventionName, tags) -> Stream.of(new MutatedMicrometerCollector.Family(Collector.Type.UNKNOWN, conventionName,
               new Collector.MetricFamilySamples.Sample(conventionName + "_active_count", tags.getKeys(), tags.getValues(), ltt.activeTasks()),
               new Collector.MetricFamilySamples.Sample(conventionName + "_duration_sum", tags.getKeys(), tags.getValues(), ltt.duration(TimeUnit.SECONDS))
       )));
@@ -290,7 +302,7 @@ public class MutatedPrometheusMeterRegistry extends MeterRegistry {
 
   @Override
   protected Meter newMeter(Meter.Id id, Meter.Type type, Iterable<Measurement> measurements) {
-    Collector.Type promType = Collector.Type.UNTYPED;
+    Collector.Type promType = Collector.Type.UNKNOWN;
     switch (type) {
       case COUNTER:
         promType = Collector.Type.COUNTER;
