@@ -42,6 +42,10 @@ public class PrometheusRegistrySupplier implements Supplier<RegistryConfigWrappe
     this.clock = clock;
   }
 
+  public static Clock createClockBean() {
+    return Clock.SYSTEM;
+  }
+
   @Override
   public RegistryConfigWrapper get() {
     if (!prometheusConfig.isEnabled()) {
