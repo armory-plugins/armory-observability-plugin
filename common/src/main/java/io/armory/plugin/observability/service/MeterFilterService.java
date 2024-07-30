@@ -18,10 +18,12 @@ package io.armory.plugin.observability.service;
 
 import static io.armory.plugin.observability.filters.ArmoryRecommendedFilters.ARMORY_RECOMMENDED_FILTERS;
 
+import java.util.ArrayList;
 import io.armory.plugin.observability.model.MeterRegistryConfig;
 import io.micrometer.core.instrument.config.MeterFilter;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.CollectionUtils;
 
 /**
  * https://micrometer.io/docs/concepts#_denyaccept_meters
@@ -39,10 +41,20 @@ public class MeterFilterService {
    * @param meterRegistryConfig
    */
   public List<MeterFilter> getMeterFilters(MeterRegistryConfig meterRegistryConfig) {
+    List<MeterFilter> meterFilters = new ArrayList<>();
+
     if (meterRegistryConfig.isArmoryRecommendedFiltersEnabled()) {
       log.info("Armory Recommended filters are enabled returning those");
-      return ARMORY_RECOMMENDED_FILTERS;
+      meterFilters.addAll(ARMORY_RECOMMENDED_FILTERS);
     }
-    return List.of();
+
+    if (!CollectionUtils.isEmpty(meterRegistryConfig.getExcludedMetrics())) {
+      // Explicitly ensure that the lambda parameter is treated as a String
+      meterRegistryConfig.getExcludedMetrics().forEach((String metricName) ->
+              meterFilters.add(MeterFilter.denyNameStartsWith(metricName))
+      );
+    }
+
+    return meterFilters;
   }
 }

@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -12,4 +14,7 @@ import lombok.NoArgsConstructor;
 public class MeterRegistryConfig {
   private boolean armoryRecommendedFiltersEnabled = false;
   private boolean defaultTagsDisabled = false;
+
+  private List<String> excludedMetrics;
+
 }
