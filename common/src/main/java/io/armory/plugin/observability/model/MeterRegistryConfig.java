@@ -15,6 +15,6 @@ public class MeterRegistryConfig {
   private boolean armoryRecommendedFiltersEnabled = false;
   private boolean defaultTagsDisabled = false;
 
-  private List<String> excludedMetrics;
+  private List<String> excludedMetricsPrefix;
 
 }

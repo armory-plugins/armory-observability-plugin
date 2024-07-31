@@ -148,7 +148,7 @@ spinnaker:
                     # By default this plugin adds a set of sane default tags to help with observability best practices, you can disable those here
                     # Optional, Default: false
                     defaultTagsDisabled: false
-                    excludedMetrics: ["Metric1","Metric2"] #configure Metrics to exclude
+                    excludedMetricsPrefix: ["Metric1","Metric2"] #configure Metrics to exclude
                     # Configures an opinionated but sane set of default meter filters: https://micrometer.io/docs/concepts#_meter_filters
                     # For example we filter out controller.invocations to prefer the micrometer generated metric 'http.server.requests'
                     # See the following for more details: 
@@ -186,7 +186,7 @@ spinnaker:
                     # By default this plugin adds a set of sane default tags to help with observability best practices, you can disable those here
                     # Optional, Default: false
                     defaultTagsDisabled: false
-                    excludedMetrics: ["Metric1","Metric2"] #configure Metrics to exclude
+                    excludedMetricsPrefix: ["Metric1","Metric2"] #configure Metrics to exclude
                     # Configures an opinionated but sane set of default meter filters: https://micrometer.io/docs/concepts#_meter_filters
                     # For example we filter out controller.invocations to prefer the micrometer generated metric 'http.server.requests'
                     # See the following for more details: 
@@ -222,7 +222,7 @@ spinnaker:
                   # By default this plugin adds a set of sane default tags to help with observability best practices, you can disable those here
                   # Optional, Default: false
                   defaultTagsDisabled: false
-                  excludedMetrics: ["Metric1","Metric2"] #configure Metrics to exclude
+                  excludedMetricsPrefix: ["Metric1","Metric2"] #configure Metrics to exclude
                   # Configures an opinionated but sane set of default meter filters: https://micrometer.io/docs/concepts#_meter_filters
                   # For example we filter out controller.invocations to prefer the micrometer generated metric 'http.server.requests'
                   # See the following for more details: 

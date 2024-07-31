@@ -48,9 +48,9 @@ public class MeterFilterService {
       meterFilters.addAll(ARMORY_RECOMMENDED_FILTERS);
     }
 
-    if (!CollectionUtils.isEmpty(meterRegistryConfig.getExcludedMetrics())) {
+    if (!CollectionUtils.isEmpty(meterRegistryConfig.getExcludedMetricsPrefix())) {
       // Explicitly ensure that the lambda parameter is treated as a String
-      meterRegistryConfig.getExcludedMetrics().forEach((String metricName) ->
+      meterRegistryConfig.getExcludedMetricsPrefix().forEach((String metricName) ->
               meterFilters.add(MeterFilter.denyNameStartsWith(metricName))
       );
     }
