@@ -16,14 +16,17 @@
 
 package io.armory.plugin.observability.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import io.armory.plugin.observability.model.MeterRegistryConfig;
 import org.junit.Before;
 import org.junit.Test;
+import static io.armory.plugin.observability.filters.ArmoryRecommendedFilters.ARMORY_RECOMMENDED_FILTERS;
+import static org.junit.Assert.*;
 
+import io.armory.plugin.observability.model.MeterRegistryConfig;
+import io.micrometer.core.instrument.config.MeterFilter;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 public class MeterFilterServiceTest {
 
   MeterFilterService sut;
@@ -48,5 +51,28 @@ public class MeterFilterServiceTest {
             MeterRegistryConfig.builder().armoryRecommendedFiltersEnabled(true).build());
     assertNotNull(filters);
     assertTrue(filters.size() > 0);
+  }
+
+  @Test
+  public void test_that_getMeterFilters_adds_deny_filters_for_excluded_metrics_prefix() {
+    List<String> excludedPrefixes = List.of("metric1", "metric2", "metric3");
+    var filters = sut.getMeterFilters(MeterRegistryConfig.builder().excludedMetricsPrefix(excludedPrefixes).build());
+    assertNotNull(filters);
+    System.out.println(filters.size());
+    assertTrue(filters.size() > 2);
+  }
+
+  @Test
+  public void test_that_getMeterFilters_combines_armory_recommendations_with_excluded_metrics() {
+    List<String> excludedPrefixes = List.of("metric1", "metric2", "metric3");
+    var filters =
+            sut.getMeterFilters(
+                    MeterRegistryConfig.builder()
+                            .armoryRecommendedFiltersEnabled(true)
+                            .excludedMetricsPrefix(excludedPrefixes)
+                            .build());
+    assertNotNull(filters);
+    System.out.println(filters.size());
+    assertTrue(filters.size() > 3);
   }
 }
