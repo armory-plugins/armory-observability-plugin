@@ -12,7 +12,7 @@ spinnakerBundle {
     version = rootProject.version
 }
 
-version = "v1.0.0"
+version = normalizedVersion()
 
 allprojects {
     apply plugin: 'jacoco'
