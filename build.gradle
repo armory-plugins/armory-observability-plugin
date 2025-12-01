@@ -1,7 +1,7 @@
 plugins {
     id("com.palantir.git-version").version("0.12.2")
     id("io.spinnaker.plugin.bundler").version("$spinnakerGradleVersion")
-    id "com.github.kt3k.coveralls" version "2.9.0"
+    id "com.github.kt3k.coveralls" version "2.12.2"
     id 'idea'
 }
 
@@ -19,10 +19,18 @@ allprojects {
 
     repositories {
         mavenCentral()
+        maven {
+            url "https://pkg.harness.io/pkg/NK24qb_MQ0aYFnTJmNEjiw/armory-oss-maven/maven"
+            credentials {
+                username = "${harness_artifact_user}"
+                password = "${harness_artifact_password}"
+            }
+        }
+
     }
 
     jacoco {
-        toolVersion = "0.8.5"
+        toolVersion = "0.8.10"
     }
 
     test {
@@ -40,8 +48,8 @@ subprojects { subProject ->
         apply plugin: "io.spinnaker.plugin.service-extension"
     }
 
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 
     repositories {
         mavenCentral()
@@ -96,7 +104,7 @@ subprojects { subProject ->
         testImplementation "org.mock-server:mockserver-client-java:5.10.0"
         testImplementation "org.mock-server:mockserver-junit-rule:5.10.0"
         testImplementation "org.testcontainers:testcontainers:1.14.3"
-        testImplementation 'io.rest-assured:rest-assured:4.3.0'
+        testImplementation 'io.rest-assured:rest-assured:5.2.1'
     }
 
     group = "io.armory.plugins.metrics"
