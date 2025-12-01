@@ -9,7 +9,9 @@ on:
 jobs:
   build:
     env:
-      COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+      HARNESS_ARTIFACT_PASSWORD: ${{secrets.HARNESS_ARTIFACTORY_PASSWORD}}
+      ORG_GRADLE_PROJECT_harness_artifact_user: '${{secrets.HARNESS_ARTIFACTORY_USER}}'
+      ORG_GRADLE_PROJECT_harness_artifact_password: '${{secrets.HARNESS_ARTIFACTORY_PASSWORD}}'
     name: Build Plugin
     runs-on: ubuntu-latest
     steps:
@@ -19,15 +21,12 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: |
-            11
             17
           distribution: 'zulu'
           cache: 'gradle'
       - name: run tests
         run: |
-          ./gradlew check aggregatedJacocoReport
-          ./gradlew coveralls
-          curl -F 'json_file=@build/coveralls/report.json' 'https://coveralls.io/api/v1/jobs'
+          ./gradlew test
       - name: build
         run: |
           ./gradlew -PenableCrossCompilerPlugin=true releaseBundle

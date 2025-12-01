@@ -9,6 +9,10 @@ jobs:
   build:
     name: Release Plugin
     runs-on: ubuntu-latest
+    env:
+      HARNESS_ARTIFACT_PASSWORD: ${{secrets.HARNESS_ARTIFACTORY_PASSWORD}}
+      ORG_GRADLE_PROJECT_harness_artifact_user: '${{secrets.HARNESS_ARTIFACTORY_USER}}'
+      ORG_GRADLE_PROJECT_harness_artifact_password: '${{secrets.HARNESS_ARTIFACTORY_PASSWORD}}'
     steps:
       - name: checkout code
         uses: actions/checkout@v2
@@ -17,7 +21,6 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: |
-            11
             17
           distribution: 'zulu'
           cache: 'gradle'
