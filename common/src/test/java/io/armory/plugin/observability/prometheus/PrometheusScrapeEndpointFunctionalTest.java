@@ -133,6 +133,7 @@ public class PrometheusScrapeEndpointFunctionalTest {
     assertEquals(false, responseEntity.getBody().contains("my.Tag"));
 
   }
+
   @Test
   public void test_that_the_prometheus_registry_will_always_return_tags_with_snakeCase_2() {
     var tags = List.of(Tag.of("main-application-test", "myValue"));
