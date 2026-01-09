@@ -24,7 +24,7 @@ jobs:
         run: ./gradlew releaseBundle $GRADLE_ARGS
 
       - name: archive build artifacts
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v6
         with:
           name: dist
           path: build/distributions
