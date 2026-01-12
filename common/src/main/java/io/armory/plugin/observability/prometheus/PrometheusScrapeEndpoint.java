@@ -55,14 +55,16 @@ public class PrometheusScrapeEndpoint {
     try {
       Writer writer = new StringWriter();
       Enumeration<Collector.MetricFamilySamples> samples =
-          this.collectorRegistry.metricFamilySamples();
+              this.collectorRegistry.metricFamilySamples();
       TextFormat.write004(writer, samples);
 
       var responseHeaders = new HttpHeaders();
       responseHeaders.set("Content-Type", TextFormat.CONTENT_TYPE_004);
-      TextFormat.write004(writer, samples);
 
-      return new ResponseEntity<>(writer.toString(), responseHeaders, HttpStatus.OK);
+      return ResponseEntity
+              .status(HttpStatus.OK)
+              .headers(responseHeaders)
+              .body(writer.toString());
     } catch (IOException ex) {
       // This actually never happens since StringWriter::write() doesn't throw any
       // IOException
