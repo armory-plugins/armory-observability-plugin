@@ -22,6 +22,7 @@ jobs:
           java-version: |
             11
           cache: 'gradle'
+          distribution: 'temurin'
 
       - name: build
         run: ./gradlew -PenableCrossCompilerPlugin=true releaseBundle $GRADLE_ARGS

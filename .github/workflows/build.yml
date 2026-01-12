@@ -23,6 +23,7 @@ jobs:
           java-version: |
             11
           cache: 'gradle'
+          distribution: 'temurin'
       - name: run tests
         run: |
           ./gradlew test
