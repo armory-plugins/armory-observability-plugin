@@ -45,6 +45,14 @@ subprojects { subProject ->
 
     repositories {
         mavenCentral()
+        maven {
+            url "https://pkg.harness.io/pkg/NK24qb_MQ0aYFnTJmNEjiw/armory-oss-maven/maven"
+            credentials {
+                username = "${harness_artifact_user}"
+                password = "${harness_artifact_password}"
+            }
+        }
+
     }
 
     compileJava {
