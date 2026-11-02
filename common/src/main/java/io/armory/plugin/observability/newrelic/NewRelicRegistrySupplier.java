@@ -20,7 +20,7 @@ import io.armory.plugin.observability.model.PluginConfig;
 import io.armory.plugin.observability.model.PluginMetricsNewRelicConfig;
 import io.armory.plugin.observability.registry.RegistryConfigWrapper;
 import io.armory.plugin.observability.service.TagsService;
-import io.micrometer.newrelic.NewRelicRegistry;
+import com.newrelic.telemetry.micrometer.NewRelicRegistry;
 
 import io.micrometer.core.ipc.http.HttpSender;
 import io.micrometer.core.ipc.http.HttpUrlConnectionSender;

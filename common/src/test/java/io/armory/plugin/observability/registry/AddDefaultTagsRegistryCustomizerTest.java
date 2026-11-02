@@ -16,20 +16,23 @@
 
 package io.armory.plugin.observability.registry;
 
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 import io.armory.plugin.observability.model.MeterRegistryConfig;
 import io.armory.plugin.observability.service.TagsService;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+@ExtendWith(MockitoExtension.class)
 public class AddDefaultTagsRegistryCustomizerTest {
 
   @Mock TagsService tagsService;
@@ -40,11 +43,10 @@ public class AddDefaultTagsRegistryCustomizerTest {
 
   AddDefaultTagsRegistryCustomizer sut;
 
-  @Before
+  @BeforeEach
   public void before() {
-    initMocks(this);
     sut = new AddDefaultTagsRegistryCustomizer(tagsService);
-    when(registry.config()).thenReturn(config);
+    lenient().when(registry.config()).thenReturn(config);
   }
 
   @Test
@@ -59,7 +61,6 @@ public class AddDefaultTagsRegistryCustomizerTest {
   public void
       test_that_customize_does_not_adds_the_tags_to_the_registry_common_tag_config_when_disabled() {
     var tags = List.of(Tag.of("FOO", "BAR"));
-    when(tagsService.getDefaultTags()).thenReturn(tags);
     sut.customize(registry, MeterRegistryConfig.builder().defaultTagsDisabled(true).build());
     verify(config, times(0)).commonTags(tags);
   }

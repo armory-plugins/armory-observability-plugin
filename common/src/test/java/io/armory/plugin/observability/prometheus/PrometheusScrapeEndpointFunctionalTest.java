@@ -22,9 +22,11 @@ import io.micrometer.core.instrument.Timer;
 import io.micrometer.prometheus.MutatedPrometheusMeterRegistry;
 import io.micrometer.prometheus.PrometheusConfig;
 import io.prometheus.client.CollectorRegistry;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -32,15 +34,15 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 /**
  * These tests are more functional than unit, because I don't really have the time to reverse
  * engineer the Prometheus registry to mock everything properly.
  */
+@ExtendWith(MockitoExtension.class)
 public class PrometheusScrapeEndpointFunctionalTest {
 
   CollectorRegistry collectorRegistry;
@@ -50,9 +52,8 @@ public class PrometheusScrapeEndpointFunctionalTest {
 
   PrometheusScrapeEndpoint sut;
 
-  @Before
+  @BeforeEach
   public void before() {
-    initMocks(this);
     collectorRegistry = new CollectorRegistry();
     sut = new PrometheusScrapeEndpoint(collectorRegistry);
 

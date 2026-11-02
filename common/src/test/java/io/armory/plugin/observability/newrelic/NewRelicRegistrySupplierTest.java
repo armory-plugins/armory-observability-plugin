@@ -22,22 +22,25 @@ import io.armory.plugin.observability.model.PluginMetricsNewRelicConfig;
 import io.armory.plugin.observability.service.TagsService;
 import io.micrometer.core.ipc.http.HttpSender;
 import io.micrometer.core.ipc.http.HttpUrlConnectionSender;
-import io.micrometer.newrelic.NewRelicRegistry;
+import com.newrelic.telemetry.micrometer.NewRelicRegistry;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.zip.GZIPInputStream;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
 
+@ExtendWith(MockitoExtension.class)
 public class NewRelicRegistrySupplierTest {
 
   PluginMetricsNewRelicConfig config;
@@ -47,17 +50,16 @@ public class NewRelicRegistrySupplierTest {
 
   NewRelicRegistrySupplier sut;
 
-  @Before
+  @BeforeEach
   public void before() throws IOException {
-    initMocks(this);
     var pluginConfig = new PluginConfig();
     var metricsConfig = new PluginMetricsConfig();
     pluginConfig.setMetrics(metricsConfig);
     config = PluginMetricsNewRelicConfig.builder().apiKey("foo").build();
     metricsConfig.setNewrelic(config);
     sut = new NewRelicRegistrySupplier(pluginConfig, tagsService);
-    when(sender.post(anyString())).thenCallRealMethod();
-    when(sender.newRequest(anyString())).thenCallRealMethod();
+    lenient().when(sender.post(anyString())).thenCallRealMethod();
+    lenient().when(sender.newRequest(anyString())).thenCallRealMethod();
     sut.sender = sender;
   }
 
@@ -86,7 +88,7 @@ public class NewRelicRegistrySupplierTest {
     registry.counter("testCounter").increment();
     Thread.sleep(2*1000l);
     registry.stop();
-    assertTrue("Received " + decompressByteData(captor.getValue().getEntity()), decompressByteData(captor.getValue().getEntity()).contains("testCounter"));
+    assertTrue(decompressByteData(captor.getValue().getEntity()).contains("testCounter"), "Received " + decompressByteData(captor.getValue().getEntity()));
   }
 
   private String decompressByteData(byte[] result) throws IOException {

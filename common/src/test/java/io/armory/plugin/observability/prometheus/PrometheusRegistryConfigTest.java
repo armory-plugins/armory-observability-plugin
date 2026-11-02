@@ -16,14 +16,14 @@
 
 package io.armory.plugin.observability.prometheus;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import io.armory.plugin.observability.model.PluginMetricsPrometheusConfig;
 import io.armory.plugin.observability.prometheus.PrometheusRegistryConfig;
 import java.time.Duration;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class PrometheusRegistryConfigTest {
 
@@ -31,7 +31,7 @@ public class PrometheusRegistryConfigTest {
 
   PrometheusRegistryConfig sut;
 
-  @Before
+  @BeforeEach
   public void before() {
     prometheusConfig = new PluginMetricsPrometheusConfig();
     sut = new PrometheusRegistryConfig(prometheusConfig);

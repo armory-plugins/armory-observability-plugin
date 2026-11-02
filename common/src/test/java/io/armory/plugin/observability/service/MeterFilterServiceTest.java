@@ -17,10 +17,10 @@
 package io.armory.plugin.observability.service;
 
 import io.armory.plugin.observability.model.MeterRegistryConfig;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import static io.armory.plugin.observability.filters.ArmoryRecommendedFilters.ARMORY_RECOMMENDED_FILTERS;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import io.armory.plugin.observability.model.MeterRegistryConfig;
 import io.micrometer.core.instrument.config.MeterFilter;
@@ -31,7 +31,7 @@ public class MeterFilterServiceTest {
 
   MeterFilterService sut;
 
-  @Before
+  @BeforeEach
   public void before() {
     sut = new MeterFilterService();
   }

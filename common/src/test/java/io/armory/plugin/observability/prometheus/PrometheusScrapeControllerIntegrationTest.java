@@ -17,9 +17,9 @@
 package io.armory.plugin.observability.prometheus;
 
 import static io.restassured.RestAssured.given;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.restassured.http.ContentType;
 import java.nio.file.Files;
@@ -30,12 +30,12 @@ import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-import org.junit.After;
-import org.junit.Ignore;
-import org.junit.Rule;
-import org.junit.Test;
-import org.mockserver.client.MockServerClient;
-import org.mockserver.junit.MockServerRule;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockserver.integration.ClientAndServer;
+import org.mockserver.junit.jupiter.MockServerExtension;
 import org.mockserver.model.HttpRequest;
 import org.mockserver.model.HttpResponse;
 import org.slf4j.Logger;
@@ -46,18 +46,15 @@ import org.testcontainers.containers.output.OutputFrame;
 import org.testcontainers.containers.wait.strategy.HttpWaitStrategy;
 import org.testcontainers.utility.MountableFile;
 
+@ExtendWith(MockServerExtension.class)
 public class PrometheusScrapeControllerIntegrationTest {
 
   Logger log = LoggerFactory.getLogger(getClass());
 
-  @Rule public MockServerRule mockServerRule = new MockServerRule(this);
-
-  MockServerClient mockServerClient;
-
   GenericContainer prometheus;
 
-  public void startPrometheus() throws Exception {
-    Testcontainers.exposeHostPorts(mockServerRule.getPort());
+  public void startPrometheus(ClientAndServer mockServerClient) throws Exception {
+    Testcontainers.exposeHostPorts(mockServerClient.getPort());
     var prometheusWaitStrategy =
         new HttpWaitStrategy()
             .forPath("/status")
@@ -75,7 +72,7 @@ public class PrometheusScrapeControllerIntegrationTest {
             .getResource("io/armory/plugin/observability/prometheus/prom-config-template.yml");
     var promConfigTemplateContent = Files.readString(Path.of(promConfigTemplateResource.toURI()));
     var processedTemplate =
-        promConfigTemplateContent.replace("@@_PORT_@@", String.valueOf(mockServerRule.getPort()));
+        promConfigTemplateContent.replace("@@_PORT_@@", String.valueOf(mockServerClient.getPort()));
     Files.writeString(promConfig, processedTemplate, StandardOpenOption.WRITE);
     assertTrue(promConfig.toFile().setReadable(true, false));
 
@@ -91,7 +88,7 @@ public class PrometheusScrapeControllerIntegrationTest {
     prometheus.start();
   }
 
-  @After
+  @AfterEach
   public void after() {
     Optional.ofNullable(prometheus).ifPresent(GenericContainer::stop);
   }
@@ -100,14 +97,15 @@ public class PrometheusScrapeControllerIntegrationTest {
    * https://github.com/armory-plugins/armory-observability-plugin/issues/3 This test ensures we
    * prometheus can consume our expected payload.
    */
-  @Ignore(
+  @Disabled(
       "Don't need to run this every CI build, was really to tdd that prometheus could handle the payload.")
   @Test
   public void
-      test_that_prometheus_can_scrape_a_payload_with_2_counters_with_that_have_the_same_name_but_different_tags()
+      test_that_prometheus_can_scrape_a_payload_with_2_counters_with_that_have_the_same_name_but_different_tags(
+          ClientAndServer mockServerClient)
           throws Exception {
 
-    startPrometheus();
+    startPrometheus(mockServerClient);
 
     var expectedScrapeResource =
         this.getClass()

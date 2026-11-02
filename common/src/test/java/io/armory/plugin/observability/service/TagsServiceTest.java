@@ -17,13 +17,12 @@
 package io.armory.plugin.observability.service;
 
 import static io.armory.plugin.observability.service.TagsService.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 import com.netflix.spinnaker.kork.version.VersionResolver;
 import io.armory.plugin.observability.model.ArmoryEnvironmentMetadata;
@@ -31,11 +30,14 @@ import io.armory.plugin.observability.model.PluginConfig;
 import io.micrometer.core.instrument.Tag;
 import java.util.Map;
 import java.util.UUID;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.info.BuildProperties;
 
+@ExtendWith(MockitoExtension.class)
 public class TagsServiceTest {
 
   private static final String MOCK_APPLICATION_NAME = "mock-application-name";
@@ -46,9 +48,8 @@ public class TagsServiceTest {
 
   PluginConfig pluginConfig;
 
-  @Before
+  @BeforeEach
   public void before() {
-    initMocks(this);
     pluginConfig = new PluginConfig();
     sut = new TagsService(pluginConfig, versionResolver, MOCK_APPLICATION_NAME);
   }
@@ -120,7 +121,6 @@ public class TagsServiceTest {
   @Test
   public void test_that_getEnvironmentMetadata_uses_spring_app_name_props_if_build_props_null() {
     var buildProps = mock(BuildProperties.class);
-    when(buildProps.getName()).thenReturn(null);
     var metadata = sut.getEnvironmentMetadata(buildProps, MOCK_PLUGIN_VER);
     assertEquals(MOCK_APPLICATION_NAME, metadata.getApplicationName());
   }

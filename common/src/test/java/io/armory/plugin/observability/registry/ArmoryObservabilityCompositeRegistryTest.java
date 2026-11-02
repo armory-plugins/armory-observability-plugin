@@ -16,26 +16,19 @@
 
 package io.armory.plugin.observability.registry;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.logging.LoggingMeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ArmoryObservabilityCompositeRegistryTest {
-
-  @Before
-  public void before() {
-    initMocks(this);
-  }
 
   @Test
   public void test_that_ArmoryObservabilityCompositeRegistry_uses_supplied_registries() {

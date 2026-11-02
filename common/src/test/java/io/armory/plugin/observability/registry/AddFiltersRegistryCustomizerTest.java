@@ -17,17 +17,19 @@
 package io.armory.plugin.observability.registry;
 
 import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 import io.armory.plugin.observability.model.MeterRegistryConfig;
 import io.armory.plugin.observability.service.MeterFilterService;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.config.MeterFilter;
 import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+@ExtendWith(MockitoExtension.class)
 public class AddFiltersRegistryCustomizerTest {
 
   @Mock MeterFilterService meterFilterService;
@@ -38,9 +40,8 @@ public class AddFiltersRegistryCustomizerTest {
 
   AddFiltersRegistryCustomizer sut;
 
-  @Before
+  @BeforeEach
   public void before() {
-    initMocks(this);
     sut = new AddFiltersRegistryCustomizer(meterFilterService);
     when(registry.config()).thenReturn(config);
   }

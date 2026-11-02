@@ -16,11 +16,12 @@
 
 package io.armory.plugin.observability.newrelic;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import io.armory.plugin.observability.model.PluginMetricsNewRelicConfig;
 import java.time.Duration;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.pf4j.PluginRuntimeException;
 
 public class NewRelicRegistryConfigTest {
@@ -48,11 +49,11 @@ public class NewRelicRegistryConfigTest {
     assertEquals(5, delegate.getConnectDurationSeconds());
   }
 
-  @Test(expected = PluginRuntimeException.class)
+  @Test
   public void test_that_apiKey_throws_exception_if_not_set() {
     var delegate = PluginMetricsNewRelicConfig.builder().build();
     var sut = new NewRelicRegistryConfig(delegate);
-    sut.apiKey();
+    assertThrows(PluginRuntimeException.class, sut::apiKey);
   }
 
 }
