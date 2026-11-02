@@ -16,18 +16,21 @@
 
 package io.armory.plugin.observability;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.initMocks;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.pf4j.PluginRuntimeException;
 import org.pf4j.PluginWrapper;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 
+@ExtendWith(MockitoExtension.class)
 public class ArmoryObservabilityPluginTest {
 
   @Mock PluginWrapper pluginWrapper;
@@ -36,9 +39,8 @@ public class ArmoryObservabilityPluginTest {
 
   ArmoryObservabilityPlugin sut;
 
-  @Before
+  @BeforeEach
   public void before() {
-    initMocks(this);
     sut = new ArmoryObservabilityPlugin(pluginWrapper);
   }
 
@@ -48,11 +50,12 @@ public class ArmoryObservabilityPluginTest {
     verify(registry, atLeast(1)).registerBeanDefinition(any(), any());
   }
 
-  @Test(expected = PluginRuntimeException.class)
+  @Test
   public void test_that_registerBeanDefinitions_throws_PRE_when_bean_registration_fails() {
     doThrow(new BeanDefinitionStoreException("error"))
         .when(registry)
         .registerBeanDefinition(any(), any());
-    sut.registerBeanDefinitions(registry);
+    assertThrows(
+        PluginRuntimeException.class, () -> sut.registerBeanDefinitions(registry));
   }
 }

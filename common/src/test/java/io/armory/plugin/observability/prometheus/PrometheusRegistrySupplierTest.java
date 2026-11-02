@@ -16,9 +16,8 @@
 
 package io.armory.plugin.observability.prometheus;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.mockito.MockitoAnnotations.initMocks;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import io.armory.plugin.observability.model.PluginConfig;
 import io.armory.plugin.observability.model.PluginMetricsConfig;
@@ -26,10 +25,13 @@ import io.armory.plugin.observability.model.PluginMetricsPrometheusConfig;
 import io.armory.plugin.observability.prometheus.PrometheusRegistrySupplier;
 import io.micrometer.core.instrument.Clock;
 import io.prometheus.client.CollectorRegistry;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+@ExtendWith(MockitoExtension.class)
 public class PrometheusRegistrySupplierTest {
 
   PluginMetricsPrometheusConfig prometheusConfig;
@@ -40,9 +42,8 @@ public class PrometheusRegistrySupplierTest {
 
   PrometheusRegistrySupplier sut;
 
-  @Before
+  @BeforeEach
   public void before() {
-    initMocks(this);
     var pluginConfig = new PluginConfig();
     var metricsConfig = new PluginMetricsConfig();
     pluginConfig.setMetrics(metricsConfig);

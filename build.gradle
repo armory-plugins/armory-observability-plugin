@@ -30,10 +30,11 @@ allprojects {
     }
 
     jacoco {
-        toolVersion = "0.8.10"
+        toolVersion = "0.8.16"
     }
 
-    test {
+    tasks.withType(Test).configureEach {
+        useJUnitPlatform()
         testLogging {
             events "passed", "skipped", "failed"
         }
@@ -48,8 +49,10 @@ subprojects { subProject ->
         apply plugin: "io.spinnaker.plugin.service-extension"
     }
 
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    java {
+        sourceCompatibility = JavaVersion.VERSION_25
+        targetCompatibility = JavaVersion.VERSION_25
+    }
 
     repositories {
         mavenCentral()
@@ -60,10 +63,10 @@ subprojects { subProject ->
     }
 
     dependencies {
-        compileOnly 'org.projectlombok:lombok:+'
-        annotationProcessor 'org.projectlombok:lombok:+'
-        testCompileOnly 'org.projectlombok:lombok:+'
-        testAnnotationProcessor 'org.projectlombok:lombok:+'
+        compileOnly 'org.projectlombok:lombok:1.18.46'
+        annotationProcessor 'org.projectlombok:lombok:1.18.46'
+        testCompileOnly 'org.projectlombok:lombok:1.18.46'
+        testAnnotationProcessor 'org.projectlombok:lombok:1.18.46'
 
         compileOnly(group: 'org.pf4j', name: 'pf4j', version: "${pf4jVersion}")
         compileOnly(group: 'io.spinnaker.kork', name: 'kork-plugins-api', version: "${korkVersion}")
@@ -71,40 +74,44 @@ subprojects { subProject ->
         compileOnly "io.spinnaker.kork:kork-core:${korkVersion}"
         compileOnly "io.spinnaker.kork:kork-web:${korkVersion}"
         // Start Prometheus deps
-        implementation("io.micrometer:micrometer-registry-prometheus:1.3.5") {
+        // This plugin's Mutated* registry fork reaches into package-private helper classes
+        // (PrometheusDistributionSummary, PrometheusTimer, etc.) of micrometer-registry-prometheus.
+        // Those classes' constructors changed (added exemplar/histogram-flavor params) starting
+        // in 1.4.0, so we stay on the newest 1.3.x patch that still matches the fork's assumptions
+        // rather than jumping to the latest release, which would require rewriting the fork
+        // against the current internals.
+        implementation("io.micrometer:micrometer-registry-prometheus:1.3.20") {
             exclude group: 'io.micrometer', module: 'micrometer-core'
         }
-        implementation group: 'io.prometheus', name: 'simpleclient_common', version: '0.9.0'// needs to match micrometer-registry-prometheus
         // End Prometheus deps
 
         // Start New Relic Deps
-        implementation('com.newrelic.telemetry:micrometer-registry-new-relic:0.5.0') {
+        implementation('com.newrelic.telemetry:micrometer-registry-new-relic:0.10.0') {
             exclude group: 'io.micrometer', module: 'micrometer-core'
             exclude group: 'org.slf4j', module: 'slf4j-api'
         }
         // End New Relic Deps
         // Start Datadog Deps
-        implementation('io.micrometer:micrometer-registry-datadog:1.9.1') {
+        implementation('io.micrometer:micrometer-registry-datadog:1.17.1') {
             exclude group: 'io.micrometer', module: 'micrometer-core'
             exclude group: 'org.slf4j', module: 'slf4j-api'
         }
         // End Datadog Deps
         annotationProcessor(group: 'org.pf4j', name: 'pf4j', version: "${pf4jVersion}")
 
-        testImplementation 'junit:junit:4.12'
-        testImplementation "org.mockito:mockito-core:2.+"
-        testImplementation 'org.springframework:spring-test:5.1.7.RELEASE'
-        testImplementation 'org.springframework.boot:spring-boot-test:2.1.5.RELEASE'
-        testImplementation 'org.springframework.vault:spring-vault-core:2.1.2.RELEASE'
+        testImplementation 'org.junit.jupiter:junit-jupiter:6.0.3'
+        testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+        testImplementation 'org.mockito:mockito-core:5.23.0'
+        testImplementation 'org.mockito:mockito-junit-jupiter:5.23.0'
         testImplementation(group: 'org.pf4j', name: 'pf4j', version: "${pf4jVersion}")
         testImplementation(group: 'io.spinnaker.kork', name: 'kork-plugins-api', version: "${korkVersion}")
         testImplementation "io.spinnaker.kork:kork-plugins-spring-api:$korkVersion"
         testImplementation "io.spinnaker.kork:kork-core:${korkVersion}"
         testImplementation "io.spinnaker.kork:kork-web:${korkVersion}"
-        testImplementation "org.mock-server:mockserver-client-java:5.10.0"
-        testImplementation "org.mock-server:mockserver-junit-rule:5.10.0"
-        testImplementation "org.testcontainers:testcontainers:1.14.3"
-        testImplementation 'io.rest-assured:rest-assured:5.2.1'
+        testImplementation "org.mock-server:mockserver-client-java:9.2.0"
+        testImplementation "org.mock-server:mockserver-junit-jupiter:9.2.0"
+        testImplementation "org.testcontainers:testcontainers:1.21.4"
+        testImplementation 'io.rest-assured:rest-assured:5.5.7'
     }
 
     group = "io.armory.plugins.metrics"
@@ -114,27 +121,20 @@ subprojects { subProject ->
 List<String> blackList = []
 def publishedProjects = subprojects.findAll { !blackList.contains(it.path) }
 
-task jacocoMerge(type: JacocoMerge) {
-    publishedProjects.each { subproject ->
-        executionData subproject.tasks.withType(Test)
-    }
-    doFirst {
-        executionData = files(executionData.findAll { it.exists() })
-    }
-}
-
 task aggregatedJacocoReport(type: JacocoReport, group: 'Coverage reports') {
     description = 'Generates an aggregate report from all subprojects'
-    dependsOn publishedProjects.test, jacocoMerge
+    dependsOn publishedProjects.test
 
     additionalSourceDirs.from = files(publishedProjects.sourceSets.main.allSource.srcDirs)
     sourceDirectories.from = files(publishedProjects.sourceSets.main.allSource.srcDirs)
     classDirectories.from = files(publishedProjects.sourceSets.main.output)
-    executionData jacocoMerge.destinationFile
+    publishedProjects.each { subproject ->
+        executionData subproject.tasks.withType(Test)
+    }
 
     reports {
-        html.enabled = true // human readable
-        xml.enabled = true // required by coveralls
+        html.required = true // human readable
+        xml.required = true // required by coveralls
     }
 
     afterEvaluate {
